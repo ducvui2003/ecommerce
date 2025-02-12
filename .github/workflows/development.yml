@@ -1,13 +1,11 @@
-name: Monorepo CI/CD
+name: Development
 
 on:
   pull_request:
     branches:
       - dev
-      - main
-  push:
-    branches:
-      - main
+    types:
+      - opened
 
 jobs:
   detect-changes:
@@ -80,22 +78,3 @@ jobs:
 
       - name: Build Next.js
         run: npm run build
-#   deploy-nestjs:
-#     needs: [build-nestjs]
-#     if: github.ref == 'refs/heads/main'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Deploy NestJS
-#         run: |
-#           cd nestjs-service
-#           # Add your deployment script or commands here
-
-#   deploy-nextjs:
-#     needs: [build-nextjs]
-#     if: github.ref == 'refs/heads/main'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Deploy Next.js
-#         run: |
-#           cd nextjs-service
-#           # Add your deployment script or commands here
