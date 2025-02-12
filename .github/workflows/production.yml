@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./server
+        working-directory: server
     steps:
       - name: Deploy NestJS
         run: |
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./web
+        working-directory: web
     steps:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
