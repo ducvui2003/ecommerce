@@ -1,11 +1,13 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import envConfig from 'src/shared/config';
 import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
+import envConfig from 'src/shared/config';
+import { TransformInterceptor } from 'src/shared/Interceptor/transform.interceptor';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(
     new ValidationPipe({
       forbidNonWhitelisted: true,
@@ -23,6 +25,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   await app.listen(envConfig.PORT);
 }

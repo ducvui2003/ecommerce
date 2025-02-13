@@ -14,17 +14,6 @@ export class RegisterReqDTO {
   password: string;
 }
 
-export class LoginReqDTO {
-  @IsEmail()
-  email: string;
-  @MinLength(1, { message: 'Password is required' })
-  password: string;
-}
-
-export class LoginResDTO {
-  token: string;
-}
-
 export class RegisterResDTO {
   id: number;
   email: string;
@@ -37,3 +26,25 @@ export class RegisterResDTO {
     Object.assign(this, partial);
   }
 }
+
+export class LoginReqDTO {
+  @IsEmail()
+  email: string;
+  @MinLength(1, { message: 'Password is required' })
+  password: string;
+}
+
+export class LoginResDTO {
+  accessToken: string;
+  refreshToken: string;
+
+  constructor(partial: Partial<LoginResDTO>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class RefreshReqDTO {
+  refreshToken: string;
+}
+
+export class RefreshResDTO extends LoginResDTO {}
