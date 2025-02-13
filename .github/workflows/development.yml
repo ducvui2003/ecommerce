@@ -31,52 +31,46 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.nestjs == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
         with:
-          cache-dependency-path: server/package-lock.json
-          node-version: 22.13.1
-          cache: "npm"
+          node_version: 22.13.1
+          cache: npm
+          working-directory: server
 
       - name: Create env
         run: echo"${{ secrets.ENV_SERVER }}" > .env
-
-      - name: Install dependencies
-        run: npm i --force
+        working-directory: server
 
       - name: Build NestJS
         run: npm run build
+        working-directory: server
 
   build-nextjs:
     needs: detect-changes
     if: needs.detect-changes.outputs.nextjs == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
         with:
-          cache-dependency-path: server/package-lock.json
-          node-version: 22.13.1
-          cache: "npm"
+          node_version: 22.13.1
+          cache: npm
+          working-directory: web
 
       - name: Create env
         run: echo"${{ secrets.ENV_WEB }}" > .env
-
-      - name: Install dependencies
-        run: npm i --force
+        working-directory: web
 
       - name: Build Next.js
         run: npm run build
+        working-directory: web
