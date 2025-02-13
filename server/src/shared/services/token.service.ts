@@ -31,7 +31,7 @@ export class TokenService {
 
   verifyRefreshToken(token: string): Promise<JWTPayload> {
     return this.jwtService.verifyAsync(token, {
-      secret: envConfig.ACCESS_TOKEN_SECRET,
+      secret: envConfig.REFRESH_TOKEN_SECRET,
     });
   }
 }

@@ -4,7 +4,6 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { LoginReqDTO, RegisterReqDTO } from 'src/routes/auth/auth.dto';
 import {
   isNotFoundError,
@@ -130,6 +129,7 @@ export class AuthService {
       if (isNotFoundError(error)) {
         throw new UnauthorizedException('Token has been revoked');
       }
+      console.error(error);
       throw new UnauthorizedException('Error when refresh token');
     }
   }
