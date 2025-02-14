@@ -1,23 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { REQUEST_USER_KEY } from 'src/shared/constants/auth.constant';
+import envConfig from 'src/shared/config';
 import { TokenService } from 'src/shared/services/token.service';
 
 @Injectable()
 export class APIKeyGuard implements CanActivate {
   constructor(private readonly tokenService: TokenService) {}
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const accessToken: string = request.headers.authorization?.split(' ')[1];
+    const xAPIKey = request.headers['x-api-key'];
 
-    if (!accessToken) return false;
+    if (!xAPIKey || xAPIKey != envConfig.SECRET_KEY) return false;
 
-    try {
-      const decodedAccessToken =
-        await this.tokenService.verifyAccessToken(accessToken);
-      request[REQUEST_USER_KEY] = decodedAccessToken;
-      return true;
-    } catch {
-      return false;
-    }
+    return true;
   }
 }

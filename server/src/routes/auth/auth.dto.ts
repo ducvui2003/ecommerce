@@ -48,3 +48,5 @@ export class RefreshReqDTO {
 }
 
 export class RefreshResDTO extends LoginResDTO {}
+
+export class LogoutReqDTO extends RefreshResDTO {}

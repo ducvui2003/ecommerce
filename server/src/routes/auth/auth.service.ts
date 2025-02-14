@@ -114,7 +114,7 @@ export class AuthService {
       });
 
       // 3. Xóa refresh token cũ
-      await this.prismaService.refreshToken.deleteMany({
+      await this.prismaService.refreshToken.delete({
         where: {
           userId: id,
           token: token,
@@ -130,6 +130,30 @@ export class AuthService {
         throw new UnauthorizedException('Token has been revoked');
       }
       console.error(error);
+      throw new UnauthorizedException('Error when refresh token');
+    }
+  }
+
+  async logout(token: string) {
+    try {
+      // 1. Decode refresh token
+      const { id } = await this.jwtService.verifyRefreshToken(token);
+
+      // 2. Xóa refresh token có trong database không
+      await this.prismaService.refreshToken.delete({
+        where: {
+          token: token,
+          userId: id,
+        },
+      });
+
+      return true;
+    } catch (error) {
+      // Xử lý trường hợp token đã bị mất
+      // P2025 là mã lỗi của Prisma khi không tìm thấy dữ liệu
+      if (isNotFoundError(error)) {
+        throw new UnauthorizedException('Token has been revoked');
+      }
       throw new UnauthorizedException('Error when refresh token');
     }
   }

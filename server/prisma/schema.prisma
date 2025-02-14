@@ -27,8 +27,7 @@ model User {
 }
 
 model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String
+  token     String   @id
   expiredAt DateTime
   userId    Int
 
