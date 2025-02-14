@@ -15,10 +15,10 @@ import {
   RegisterReqDTO,
   RegisterResDTO,
 } from 'src/routes/auth/auth.dto';
-import { AuthService } from './auth.service';
+import { AuthType } from 'src/shared/constants/auth.constant';
 import { Auth } from 'src/shared/decorators/auth.decorator';
-import { AuthType, ConditionType } from 'src/shared/constants/auth.constant';
 import { AuthenticationGuard } from 'src/shared/guards/authentication.guard';
+import { AuthService } from './auth.service';
 
 @Controller('/api/v1/auth')
 export class AuthController {
@@ -44,8 +44,8 @@ export class AuthController {
     return new RefreshResDTO(res);
   }
 
-  @Auth([AuthType.Bearer], { condition: ConditionType.Or })
   @UseGuards(AuthenticationGuard)
+  @Auth([AuthType.Bearer])
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Body() body: LogoutReqDTO) {

@@ -14,14 +14,14 @@ export type AuthTypeDecoratorPayload = {
 
 export const Auth = (
   authTypes: AuthType[],
-  options: {
-    condition: ConditionType;
+  options?: {
+    condition: ConditionType | undefined;
   },
 ) => {
   return SetMetadata(AUTH_TYPE_KEY, {
     authType: authTypes,
-    options: {
-      condition: options.condition,
+    options: options ?? {
+      condition: ConditionType.And,
     },
   });
 };
