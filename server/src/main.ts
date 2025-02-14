@@ -2,8 +2,8 @@ import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
 import envConfig from 'src/shared/config';
-import { TransformInterceptor } from 'src/shared/Interceptor/transform.interceptor';
 import { AppModule } from './app.module';
+import { TransformInterceptor } from 'src/shared/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
