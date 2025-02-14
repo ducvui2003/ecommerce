@@ -18,10 +18,14 @@ class Config {
   PORT: number;
   @IsString()
   DATABASE_URL: string;
+  @IsString()
   ACCESS_TOKEN_SECRET: string;
   ACCESS_TOKEN_EXPIRY: string;
+  @IsString()
   REFRESH_TOKEN_SECRET: string;
   REFRESH_TOKEN_EXPIRY: string;
+  @IsString()
+  SECRET_KEY: string;
 }
 const configServer = plainToInstance(Config, process.env, {
   enableImplicitConversion: true,
