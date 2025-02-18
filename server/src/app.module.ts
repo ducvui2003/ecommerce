@@ -5,8 +5,9 @@ import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './routes/auth/auth.module';
 import './shared/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { UserModule } from './routes/user/user.module';
 @Module({
-  imports: [SharedModule, AuthModule],
+  imports: [SharedModule, AuthModule, UserModule],
   controllers: [AppController],
   providers: [
     AppService,

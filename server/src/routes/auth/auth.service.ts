@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -34,7 +33,12 @@ export class AuthService {
       return userCreated;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
-        throw new ConflictException('Email already exists');
+        throw new UnprocessableEntityException([
+          {
+            field: 'email',
+            error: 'email has exist',
+          },
+        ]);
       }
       throw error;
     }

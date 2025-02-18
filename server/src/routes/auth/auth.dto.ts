@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { IsEmail, MinLength } from 'class-validator';
-import { IsPasswordStrong } from 'src/shared/decorators/IsPasswordStrong';
+import { IsPasswordStrong } from 'src/shared/decorators/strong-password';
 
 export class RegisterReqDTO {
   @IsEmail()
