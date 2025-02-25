@@ -1,8 +1,9 @@
 import { plainToInstance } from 'class-transformer';
-import { IsNumber, IsString, validateSync } from 'class-validator';
+import { IsArray, IsNumber, IsString, validateSync } from 'class-validator';
 import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { SplitStringToList } from 'src/shared/decorators/split-string.decorator';
 
 config({
   path: '.env',
@@ -18,10 +19,18 @@ class Config {
   PORT: number;
   @IsString()
   DATABASE_URL: string;
+  @IsString()
   ACCESS_TOKEN_SECRET: string;
   ACCESS_TOKEN_EXPIRY: string;
+  @IsString()
   REFRESH_TOKEN_SECRET: string;
   REFRESH_TOKEN_EXPIRY: string;
+  @IsString()
+  SECRET_KEY: string;
+  @IsArray()
+  @IsString({ each: true }) // Ensures all items are strings
+  @SplitStringToList()
+  ORIGIN_ALLOWED: string[];
 }
 const configServer = plainToInstance(Config, process.env, {
   enableImplicitConversion: true,
