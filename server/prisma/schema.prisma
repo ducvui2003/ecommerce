@@ -16,7 +16,7 @@ datasource db {
 model User {
   id           Int            @id @default(autoincrement())
   email        String         @unique
-  name         String?
+  name         String         @default("")
   password     String
   refreshToken RefreshToken[]
 
@@ -27,10 +27,9 @@ model User {
 }
 
 model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String
+  token     String   @id
   expiredAt DateTime
-  userId    Int      @unique
+  userId    Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
