@@ -9,17 +9,17 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { LoginBodyReq, LoginBodyReqType } from '@/types/schema/auth.schema';
-import authApiRequest from '@/service/auth.service';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { ERROR_STATUS_CODE } from '@/constraint/variable';
+import { EntityError } from '@/lib/http';
 import { handleErrorApi } from '@/lib/utils';
+import { LoginBodyReq, LoginBodyReqType } from '@/types/schema/auth.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 
 const LoginForm = () => {
   const router = useRouter();
-  const toast = useToast();
 
   // 1. Define your form.
   const form = useForm<LoginBodyReqType>({
@@ -29,11 +29,29 @@ const LoginForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyReqType) {
     try {
-      const { accessToken, refreshToken } = (await authApiRequest.login(values))
-        .payload.data;
-      authApiRequest.auth({ accessToken, refreshToken });
-      router.push('/');
-    } catch (err: any) {
+      const response = await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+      if (
+        response?.error == ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
+      ) {
+        // Đóng gói error để trả error trên form thay vì toast message error
+        throw new EntityError({
+          status: ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
+          payload: {
+            error: '',
+            message: [
+              {
+                field: 'password',
+                error: 'Email hoặc mật khẩu không đúng',
+              },
+            ],
+          },
+        });
+      }
+    } catch (err) {
       handleErrorApi({
         error: err,
         setError: form.setError,
@@ -52,7 +70,6 @@ const LoginForm = () => {
               <FormControl>
                 <Input placeholder="Vui lòng không để trống" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}

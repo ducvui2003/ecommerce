@@ -1,20 +1,16 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import authApiRequest from '@/service/auth.service';
-import React from 'react';
+import { HOME_PAGE } from '@/constraint/variable';
+import { signOut } from 'next-auth/react';
 
 const LogoutButton = () => {
-  const logout = async () => {
-    const response = authApiRequest.logoutFromNextClient();
-    console.log(response);
-  };
   return (
     <Button
       onClick={() => {
-        logout();
+        signOut({ callbackUrl: HOME_PAGE });
       }}
     >
-      Logout
+      Đăng xuất
     </Button>
   );
 };

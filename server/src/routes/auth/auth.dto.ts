@@ -35,8 +35,12 @@ export class LoginReqDTO {
 }
 
 export class LoginResDTO {
+  id: number;
+  email: string;
+  image?: string | undefined;
   accessToken: string;
   refreshToken: string;
+  exp: number;
 
   constructor(partial: Partial<LoginResDTO>) {
     Object.assign(this, partial);
@@ -47,6 +51,14 @@ export class RefreshReqDTO {
   refreshToken: string;
 }
 
-export class RefreshResDTO extends LoginResDTO {}
+export class RefreshResDTO {
+  accessToken: string;
+  refreshToken: string;
+  exp: number;
+
+  constructor(partial: Partial<RefreshResDTO>) {
+    Object.assign(this, partial);
+  }
+}
 
 export class LogoutReqDTO extends RefreshResDTO {}

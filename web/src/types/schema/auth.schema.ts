@@ -9,11 +9,6 @@ export const LoginBodyReq = z.object({
 
 export type LoginBodyReqType = z.infer<typeof LoginBodyReq>;
 
-export type LoginRes = {
-  accessToken: string;
-  refreshToken: string;
-};
-
 const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')

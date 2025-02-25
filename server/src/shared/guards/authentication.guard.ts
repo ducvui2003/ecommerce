@@ -11,7 +11,7 @@ import {
   ConditionType,
 } from 'src/shared/constants/auth.constant';
 import { AuthTypeDecoratorPayload } from 'src/shared/decorators/auth.decorator';
-import { AccessTokenGuard } from 'src/shared/guards/acces-token.guard';
+import { AccessTokenGuard } from 'src/shared/guards/access-token.guard';
 import { APIKeyGuard } from 'src/shared/guards/api-key.guard';
 
 @Injectable()

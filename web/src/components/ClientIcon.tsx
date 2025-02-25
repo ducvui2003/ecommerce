@@ -1,10 +1,5 @@
 'use client';
-import React from 'react';
-import {
-  Icon,
-  IconifyIconHTMLElement,
-  IconifyIconProps,
-} from '@iconify-icon/react';
+import { Icon, IconifyIconProps } from '@iconify-icon/react';
 
 interface ClientIconProps extends Omit<IconifyIconProps, 'ref'> {}
 

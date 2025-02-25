@@ -9,6 +9,16 @@ export default {
   ],
   theme: {
     extend: {
+      container: {
+        padding: '1rem', // 1rem = 16px
+        screens: {
+          sm: '640px',
+          md: '768px',
+          lg: '1024px',
+          xl: '1280px',
+          '2xl': '1536px',
+        },
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

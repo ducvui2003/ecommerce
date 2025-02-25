@@ -1,11 +1,17 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './routes/auth/auth.module';
-import './shared/config';
+import './configs/env.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './routes/user/user.module';
+import { LoggingMiddleware } from 'src/shared/middlewares/logging.middleware';
 @Module({
   imports: [SharedModule, AuthModule, UserModule],
   controllers: [AppController],
@@ -17,4 +23,8 @@ import { UserModule } from './routes/user/user.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggingMiddleware).forRoutes('*');
+  }
+}

@@ -1,8 +1,6 @@
 import envConfig from '@/config/env.config';
-import { normalizePath } from '@/lib/utils';
-import { ResponseApi } from '@/types/schema/api.schema';
-import { LoginRes } from '@/types/schema/auth.schema';
-import { Token } from '@/types/token';
+import { ERROR_STATUS_CODE } from '@/constraint/variable';
+import { useSession } from 'next-auth/react';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -20,8 +18,6 @@ export class HttpError extends Error {
     this.payload = payload;
   }
 }
-
-export const ENTITY_ERROR_STATUS_CODE: number = 422;
 
 type EntityErrorPayload = {
   error: string;
@@ -44,8 +40,26 @@ export class EntityError extends HttpError {
   }
 }
 
-export const clientAccessToken = new Token();
-export const clientRefreshToken = new Token();
+export const getAccessToken = async (): Promise<string> => {
+  try {
+    if (typeof window !== 'undefined') {
+      // Client
+      const { data: session } = useSession();
+      return session?.accessToken || '';
+    } else {
+      // Server
+      const { getServerSession } = await import('next-auth');
+      const { authOptions } = await import(
+        '@/app/api/auth/[...nextauth]/route'
+      );
+      const session = await getServerSession(authOptions);
+      return session?.accessToken || '';
+    }
+  } catch (e) {
+    console.error('Get access token failed');
+    return '';
+  }
+};
 
 const request = async <Response>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -55,9 +69,7 @@ const request = async <Response>(
   const body = options?.body ? JSON.stringify(options.body) : undefined;
   const baseHeaders = {
     'Content-Type': 'application/json',
-    Authorization: clientAccessToken.value
-      ? `Bearer ${clientAccessToken.value}`
-      : '',
+    Authorization: await getAccessToken(),
   };
   const baseUrl =
     options?.baseUrl === undefined
@@ -84,7 +96,7 @@ const request = async <Response>(
   };
 
   if (!res.ok) {
-    if (res.status === ENTITY_ERROR_STATUS_CODE)
+    if (res.status === ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE)
       throw new EntityError(
         data as {
           status: 422;
@@ -96,15 +108,15 @@ const request = async <Response>(
     }
   }
 
-  if (typeof window === 'undefined')
-    if (['api/v1/auth/login'].some((path) => path === normalizePath(url))) {
-      const data = (payload as ResponseApi<LoginRes>).data;
-      clientAccessToken.value = data.accessToken;
-      clientRefreshToken.value = data.refreshToken;
-    } else if ('/api/v1/auth/logout' === normalizePath(url)) {
-      clientAccessToken.value = '';
-      clientRefreshToken.value = '';
-    }
+  // if (typeof window === 'undefined')
+  //   if (['api/v1/auth/login'].some((path) => path === normalizePath(url))) {
+  //     const data = (payload as ResponseApi<LoginRes>).data;
+  //     clientAccessToken.value = data.accessToken;
+  //     clientRefreshToken.value = data.refreshToken;
+  //   } else if ('/api/v1/auth/logout' === normalizePath(url)) {
+  //     clientAccessToken.value = '';
+  //     clientRefreshToken.value = '';
+  //   }
 
   return data;
 };

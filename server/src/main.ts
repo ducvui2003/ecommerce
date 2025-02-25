@@ -1,18 +1,17 @@
 import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
-import envConfig from 'src/shared/config';
+import envConfig from 'src/configs/env.config';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from 'src/shared/interceptors/transform.interceptor';
 
+import setupCors from 'src/configs/cors.config';
+import setupSwagger from 'src/configs/swagger.config';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: envConfig.ORIGIN_ALLOWED, // Allow only this origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
-    credentials: true,
-  });
+
+  setupCors(app);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -33,6 +32,8 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new TransformInterceptor());
+
+  setupSwagger(app);
 
   await app.listen(envConfig.PORT);
 }

@@ -6,16 +6,16 @@ import {
 } from 'src/shared/constants/auth.constant';
 
 export type AuthTypeDecoratorPayload = {
-  authType: AuthType[];
+  authType: AuthType[],
   options: {
-    condition: ConditionType;
-  };
+    condition: ConditionType,
+  },
 };
 
 export const Auth = (
   authTypes: AuthType[],
   options?: {
-    condition: ConditionType | undefined;
+    condition: ConditionType | undefined,
   },
 ) => {
   return SetMetadata(AUTH_TYPE_KEY, {

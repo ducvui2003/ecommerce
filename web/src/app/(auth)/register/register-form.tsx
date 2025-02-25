@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -11,13 +10,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { handleErrorApi } from '@/lib/utils';
+import authApiRequest from '@/service/auth.service';
 import {
   RegisterBodyReq,
   RegisterBodyReqType,
 } from '@/types/schema/auth.schema';
-import authApiRequest from '@/service/auth.service';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 
 const RegisterForm = () => {
@@ -49,7 +47,6 @@ const RegisterForm = () => {
               <FormControl>
                 <Input placeholder="Vui lòng không để trống" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -97,7 +94,7 @@ const RegisterForm = () => {
           )}
         />
         <Button className="w-full" type="submit">
-          Đăng nhập
+          Đăng ký
         </Button>
       </form>
     </Form>

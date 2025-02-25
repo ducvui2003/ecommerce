@@ -1,7 +1,12 @@
+import Link from '@/components/Link';
 import Logo from '@/components/Logo';
 import LogoutButton from '@/components/LogoutButton';
+import ConditionalRenderer from '@/components/protected/ConditionalRenderer';
+import { Button } from '@/components/ui/button';
+import { getAccessToken } from '@/lib/http';
 
-const Header = () => {
+const Header = async () => {
+  const accessToken = await getAccessToken();
   return (
     <header className="columns-2 px-5 py-2 bg-pink-100">
       <div className="flex">
@@ -12,7 +17,17 @@ const Header = () => {
         </div>
       </div>
       <div className="flex justify-end">
-        <LogoutButton />
+        <ConditionalRenderer
+          condition={accessToken == ''}
+          whenTrue={
+            <Link href={'/login'}>
+              <Button className="w-full" variant={'outline'}>
+                Đăng Nhập
+              </Button>
+            </Link>
+          }
+          whenFalse={<LogoutButton />}
+        />
       </div>
     </header>
   );

@@ -3,7 +3,11 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { LoginReqDTO, RegisterReqDTO } from 'src/routes/auth/auth.dto';
+import {
+  LoginReqDTO,
+  LoginResDTO,
+  RegisterReqDTO,
+} from 'src/routes/auth/auth.dto';
 import {
   isNotFoundError,
   isUniqueConstraintError,
@@ -44,10 +48,7 @@ export class AuthService {
     }
   }
 
-  async login(req: LoginReqDTO): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  async login(req: LoginReqDTO): Promise<LoginResDTO> {
     const user = await this.prismaService.user.findUnique({
       where: {
         email: req.email,
@@ -76,7 +77,13 @@ export class AuthService {
       email: user.email,
     });
 
-    return tokens;
+    return {
+      id: user.id,
+      email: user.email,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      exp: tokens.exp,
+    };
   }
 
   async generateToken(payload: JWTPayload) {
@@ -89,17 +96,20 @@ export class AuthService {
     const decodeRefreshToken =
       await this.jwtService.verifyRefreshToken(refreshToken);
 
+    const exp: Date = new Date(decodeRefreshToken.exp || 0 * 1000);
+
     await this.prismaService.refreshToken.create({
       data: {
         token: refreshToken,
         userId: payload.id,
-        expiredAt: new Date(decodeRefreshToken.exp || 0 * 1000),
+        expiredAt: exp,
       },
     });
 
     return {
       accessToken,
       refreshToken,
+      exp: decodeRefreshToken.exp || 0,
     };
   }
 

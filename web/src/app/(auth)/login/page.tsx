@@ -1,6 +1,7 @@
 import LoginForm from '@/app/(auth)/login/login-form';
 import ClientIcon from '@/components/ClientIcon';
 import Link from '@/components/Link';
+import ProtectedServer from '@/components/protected/ProtectedServer';
 import { Button } from '@/components/ui/button';
 
 const LoginPage = () => {

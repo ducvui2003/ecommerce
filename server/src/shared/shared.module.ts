@@ -3,8 +3,9 @@ import { PrismaService } from './services/prisma.service';
 import { HashingService } from './services/hashing.service';
 import { TokenService } from './services/token.service';
 import { JwtModule } from '@nestjs/jwt';
-import { AccessTokenGuard } from 'src/shared/guards/acces-token.guard';
+import { AccessTokenGuard } from 'src/shared/guards/access-token.guard';
 import { APIKeyGuard } from 'src/shared/guards/api-key.guard';
+import { LoggingMiddleware } from 'src/shared/middlewares/logging.middleware';
 
 const sharedServices = [
   PrismaService,
@@ -12,6 +13,7 @@ const sharedServices = [
   TokenService,
   AccessTokenGuard,
   APIKeyGuard,
+  LoggingMiddleware,
 ];
 
 @Global()

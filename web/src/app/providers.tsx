@@ -1,29 +1,18 @@
 'use client';
 import { Toaster } from '@/components/ui/toaster';
-import { clientAccessToken, clientRefreshToken } from '@/lib/http';
-import { TokenType } from '@/types/token';
+import { RefreshTokenResType } from '@/types/auth.type';
+import { SessionProvider } from 'next-auth/react';
 import React, { useState } from 'react';
 
-const Providers = ({
-  initToken,
-  children,
-}: {
-  initToken?: TokenType | undefined;
-  children: React.ReactNode;
-}) => {
-  // use state chỉ rendẻ duy nhất 1 lần trong life cycle
-  useState(() => {
-    if (typeof window !== 'undefined' && initToken) {
-      clientAccessToken.value = initToken.accessToken;
-      clientRefreshToken.value = initToken.refreshToken;
-    }
-  });
+const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <main>
-        <Toaster />
-        <div>{children}</div>
-      </main>
+      <SessionProvider>
+        <main>
+          <Toaster />
+          <div>{children}</div>
+        </main>
+      </SessionProvider>
     </>
   );
 };

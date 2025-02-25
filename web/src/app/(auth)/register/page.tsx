@@ -1,4 +1,3 @@
-import LoginForm from '@/app/(auth)/login/login-form';
 import RegisterForm from '@/app/(auth)/register/register-form';
 import ClientIcon from '@/components/ClientIcon';
 import Link from '@/components/Link';
@@ -19,10 +18,10 @@ const RegisterPage = () => {
           </Button>
         </Link>
       </div>
-      <div className="p-2 p-2 border rounded-md border-gray-300">
+      <div className="p-2 border rounded-md border-gray-300">
         <RegisterForm />
       </div>
-      <div className="p-2 p-2 border rounded-md border-gray-300">
+      <div className="p-2 border rounded-md border-gray-300">
         <span className="text-center block py-2">Hoặc đăng nhập với</span>
         <div className="flex justify-evenly      ">
           <ClientIcon icon="flat-color-icons:google" size={40} />

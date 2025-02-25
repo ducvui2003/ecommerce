@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import envConfig from 'src/shared/config';
+import envConfig from 'src/configs/env.config';
 import { TokenService } from 'src/shared/services/token.service';
 
 @Injectable()

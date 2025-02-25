@@ -1,10 +1,7 @@
+import Providers from '@/app/providers';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Providers from '@/app/providers';
-import { cookies } from 'next/headers';
-import { Toaster } from '@/components/ui/toaster';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/constraint/variable';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,17 +23,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get(ACCESS_TOKEN)?.value || '';
-  const refreshToken = cookieStore.get(REFRESH_TOKEN)?.value || '';
-  console.log('access token', accessToken);
-  console.log('refresh token', refreshToken);
   return (
     <html lang="en">
       <body>
-        <Providers initToken={{ accessToken, refreshToken }}>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
