@@ -1,4 +1,6 @@
 import { Prisma } from '@prisma/client';
+import { randomInt } from 'crypto';
+import { generate } from 'rxjs';
 
 export function isUniqueConstraintError(
   error: any,
@@ -16,4 +18,8 @@ export function isNotFoundError(
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === 'P2025'
   );
+}
+
+export function generateOTP() {
+  return String(randomInt(100000, 1000000));
 }

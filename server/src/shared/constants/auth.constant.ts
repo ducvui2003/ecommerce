@@ -15,3 +15,17 @@ export const ConditionType = {
 } as const;
 
 export type ConditionType = (typeof ConditionType)[keyof typeof ConditionType];
+
+export const UserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  BLOCKED: 'BLOCKED',
+} as const;
+
+export const VerificationType = {
+  REGISTER: 'REGISTER',
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+} as const;
+
+export type TypeOfVerificationType =
+  (typeof VerificationType)[keyof typeof VerificationType];

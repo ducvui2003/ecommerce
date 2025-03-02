@@ -1,39 +1,84 @@
+import envConfig from '@config/env.config';
 import {
+  Inject,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   LoginReqDTO,
-  LoginResDTO,
   RegisterReqDTO,
-} from 'src/routes/auth/auth.dto';
+  SendOTPBodyDTO,
+} from '@route/auth/auth.dto';
+import { AuthRepository } from '@route/auth/auth.repository';
+import { RoleService } from '@route/auth/role.service';
+import { VerificationType } from '@shared/constants/auth.constant';
 import {
+  generateOTP,
   isNotFoundError,
   isUniqueConstraintError,
-} from 'src/shared/helper.shared';
-import { HashingService } from 'src/shared/services/hashing.service';
-import { PrismaService } from 'src/shared/services/prisma.service';
-import { TokenService } from 'src/shared/services/token.service';
-import { JWTPayload } from 'src/shared/types/jwt.type';
-
+} from '@shared/helper.shared';
+import { UserRepository } from '@shared/repositories/user.repository';
+import { HashingService } from '@shared/services/hashing.service';
+import { TokenService } from '@shared/services/token.service';
+import { JWTPayload } from '@shared/types/jwt.type';
+import { addMilliseconds } from 'date-fns';
+import ms from 'ms';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaService: PrismaService,
+    @Inject('AuthRepository') private readonly authRepository: AuthRepository,
+    private readonly userRepository: UserRepository,
     private readonly hashingService: HashingService,
     private readonly jwtService: TokenService,
+    private readonly roleService: RoleService,
   ) {}
+
   async register(req: RegisterReqDTO) {
     try {
-      const hashing = await this.hashingService.hash(req.password);
-      const userCreated = await this.prismaService.user.create({
-        data: {
+      // 1. Kiểm tra OTP có tồn tại chưa?
+      const verificationCode =
+        await this.authRepository.findUniqueVerificationCode({
+          code: req.otp,
           email: req.email,
-          name: req.name,
-          password: hashing,
-        },
+          type: VerificationType.REGISTER,
+        });
+      if (!verificationCode) {
+        throw new UnprocessableEntityException([
+          {
+            field: 'code',
+            error: 'OTP not valid',
+          },
+        ]);
+      }
+
+      // 2. Kiểm tra OTP đã hết hạn chưa?
+      if (verificationCode.expiredAt < new Date()) {
+        throw new UnprocessableEntityException([
+          {
+            field: 'code',
+            error: 'OTP is expired',
+          },
+        ]);
+      }
+
+      // 3. Tạo user
+      const hashing = await this.hashingService.hash(req.password);
+      const clientRoleId = await this.roleService.getClientRoleId();
+      const userCreated = await this.authRepository.createUser({
+        email: req.email,
+        name: req.name,
+        password: hashing,
+        roleId: clientRoleId,
       });
+
+      // 4. Xóa OTP
+      await this.authRepository.deleteVerificationCode({
+        email: req.email,
+        code: req.otp,
+        type: VerificationType.REGISTER,
+      });
+
       return userCreated;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
@@ -48,12 +93,33 @@ export class AuthService {
     }
   }
 
-  async login(req: LoginReqDTO): Promise<LoginResDTO> {
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        email: req.email,
-      },
+  async sendOTP(data: SendOTPBodyDTO) {
+    // 1. Kiểm tra OTP có tồn tại chưa?
+    const userExist = await this.userRepository.findUnique({
+      email: data.email,
     });
+    if (userExist) {
+      throw new UnprocessableEntityException([
+        {
+          path: 'email',
+          error: 'email is exist',
+        },
+      ]);
+    }
+
+    // 2. Tạo OTP
+    const otp = generateOTP();
+    const verificationCode = await this.authRepository.createVerificationCode({
+      email: data.email,
+      type: data.type,
+      code: otp,
+      expiredAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRY)),
+    });
+    return { ...data, expiredAt: verificationCode.expiredAt };
+  }
+
+  async login(req: LoginReqDTO) {
+    const user = await this.userRepository.findUnique({ email: req.email });
 
     if (!user) {
       throw new UnauthorizedException('Email not found');
@@ -98,12 +164,10 @@ export class AuthService {
 
     const exp: Date = new Date(decodeRefreshToken.exp || 0 * 1000);
 
-    await this.prismaService.refreshToken.create({
-      data: {
-        token: refreshToken,
-        userId: payload.id,
-        expiredAt: exp,
-      },
+    await this.authRepository.createRefreshToken({
+      token: refreshToken,
+      userId: payload.id,
+      expiredAt: exp,
     });
 
     return {
@@ -120,20 +184,10 @@ export class AuthService {
 
       // 2. Kiểm tra refresh token có tồn tại trong database không
       // Nếu ko tồn tại thì refresh token đã bị mất
-      await this.prismaService.refreshToken.findFirstOrThrow({
-        where: {
-          token: token,
-          userId: id,
-        },
-      });
+      await this.authRepository.findRefreshTokenOrThrown(id, token);
 
       // 3. Xóa refresh token cũ
-      await this.prismaService.refreshToken.delete({
-        where: {
-          userId: id,
-          token: token,
-        },
-      });
+      await this.authRepository.deleteRefreshToken(id, token);
 
       // 4. Tạo mới access token và refresh token
       return await this.generateToken({ id, email });
@@ -154,12 +208,7 @@ export class AuthService {
       const { id } = await this.jwtService.verifyRefreshToken(token);
 
       // 2. Xóa refresh token có trong database không
-      await this.prismaService.refreshToken.delete({
-        where: {
-          token: token,
-          userId: id,
-        },
-      });
+      await this.authRepository.deleteRefreshToken(id, token);
 
       return true;
     } catch (error) {
