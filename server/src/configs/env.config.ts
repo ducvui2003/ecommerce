@@ -1,9 +1,7 @@
-import { plainToInstance } from 'class-transformer';
-import { IsArray, IsNumber, IsString, validateSync } from 'class-validator';
 import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import { SplitStringToList } from 'src/shared/decorators/split-string.decorator';
+import { z } from 'zod';
 
 config({
   path: '.env',
@@ -14,39 +12,37 @@ if (!fs.existsSync(path.resolve('.env'))) {
   process.exit(1);
 }
 
-class Config {
-  @IsNumber()
-  PORT: number;
-  @IsString()
-  DATABASE_URL: string;
-  @IsString()
-  ACCESS_TOKEN_SECRET: string;
-  ACCESS_TOKEN_EXPIRY: string;
-  @IsString()
-  REFRESH_TOKEN_SECRET: string;
-  REFRESH_TOKEN_EXPIRY: string;
-  @IsString()
-  SECRET_KEY: string;
-  @IsArray()
-  @IsString({ each: true }) // Ensures all items are strings
-  @SplitStringToList()
-  ORIGIN_ALLOWED: string[];
-}
-const configServer = plainToInstance(Config, process.env, {
-  enableImplicitConversion: true,
+const envSchema = z.object({
+  PORT: z.string().transform(Number),
+  DATABASE_URL: z.string(),
+  ACCESS_TOKEN_SECRET: z.string(),
+  ACCESS_TOKEN_EXPIRY: z.string(),
+  REFRESH_TOKEN_SECRET: z.string(),
+  REFRESH_TOKEN_EXPIRY: z.string(),
+  SECRET_KEY: z.string(),
+  ORIGIN_ALLOWED: z.string().transform((value) => value.split(',')),
+  OTP_EXPIRY: z.string(),
+
+  EMAIL_HOST: z.string(),
+  EMAIL_PORT: z.string().transform(Number),
+  EMAIL_USER: z.string().email(),
+  EMAIL_PASSWORD: z.string(),
 });
-const e = validateSync(configServer);
-if (e.length) {
+
+const configServer = envSchema.safeParse(process.env);
+
+if (!configServer.success) {
   console.error('Env has conflict');
-  const errors = e.map((error) => {
+  const errors = configServer.error.errors.map((error) => {
+    console.log(error);
     return {
-      property: error.property,
-      constraints: error.constraints,
-      value: error.value,
+      property: error.path.join('.'),
+      constraints: error['expected'],
+      code: error.code,
     };
   });
   throw errors;
 }
 
-const envConfig = configServer;
+const envConfig = configServer.data;
 export default envConfig;

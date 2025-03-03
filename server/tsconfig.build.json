@@ -1,4 +1,24 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "**/*spec.ts"
+  ],
+  "baseUrl": "./",
+  "paths": {
+    "@emails/*": [
+      "emails/*"
+    ],
+    "@route/*": [
+      "src/routes/*"
+    ],
+    "@shared/*": [
+      "src/shared/*"
+    ],
+    "@config/*": [
+      "src/configs/*"
+    ],
+  }
 }
