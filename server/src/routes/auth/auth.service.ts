@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   LoginReqDTO,
   RegisterReqDTO,
@@ -20,6 +21,7 @@ import {
 } from '@shared/helper.shared';
 import { UserRepository } from '@shared/repositories/user.repository';
 import { HashingService } from '@shared/services/hashing.service';
+import { MailService } from '@shared/services/mail.service';
 import { TokenService } from '@shared/services/token.service';
 import { JWTPayload } from '@shared/types/jwt.type';
 import { addMilliseconds } from 'date-fns';
@@ -32,6 +34,7 @@ export class AuthService {
     private readonly hashingService: HashingService,
     private readonly jwtService: TokenService,
     private readonly roleService: RoleService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async register(req: RegisterReqDTO) {
@@ -115,6 +118,13 @@ export class AuthService {
       code: otp,
       expiredAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRY)),
     });
+
+    this.eventEmitter.emit('email.register', {
+      to: data.email,
+      name: data.email,
+      validationCode: otp,
+    });
+
     return { ...data, expiredAt: verificationCode.expiredAt };
   }
 

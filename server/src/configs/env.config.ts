@@ -22,6 +22,11 @@ const envSchema = z.object({
   SECRET_KEY: z.string(),
   ORIGIN_ALLOWED: z.string().transform((value) => value.split(',')),
   OTP_EXPIRY: z.string(),
+
+  EMAIL_HOST: z.string(),
+  EMAIL_PORT: z.string().transform(Number),
+  EMAIL_USER: z.string().email(),
+  EMAIL_PASSWORD: z.string(),
 });
 
 const configServer = envSchema.safeParse(process.env);

@@ -10,8 +10,9 @@ import { AuthModule } from './routes/auth/auth.module';
 import { UserModule } from './routes/user/user.module';
 import { SharedModule } from './shared/shared.module';
 import { HttpExceptionFilter } from 'src/shared/filters/validation-exception.filter';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 @Module({
-  imports: [SharedModule, AuthModule, UserModule],
+  imports: [SharedModule, AuthModule, UserModule, EventEmitterModule.forRoot()],
   controllers: [AppController],
   providers: [
     AppService,

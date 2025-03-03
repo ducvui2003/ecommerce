@@ -7,6 +7,7 @@ import { HashingService } from '@shared/services/hashing.service';
 import { TokenService } from '@shared/services/token.service';
 import { AccessTokenGuard } from '@shared/guards/access-token.guard';
 import { LoggingMiddleware } from '@shared/middlewares/logging.middleware';
+import { MailService } from '@shared/services/mail.service';
 
 const sharedServices = [
   PrismaService,
@@ -16,6 +17,7 @@ const sharedServices = [
   APIKeyGuard,
   LoggingMiddleware,
   UserRepository,
+  MailService,
 ];
 
 @Global()
