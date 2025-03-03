@@ -1,11 +1,13 @@
 import { Global, Module } from '@nestjs/common';
-import { PrismaService } from './services/prisma.service';
-import { HashingService } from './services/hashing.service';
-import { TokenService } from './services/token.service';
 import { JwtModule } from '@nestjs/jwt';
-import { AccessTokenGuard } from 'src/shared/guards/access-token.guard';
-import { APIKeyGuard } from 'src/shared/guards/api-key.guard';
-import { LoggingMiddleware } from 'src/shared/middlewares/logging.middleware';
+import { UserRepository } from '@shared/repositories/user.repository';
+import { APIKeyGuard } from '@shared/guards/api-key.guard';
+import { PrismaService } from '@shared/services/prisma.service';
+import { HashingService } from '@shared/services/hashing.service';
+import { TokenService } from '@shared/services/token.service';
+import { AccessTokenGuard } from '@shared/guards/access-token.guard';
+import { LoggingMiddleware } from '@shared/middlewares/logging.middleware';
+import { MailService } from '@shared/services/mail.service';
 
 const sharedServices = [
   PrismaService,
@@ -14,6 +16,8 @@ const sharedServices = [
   AccessTokenGuard,
   APIKeyGuard,
   LoggingMiddleware,
+  UserRepository,
+  MailService,
 ];
 
 @Global()
