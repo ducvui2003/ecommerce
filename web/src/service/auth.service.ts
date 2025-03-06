@@ -1,14 +1,15 @@
+import envConfig from '@/config/env.config';
 import http from '@/lib/http';
 import { ResponseApi } from '@/types/api.type';
+import { LoginResType, RefreshTokenResType } from '@/types/auth.type';
 import {
   LoginBodyReqType,
   RegisterBodyReqType,
-  RegisterRes,
+  RegisterResType,
+  SendOTPReqType,
+  SendOTPResType,
 } from '@/types/schema/auth.schema';
-import { LoginResType, RefreshTokenResType } from '@/types/auth.type';
-import envConfig from '@/config/env.config';
 import { User } from 'next-auth';
-import { error } from 'console';
 
 const authApiRequest = {
   login: async (data: LoginBodyReqType): Promise<User> => {
@@ -31,8 +32,20 @@ const authApiRequest = {
       throw error;
     }
   },
+
   register: (data: RegisterBodyReqType) => {
-    return http.post<ResponseApi<RegisterRes>>('/api/v1/auth/register', data);
+    const { 'confirm-password': _, ...dataAfter } = data;
+    return http.post<ResponseApi<RegisterResType>>(
+      '/api/v1/auth/register',
+      dataAfter,
+    );
+  },
+
+  sendOTP: (data: SendOTPReqType): Promise<any> => {
+    return http.post<ResponseApi<SendOTPResType>>('/api/v1/auth/send-otp', {
+      email: data.email,
+      type: 'REGISTER',
+    });
   },
 
   renewToken: async (

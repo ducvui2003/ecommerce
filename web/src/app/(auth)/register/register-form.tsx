@@ -1,4 +1,5 @@
 'use client';
+import VerificationForm from '@/app/(auth)/register/verification-form';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -35,22 +36,11 @@ const RegisterForm = () => {
       });
     }
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <VerificationForm formOuter={form} />
         <FormField
           control={form.control}
           name="name"
@@ -74,11 +64,10 @@ const RegisterForm = () => {
               <FormControl>
                 <Input placeholder="Vui lòng không để trống" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
-        />{' '}
+        />
         <FormField
           control={form.control}
           name="confirm-password"
@@ -88,12 +77,18 @@ const RegisterForm = () => {
               <FormControl>
                 <Input placeholder="Vui lòng không để trống" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+          type="submit"
+        >
+          {form.formState.isSubmitting && (
+            <span className="spinner-border spinner-border-sm mr-1"></span>
+          )}
           Đăng ký
         </Button>
       </form>

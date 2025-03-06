@@ -22,6 +22,7 @@ export function handleErrorApi({
       field: string;
       error: string;
     }[];
+
     errors.forEach(({ field, error }) => {
       setError(field, {
         type: 'server',
