@@ -22,20 +22,39 @@ export const RegisterBodyReq = z
     email: z.string().email({
       message: 'Please enter a valid email address.',
     }),
+    otp: z.string().min(6),
     name: z.string().min(8),
     password: passwordSchema,
     'confirm-password': z.string(),
   })
   .refine((data) => data.password === data['confirm-password'], {
     message: 'Passwords do not match',
-    path: ['confirmPassword'],
+    path: ['confirm-password'],
   });
 
 export type RegisterBodyReqType = z.infer<typeof RegisterBodyReq>;
 
-export type RegisterRes = {
+export type RegisterResType = {
   id: string;
   email: string;
   name: string;
   password: string;
 };
+
+export const SendOTPReq = z.object({
+  email: z.string().email({
+    message: 'Please enter a valid email address.',
+  }),
+});
+
+export type SendOTPReqType = z.infer<typeof SendOTPReq>;
+
+export type SendOTPResType = {
+  email: string;
+  type: TypeOTP;
+  expiredAt: Date;
+};
+
+export enum TypeOTP {
+  'REGISTER',
+}

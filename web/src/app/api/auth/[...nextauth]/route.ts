@@ -5,8 +5,7 @@ import authApiRequest from '@/service/auth.service';
 import CredentialsProvider, {
   CredentialInput,
 } from 'next-auth/providers/credentials';
-import { ERROR_STATUS_CODE } from '@/constraint/variable';
-import { HttpError } from '@/lib/http';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
 
 export const authOptions: NextAuthOptions = {
   debug: true,
@@ -42,8 +41,8 @@ export const authOptions: NextAuthOptions = {
           return res;
         } catch (error: any) {
           // 422 = email hoặc password không đúng
-          if (error.status === ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
-            throw Error(ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString());
+          if (error.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
+            throw Error(HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString());
           }
           throw new Error('Error but not cast in next auth');
         }
@@ -67,9 +66,10 @@ export const authOptions: NextAuthOptions = {
     // user param is receive from authorize
     // token is a obj that is assign value related jwt (AT and RT)
     // return data encrypted and store cookie
-    async jwt({ token, user }) {
-      // console.log('🔹 JWT Callback:', token, user);
+    async jwt({ token, user, trigger }) {
+      console.log('jwt trigger', trigger);
       if (user) {
+        token.name = user.name;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.expiresAt = user.expiresAt;
@@ -87,6 +87,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      console.log('🔹 JWT Callback:', token);
       return token;
     },
 
@@ -105,13 +106,9 @@ export const authOptions: NextAuthOptions = {
 
   events: {
     async signOut({ session, token }) {
-      // console.log('🔹 SignOut Event:', token);
-
+      console.info('token', token);
       try {
-        await authApiRequest.logout(session.accessToken, session.refreshToken);
-
-        session.accessToken = '';
-        session.refreshToken = '';
+        await authApiRequest.logout(token.accessToken, token.refreshToken);
       } catch (error) {
         console.error('⚠️ Error calling logout API:', error);
       }
