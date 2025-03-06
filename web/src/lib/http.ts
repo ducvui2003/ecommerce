@@ -1,5 +1,5 @@
 import envConfig from '@/config/env.config';
-import { ERROR_STATUS_CODE } from '@/constraint/variable';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { useSession } from 'next-auth/react';
 
 type CustomOptions = RequestInit & {
@@ -53,6 +53,7 @@ export const getAccessToken = async (): Promise<string> => {
         '@/app/api/auth/[...nextauth]/route'
       );
       const session = await getServerSession(authOptions);
+      3;
       return session?.accessToken || '';
     }
   } catch (e) {
@@ -96,7 +97,7 @@ const request = async <Response>(
   };
 
   if (!res.ok) {
-    if (res.status === ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE)
+    if (res.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE)
       throw new EntityError(
         data as {
           status: 422;

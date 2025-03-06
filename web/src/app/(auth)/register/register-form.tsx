@@ -10,6 +10,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
+import { toast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
 import authApiRequest from '@/service/auth.service';
 import {
@@ -17,18 +19,44 @@ import {
   RegisterBodyReqType,
 } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 
 const RegisterForm = () => {
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<RegisterBodyReqType>({
     resolver: zodResolver(RegisterBodyReq),
+    defaultValues: {
+      email: '',
+      otp: '',
+      name: '',
+      password: '',
+      'confirm-password': '',
+    },
   });
 
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyReqType) {
     try {
-      (await authApiRequest.register(values)).payload.data;
+      const res = await authApiRequest.register(values);
+      if (res.status === HTTP_STATUS_CODE.SUCCESS) {
+        toast({
+          title: 'Đăng ký thành công',
+          description: (
+            <>
+              <p>You have logged in successfully.</p>
+              <button
+                onClick={() => router.push('/login')}
+                className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Go to Dashboard
+              </button>
+            </>
+          ),
+          variant: 'default',
+        });
+      }
     } catch (err: any) {
       handleErrorApi({
         error: err,
@@ -62,7 +90,11 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Vui lòng không để trống"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -75,7 +107,11 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Vui lòng không để trống"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

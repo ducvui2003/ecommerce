@@ -7,7 +7,7 @@ const LogoutButton = () => {
   return (
     <Button
       onClick={() => {
-        signOut({ callbackUrl: HOME_PAGE });
+        signOut({ redirect: false });
       }}
     >
       Đăng xuất

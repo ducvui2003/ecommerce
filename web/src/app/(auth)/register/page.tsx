@@ -6,7 +6,7 @@ const RegisterPage = () => {
   return (
     <>
       <RegisterForm />
-      <Link href={'/register'}>
+      <Link href={'/login'}>
         <Button variant={'ghost'} className="w-full mt-5" type="button">
           Đăng nhập
         </Button>
