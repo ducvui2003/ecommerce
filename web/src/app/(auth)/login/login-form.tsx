@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ERROR_STATUS_CODE } from '@/constraint/variable';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { EntityError } from '@/lib/http';
 import { handleErrorApi } from '@/lib/utils';
 import { LoginBodyReq, LoginBodyReqType } from '@/types/schema/auth.schema';
@@ -24,6 +24,10 @@ const LoginForm = () => {
   // 1. Define your form.
   const form = useForm<LoginBodyReqType>({
     resolver: zodResolver(LoginBodyReq),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   // 2. Define a submit handler.
@@ -35,11 +39,11 @@ const LoginForm = () => {
         redirect: false,
       });
       if (
-        response?.error == ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
+        response?.error === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
       ) {
         // Đóng gói error để trả error trên form thay vì toast message error
         throw new EntityError({
-          status: ERROR_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
+          status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
           payload: {
             error: '',
             message: [
@@ -51,6 +55,7 @@ const LoginForm = () => {
           },
         });
       }
+      router.push('/');
     } catch (err) {
       handleErrorApi({
         error: err,
@@ -81,7 +86,11 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Vui lòng không để trống"
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />

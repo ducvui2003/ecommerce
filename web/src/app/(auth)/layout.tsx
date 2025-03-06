@@ -1,27 +1,37 @@
 import ClientIcon from '@/components/ClientIcon';
 import Link from '@/components/Link';
-import { redirect } from 'next/navigation';
 
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import React from 'react';
 
 const AuthLayout = ({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: { slug?: string };
 }>) => {
   return (
-    <main className="relative w-screen h-screen bg-gray-100">
-      <div className="absolute inset-0 backdrop-blur-sm bg-white/20 z-10" />
-      <div className="absolute inset-0 -z-0">
-        <Image src="/images/bg_auth.jpeg" alt="" fill />
-      </div>
-      <Link href="/" className="absolute top-4 left-4 z-20">
-        <ClientIcon icon="akar-icons:home" size={40} />
-      </Link>
+    <main className="w-screen h-screen bg-gray-100 flex">
+      <div className=" relative flex-1 z-20 bg-pink-100 h-screen overflow-y-scroll scrollbar-hide">
+        <article className="flex flex-col gap-4 w-3/4 mx-auto mt-28">
+          <h1 className="text-3xl">Welcome to my website</h1>
 
-      <div className="w-[500px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 bg-pink-100 p-4 rounded-md">
-        {children}
+          <div className="p-2 ">{children}</div>
+
+          <div className="p-2 ">
+            <span className="text-center block py-2">Hoặc đăng nhập với</span>
+            <div className="flex justify-evenly      ">
+              <ClientIcon icon="flat-color-icons:google" size={40} />
+              <ClientIcon icon="logos:facebook" size={40} />
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div className="grow-[1] ">
+        <Image src="/images/bg_auth.jpeg" alt="" fill />
       </div>
     </main>
   );

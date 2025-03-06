@@ -104,8 +104,8 @@ export class AuthService {
     if (userExist) {
       throw new UnprocessableEntityException([
         {
-          path: 'email',
-          error: 'email is exist',
+          field: 'email',
+          error: 'Email is exist',
         },
       ]);
     }
