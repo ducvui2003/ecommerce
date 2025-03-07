@@ -1,4 +1,5 @@
 import ClientIcon from '@/components/ClientIcon';
+import GoogleLogin from '@/components/GoogleButton';
 import Link from '@/components/Link';
 
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,8 @@ const AuthLayout = ({
           <div className="p-2 ">
             <span className="text-center block py-2">Hoặc đăng nhập với</span>
             <div className="flex justify-evenly      ">
-              <ClientIcon icon="flat-color-icons:google" size={40} />
-              <ClientIcon icon="logos:facebook" size={40} />
+              <GoogleLogin />
+              {/* <ClientIcon icon="logos:facebook" size={40} /> */}
             </div>
           </div>
         </article>

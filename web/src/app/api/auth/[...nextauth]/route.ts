@@ -1,11 +1,13 @@
 import envConfig from '@/config/env.config';
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions, User } from 'next-auth';
 
 import authApiRequest from '@/service/auth.service';
 import CredentialsProvider, {
   CredentialInput,
 } from 'next-auth/providers/credentials';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
+import GoogleProvider from 'next-auth/providers/google';
+import oauth2Api from '@/service/oauth2.service';
 
 export const authOptions: NextAuthOptions = {
   debug: true,
@@ -48,6 +50,14 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+
+    GoogleProvider({
+      clientId: envConfig.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      clientSecret: envConfig.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: { scope: 'openid email profile', response_type: 'code' },
+      },
+    }),
   ],
   session: {
     strategy: 'jwt', // Save data in cookie
@@ -66,8 +76,25 @@ export const authOptions: NextAuthOptions = {
     // user param is receive from authorize
     // token is a obj that is assign value related jwt (AT and RT)
     // return data encrypted and store cookie
-    async jwt({ token, user, trigger }) {
-      console.log('jwt trigger', trigger);
+    async jwt({ token, user, account }) {
+      // console.log('jwt trigger', trigger);
+      if (account?.provider === 'google' && account?.access_token) {
+        console.log('Call to nest');
+        try {
+          const userData: User = await oauth2Api.google(account.access_token);
+          token.id = userData.id;
+          token.name = userData.name;
+          token.email = userData.email;
+          token.role = userData.role;
+          token.accessToken = userData.accessToken;
+          token.refreshToken = userData.refreshToken;
+          token.expiresAt = userData.expiresAt;
+          console.log('token', token);
+          return token;
+        } catch (error) {
+          console.error('⚠️ Google login error:', error);
+        }
+      }
       if (user) {
         token.name = user.name;
         token.accessToken = user.accessToken;
@@ -87,7 +114,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      console.log('🔹 JWT Callback:', token);
+      // console.log('🔹 JWT Callback:', token);
       return token;
     },
 
