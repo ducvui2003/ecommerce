@@ -10,13 +10,19 @@ export interface AuthRepository {
   createUser(
     data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId'>,
   ): Promise<any>;
+
   createRefreshToken(data: any): Promise<any>;
+
   findRefreshTokenOrThrown(userId: number, refreshToken: string): Promise<any>;
+
   deleteRefreshToken(userId: number, refreshToken: string): Promise<any>;
+
   getRoleIdByRoleNameOrThrown: (roleName: string) => Promise<RoleType>;
+
   createVerificationCode(
     data: Pick<VerificationCodeType, 'email' | 'type' | 'code' | 'expiredAt'>,
   ): Promise<VerificationCodeType>;
+
   findUniqueVerificationCode(
     uniqueValue:
       | {

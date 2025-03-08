@@ -22,3 +22,8 @@ export function isNotFoundError(
 export function generateOTP() {
   return String(randomInt(100000, 1000000));
 }
+
+export function buildUrl(baseUrl, params) {
+  const queryString = new URLSearchParams(params).toString();
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+}
