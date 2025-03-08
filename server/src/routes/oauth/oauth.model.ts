@@ -8,6 +8,20 @@ export type GoogleInfo = {
   email_verified: boolean;
 };
 
+export type FacebookInfo = {
+  id: string;
+  name: string;
+  email: string;
+  picture: {
+    data: {
+      height: string;
+      width: string;
+      url: string;
+      is_silhouette: boolean;
+    };
+  };
+};
+
 export type UserOauth2 = {
   name: string;
   email: string;

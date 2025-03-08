@@ -1,10 +1,11 @@
 import ClientIcon from '@/components/ClientIcon';
-import GoogleLogin from '@/components/GoogleButton';
+import GoogleButton from '@/components/oauth2/GoogleButton';
 import Link from '@/components/Link';
 
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import React from 'react';
+import FacebookButton from '@/components/oauth2/FacebookButton';
 
 const AuthLayout = ({
   children,
@@ -24,7 +25,8 @@ const AuthLayout = ({
           <div className="p-2 ">
             <span className="text-center block py-2">Hoặc đăng nhập với</span>
             <div className="flex justify-evenly      ">
-              <GoogleLogin />
+              <GoogleButton />
+              <FacebookButton />
               {/* <ClientIcon icon="logos:facebook" size={40} /> */}
             </div>
           </div>

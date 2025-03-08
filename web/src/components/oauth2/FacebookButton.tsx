@@ -3,15 +3,15 @@ import ClientIcon from '@/components/ClientIcon';
 import { signIn } from 'next-auth/react';
 import React from 'react';
 
-const GoogleLogin = () => {
+const FacebookButton = () => {
   return (
     <ClientIcon
-      icon="flat-color-icons:google"
+      icon="logos:facebook"
       className="hover:text-gray-300 hover:opacity- 40 hover:cursor-pointer"
       size={40}
-      onClick={() => signIn('google')}
+      onClick={() => signIn('facebook')}
     />
   );
 };
 
-export default GoogleLogin;
+export default FacebookButton;

@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { GoogleInfo, UserOauth2 } from '@route/oauth/oauth.model';
+import { FacebookInfo, GoogleInfo, UserOauth2 } from '@route/oauth/oauth.model';
 import { RoleService } from '@route/auth/role.service';
 import { OAuthRepository } from '@route/oauth/oauth.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { HashingService } from '@shared/services/hashing.service';
 import { AuthService } from '@route/auth/auth.service';
 import { UserRepository } from '@shared/repositories/user.repository';
+import { buildUrl } from '@shared/helper.shared';
 
 @Injectable()
 export abstract class OauthService {
@@ -45,7 +46,7 @@ export abstract class OauthService {
     }
 
     if (!user) {
-      throw new Error('User creation failed.');
+      throw new Error('User oauth2 creation failed.');
     }
 
     const tokens = await this.authService.generateToken({
@@ -94,6 +95,39 @@ export class GoogleService extends OauthService {
       name: data.name,
       email: data.email,
       avatar: data.picture,
+    };
+  }
+}
+
+@Injectable()
+export class FacebookService extends OauthService {
+  constructor(
+    @Inject('OAUTH_REPOSITORY') oauthRepository: OAuthRepository,
+    hashingService: HashingService,
+    roleService: RoleService,
+    authService: AuthService,
+    userRepository: UserRepository,
+  ) {
+    super(
+      oauthRepository,
+      hashingService,
+      roleService,
+      authService,
+      userRepository,
+    );
+  }
+  async getInfo(accessToken: string): Promise<UserOauth2 | undefined> {
+    const urlWithParams = buildUrl('https://graph.facebook.com/me', {
+      access_token: accessToken,
+      fields: 'id,name,email,picture',
+    });
+    const res = await fetch(urlWithParams);
+    if (!res.ok) return undefined;
+    const data: FacebookInfo = await res.json();
+
+    return {
+      name: data.name,
+      email: data.email,
     };
   }
 }

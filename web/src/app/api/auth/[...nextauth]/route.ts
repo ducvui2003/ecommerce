@@ -7,6 +7,8 @@ import CredentialsProvider, {
 } from 'next-auth/providers/credentials';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import GoogleProvider from 'next-auth/providers/google';
+import FacebookProvider from 'next-auth/providers/facebook';
+
 import oauth2Api from '@/service/oauth2.service';
 
 export const authOptions: NextAuthOptions = {
@@ -58,6 +60,16 @@ export const authOptions: NextAuthOptions = {
         params: { scope: 'openid email profile', response_type: 'code' },
       },
     }),
+
+    FacebookProvider({
+      clientId: envConfig.NEXT_PUBLIC_FACEBOOK_CLIENT_ID,
+      clientSecret: envConfig.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET,
+      token: 'https://graph.facebook.com/v22.0/oauth/access_token',
+      authorization: {
+        url: 'https://www.facebook.com/v22.0/dialog/oauth',
+        params: { fields: 'id,name,email,picture' },
+      },
+    }),
   ],
   session: {
     strategy: 'jwt', // Save data in cookie
@@ -78,23 +90,48 @@ export const authOptions: NextAuthOptions = {
     // return data encrypted and store cookie
     async jwt({ token, user, account }) {
       // console.log('jwt trigger', trigger);
-      if (account?.provider === 'google' && account?.access_token) {
+      if (account?.access_token) {
         console.log('Call to nest');
-        try {
-          const userData: User = await oauth2Api.google(account.access_token);
-          token.id = userData.id;
-          token.name = userData.name;
-          token.email = userData.email;
-          token.role = userData.role;
-          token.accessToken = userData.accessToken;
-          token.refreshToken = userData.refreshToken;
-          token.expiresAt = userData.expiresAt;
-          console.log('token', token);
-          return token;
-        } catch (error) {
-          console.error('⚠️ Google login error:', error);
+        if (account?.provider === 'google') {
+          try {
+            const userData: User = await oauth2Api.login(
+              account.access_token,
+              'google',
+            );
+            token.id = userData.id;
+            token.name = userData.name;
+            token.email = userData.email;
+            token.role = userData.role;
+            token.accessToken = userData.accessToken;
+            token.refreshToken = userData.refreshToken;
+            token.expiresAt = userData.expiresAt;
+            console.log('token', token);
+            return token;
+          } catch (error) {
+            console.error('⚠️ Google login error:', error);
+          }
+        }
+        if (account?.provider === 'facebook') {
+          try {
+            const userData: User = await oauth2Api.login(
+              account.access_token,
+              'facebook',
+            );
+            token.id = userData.id;
+            token.name = userData.name;
+            token.email = userData.email;
+            token.role = userData.role;
+            token.accessToken = userData.accessToken;
+            token.refreshToken = userData.refreshToken;
+            token.expiresAt = userData.expiresAt;
+            console.log('token', token);
+            return token;
+          } catch (error) {
+            console.error('⚠️ Facebook login error:', error);
+          }
         }
       }
+
       if (user) {
         token.name = user.name;
         token.accessToken = user.accessToken;
