@@ -1,17 +1,52 @@
 'use client';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { HOME_PAGE } from '@/constraint/variable';
 import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const LogoutButton = () => {
+  const router = useRouter();
   return (
-    <Button
-      onClick={() => {
-        signOut({ redirect: false });
-      }}
-    >
-      Đăng xuất
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="bg-red-500 hover:bg-red-700 text-white"
+        >
+          Đăng xuất
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>ở lại</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              signOut({ redirect: false });
+              router.push('/');
+            }}
+          >
+            Tiếp tục
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

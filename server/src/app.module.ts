@@ -1,18 +1,25 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ZodSerializerInterceptor } from 'nestjs-zod';
-import { LoggingMiddleware } from 'src/shared/middlewares/logging.middleware';
-import { ZodValidationPipe } from 'src/shared/pipes/validation.pipe';
+import { LoggingMiddleware } from '@shared/middlewares/logging.middleware';
+import { ZodValidationPipe } from '@shared/pipes/validation.pipe';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import './configs/env.config';
-import { AuthModule } from './routes/auth/auth.module';
-import { UserModule } from './routes/user/user.module';
-import { SharedModule } from './shared/shared.module';
-import { HttpExceptionFilter } from 'src/shared/filters/validation-exception.filter';
+import '@config/env.config';
+import { AuthModule } from '@route/auth/auth.module';
+import { UserModule } from '@route/user/user.module';
+import { SharedModule } from '@shared/shared.module';
+import { HttpExceptionFilter } from '@shared/filters/validation-exception.filter';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { OauthModule } from '@route/oauth/oauth.module';
 @Module({
-  imports: [SharedModule, AuthModule, UserModule, EventEmitterModule.forRoot()],
+  imports: [
+    SharedModule,
+    AuthModule,
+    UserModule,
+    EventEmitterModule.forRoot(),
+    OauthModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
