@@ -17,7 +17,7 @@ const AuthLayout = ({
   return (
     <main className="w-screen h-screen bg-gray-100 flex">
       <div className=" relative flex-1 z-20 bg-pink-100 h-screen overflow-y-scroll scrollbar-hide">
-        <article className="flex flex-col gap-4 w-3/4 mx-auto mt-28">
+        <article className="flex flex-col gap-4 w-3/4 mx-auto my-28">
           <h1 className="text-3xl">Welcome to my website</h1>
 
           <div className="p-2 ">{children}</div>
@@ -27,7 +27,6 @@ const AuthLayout = ({
             <div className="flex justify-evenly      ">
               <GoogleButton />
               <FacebookButton />
-              {/* <ClientIcon icon="logos:facebook" size={40} /> */}
             </div>
           </div>
         </article>

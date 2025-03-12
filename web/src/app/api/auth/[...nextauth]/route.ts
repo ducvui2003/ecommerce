@@ -1,7 +1,7 @@
 import envConfig from '@/config/env.config';
 import NextAuth, { NextAuthOptions, User } from 'next-auth';
 
-import authApiRequest from '@/service/auth.service';
+import authService from '@/service/auth.service';
 import CredentialsProvider, {
   CredentialInput,
 } from 'next-auth/providers/credentials';
@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
        */
       async authorize(credentials, req) {
         try {
-          const res = await authApiRequest.login({
+          const res = await authService.login({
             email: credentials?.email || '',
             password: credentials?.password || '',
           });
@@ -141,13 +141,17 @@ export const authOptions: NextAuthOptions = {
 
       // Refresh access token if expired
       if (Date.now() > (token.expiresAt as number) * 1000) {
-        const newTokens = await authApiRequest.renewToken(
+        const newTokens = await authService.renewToken(
           token.refreshToken as string,
         );
         if (newTokens) {
+          token.email = newTokens.email;
+          token.id = newTokens.id;
+          token.name = newTokens.name;
+          token.picture = newTokens.image;
           token.accessToken = newTokens.accessToken;
           token.refreshToken = newTokens.refreshToken;
-          token.expiresAt = newTokens.exp;
+          token.expiresAt = newTokens.expiresAt;
         }
       }
 
@@ -170,9 +174,9 @@ export const authOptions: NextAuthOptions = {
 
   events: {
     async signOut({ session, token }) {
-      console.info('token', token);
       try {
-        await authApiRequest.logout(token.accessToken, token.refreshToken);
+        console.log('Call logout api');
+        await authService.logout(token.accessToken, token.refreshToken);
       } catch (error) {
         console.error('⚠️ Error calling logout API:', error);
       }

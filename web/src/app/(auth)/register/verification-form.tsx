@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
-import authApiRequest from '@/service/auth.service';
+import authService from '@/service/auth.service';
 import { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 type VerificationFormProps = {
@@ -50,7 +50,7 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
     }
     formOuter.clearErrors('email');
     setLoading(true);
-    authApiRequest
+    authService
       .sendOTP({
         email: email,
       })

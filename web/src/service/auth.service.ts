@@ -1,5 +1,6 @@
 import envConfig from '@/config/env.config';
 import http from '@/lib/http';
+import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
 import { LoginResType, RefreshTokenResType } from '@/types/auth.type';
 import {
@@ -11,7 +12,7 @@ import {
 } from '@/types/schema/auth.schema';
 import { User } from 'next-auth';
 
-const authApiRequest = {
+const authService = {
   login: async (data: LoginBodyReqType): Promise<User> => {
     try {
       const res = await http.post<ResponseApi<LoginResType>>(
@@ -19,14 +20,14 @@ const authApiRequest = {
         data,
       );
       const body = res.payload.data;
+
+      const userInfo = await userService.getInfo(body.accessToken);
       return {
-        id: body.id,
-        email: body.email,
-        image: null,
+        ...userInfo,
+        image: userInfo.avatar,
         accessToken: body.accessToken,
         refreshToken: body.refreshToken,
         expiresAt: body.exp,
-        role: 'USER',
       };
     } catch (error) {
       throw error;
@@ -48,9 +49,7 @@ const authApiRequest = {
     });
   },
 
-  renewToken: async (
-    refreshToken: string,
-  ): Promise<RefreshTokenResType | undefined> => {
+  renewToken: async (refreshToken: string): Promise<User> => {
     try {
       const body = {
         refreshToken: refreshToken,
@@ -65,14 +64,18 @@ const authApiRequest = {
       );
       const data: ResponseApi<RefreshTokenResType> = await res.json();
 
+      const userInfo = await userService.getInfo(data.data.accessToken);
+
       return {
+        ...userInfo,
+        image: userInfo.avatar,
         accessToken: data.data.accessToken,
         refreshToken: data.data.refreshToken,
-        exp: data.data.exp,
+        expiresAt: data.data.exp,
       };
     } catch (error) {
       console.error('Renew token failed');
-      return undefined;
+      throw error;
     }
   },
 
@@ -95,4 +98,4 @@ const authApiRequest = {
     }
   },
 };
-export default authApiRequest;
+export default authService;

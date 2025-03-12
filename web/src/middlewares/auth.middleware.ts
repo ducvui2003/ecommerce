@@ -1,15 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
+import { NextRequestWithAuth, withAuth } from 'next-auth/middleware';
 import envConfig from '@/config/env.config';
 
-// ✅ Create a function that returns a middleware handler
 export const authMiddleware = withAuth(
-  function middleware(req: NextRequest) {
-    console.log('Auth Middleware Executed');
+  function middleware(req: NextRequestWithAuth) {
     if (!req.nextauth.token) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
-    return NextResponse.next(); // Continue if authenticated
+    return NextResponse.next();
   },
   {
     secret: envConfig.NEXT_PUBLIC_AUTH_SECRET,
@@ -18,7 +16,7 @@ export const authMiddleware = withAuth(
     },
     callbacks: {
       authorized({ token }) {
-        return !!token; // ✅ Allow access if token exists
+        return !!token;
       },
     },
   },
