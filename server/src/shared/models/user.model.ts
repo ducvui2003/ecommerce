@@ -10,6 +10,7 @@ export const UserModel = z.object({
   avatar: z.string().nullable(),
   status: z.enum([UserStatus.ACTIVE, UserStatus.INACTIVE, UserStatus.BLOCKED]),
   roleId: z.number().positive(),
+
   createdAt: z.date(),
   updatedAt: z.date().nullable(),
   deletedAt: z.date().nullable(),

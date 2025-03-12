@@ -1,4 +1,5 @@
 import http from '@/lib/http';
+import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
 import { LoginResType } from '@/types/auth.type';
 import { User } from 'next-auth';
@@ -14,14 +15,14 @@ const oauth2Api = {
         provider,
       });
       const body = res.payload.data;
+
+      const userInfo = await userService.getInfo(body.accessToken);
       return {
-        id: body.id,
-        email: body.email,
-        image: null,
+        ...userInfo,
+        image: userInfo.avatar,
         accessToken: body.accessToken,
         refreshToken: body.refreshToken,
         expiresAt: body.exp,
-        role: 'USER',
       };
     } catch (e) {
       throw e;

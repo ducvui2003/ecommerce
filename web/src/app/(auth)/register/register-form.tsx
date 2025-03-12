@@ -13,13 +13,13 @@ import { Input } from '@/components/ui/input';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { toast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
-import authApiRequest from '@/service/auth.service';
+import authService from '@/service/auth.service';
 import {
   RegisterBodyReq,
   RegisterBodyReqType,
 } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 const RegisterForm = () => {
@@ -39,7 +39,7 @@ const RegisterForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyReqType) {
     try {
-      const res = await authApiRequest.register(values);
+      const res = await authService.register(values);
       if (res.status === HTTP_STATUS_CODE.SUCCESS) {
         toast({
           title: 'Đăng ký thành công',

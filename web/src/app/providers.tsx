@@ -1,8 +1,7 @@
 'use client';
 import { Toaster } from '@/components/ui/toaster';
-import { RefreshTokenResType } from '@/types/auth.type';
 import { SessionProvider } from 'next-auth/react';
-import React, { useState } from 'react';
+import React from 'react';
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
