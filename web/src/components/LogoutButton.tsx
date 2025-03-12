@@ -35,11 +35,10 @@ const LogoutButton = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>ở lại</AlertDialogCancel>
+          <AlertDialogCancel>Ở lại</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
-              signOut({ redirect: false });
-              router.push('/');
+              signOut({ callbackUrl: '/' });
             }}
           >
             Tiếp tục

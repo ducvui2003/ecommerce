@@ -18,4 +18,20 @@ export class UserRepository {
       where: uniqueObject,
     });
   }
+  async findUniqueWithRole(
+    uniqueObject:
+      | {
+          email: string;
+        }
+      | {
+          id: number;
+        },
+  ): Promise<UserType | null> {
+    return await this.prismaService.user.findUnique({
+      where: uniqueObject,
+      include: {
+        Role: true,
+      },
+    });
+  }
 }

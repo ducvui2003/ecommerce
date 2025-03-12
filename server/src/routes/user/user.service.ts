@@ -12,12 +12,15 @@ export class UserService {
         where: {
           id: id,
         },
+        include: { Role: true },
       });
 
       return {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.Role.name,
+        avatar: user.avatar,
       };
     } catch (error) {
       if (isNotFoundError(error)) {

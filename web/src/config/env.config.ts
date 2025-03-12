@@ -7,6 +7,7 @@ const configSchema = z.object({
   NEXT_PUBLIC_GOOGLE_CLIENT_SECRET: z.string(),
   NEXT_PUBLIC_FACEBOOK_CLIENT_ID: z.string(),
   NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET: z.string(),
+  NEXT_PUBLIC_DEVELOPMENT: z.string(),
 });
 
 const configProject = configSchema.safeParse({
@@ -18,6 +19,7 @@ const configProject = configSchema.safeParse({
   NEXT_PUBLIC_FACEBOOK_CLIENT_ID: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID,
   NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET:
     process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET,
+  NEXT_PUBLIC_DEVELOPMENT: process.env.NEXT_PUBLIC_DEVELOPMENT,
 });
 
 if (!configProject.success) {
