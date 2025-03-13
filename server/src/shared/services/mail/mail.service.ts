@@ -1,14 +1,11 @@
 import envConfig from '@config/env.config';
-import { EmailVerify } from '@emails/register-verify';
 import { Injectable, Logger } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 import { render } from '@react-email/components';
-import { MailRegister, MailWithTemplate } from '@shared/types/mail.type';
+import { MailWithTemplate } from '@shared/types/mail.type';
 import * as nodemailer from 'nodemailer';
 import React from 'react';
 
-@Injectable()
-export class MailService {
+export abstract class MailService<T> {
   private transporter = nodemailer.createTransport({
     host: envConfig.EMAIL_HOST,
     port: envConfig.EMAIL_PORT,
@@ -20,7 +17,7 @@ export class MailService {
     },
   });
 
-  async sendWithTemplate(data: MailWithTemplate) {
+  protected async sendWithTemplate(data: MailWithTemplate) {
     await this.transporter.sendMail({
       from: envConfig.EMAIL_USER,
       to: data.to,
@@ -30,22 +27,23 @@ export class MailService {
     Logger.log(`Mail sent to ${data.to}`);
   }
 
-  async loadTemplate(template, data): Promise<string> {
+  protected async loadTemplate(template, data: any): Promise<string> {
     return await render(React.createElement(template, data));
   }
 
-  @OnEvent('email.register')
-  async sendRegisterTemplate(data: MailRegister) {
-    const emailHtml = await this.loadTemplate(EmailVerify, {
-      validationCode: data.validationCode,
-      name: data.name,
-    });
+  protected beforeSend(data: T) {
+    Logger.log('Start send mail');
+  }
 
-    await this.sendWithTemplate({
-      to: data.to,
-      subject: 'Register Verification',
-      template: emailHtml,
-    });
-    Logger.log('Send email success');
+  abstract send(data: T);
+
+  protected afterSend(data: T) {
+    Logger.log('Send mail success');
+  }
+
+  async handleSend(data: T) {
+    this.beforeSend(data);
+    await this.send(data);
+    this.afterSend(data);
   }
 }

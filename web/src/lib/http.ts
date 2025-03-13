@@ -1,6 +1,7 @@
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { useSession } from 'next-auth/react';
+import { tree } from 'next/dist/build/templates/app-page';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -66,11 +67,12 @@ const request = async <Response>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   url: string,
   options?: CustomOptions | undefined,
+  auth: boolean = true,
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
   const baseHeaders = {
     'Content-Type': 'application/json',
-    Authorization: await getAccessToken(),
+    Authorization: auth ? await getAccessToken() : '',
   };
   const baseUrl =
     options?.baseUrl === undefined
@@ -126,21 +128,33 @@ const http = {
   get<Response>(
     url: string,
     options?: Omit<CustomOptions, 'body'> | undefined,
+    auth: boolean = true,
   ) {
-    return request<Response>('GET', url, options);
+    return request<Response>('GET', url, options, auth);
   },
-  post<Response>(url: string, body: any, options?: CustomOptions | undefined) {
-    return request<Response>('POST', url, { ...options, body });
+  post<Response>(
+    url: string,
+    body: any,
+    options?: CustomOptions | undefined,
+    auth: boolean = true,
+  ) {
+    return request<Response>('POST', url, { ...options, body }, auth);
   },
-  put<Response>(url: string, body: any, options?: CustomOptions | undefined) {
-    return request<Response>('PUT', url, { ...options, body });
+  put<Response>(
+    url: string,
+    body: any,
+    options?: CustomOptions | undefined,
+    auth: boolean = true,
+  ) {
+    return request<Response>('PUT', url, { ...options, body }, auth);
   },
   delete<Response>(
     url: string,
     body: any,
     options?: CustomOptions | undefined,
+    auth: boolean = true,
   ) {
-    return request<Response>('DELETE', url, { ...options, body });
+    return request<Response>('DELETE', url, { ...options, body }, auth);
   },
 };
 

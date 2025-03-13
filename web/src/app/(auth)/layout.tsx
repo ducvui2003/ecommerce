@@ -1,11 +1,5 @@
-import ClientIcon from '@/components/ClientIcon';
-import GoogleButton from '@/components/oauth2/GoogleButton';
-import Link from '@/components/Link';
-
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import React from 'react';
-import FacebookButton from '@/components/oauth2/FacebookButton';
 
 const AuthLayout = ({
   children,
@@ -19,16 +13,7 @@ const AuthLayout = ({
       <div className=" relative flex-1 z-20 bg-pink-100 h-screen overflow-y-scroll scrollbar-hide">
         <article className="flex flex-col gap-4 w-3/4 mx-auto my-28">
           <h1 className="text-3xl">Welcome to my website</h1>
-
-          <div className="p-2 ">{children}</div>
-
-          <div className="p-2 ">
-            <span className="text-center block py-2">Hoặc đăng nhập với</span>
-            <div className="flex justify-evenly      ">
-              <GoogleButton />
-              <FacebookButton />
-            </div>
-          </div>
+          {children}
         </article>
       </div>
 
