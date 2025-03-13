@@ -1,4 +1,5 @@
 import {
+  ForgetPasswordSchema,
   LoginBodySchema,
   RefreshReqSchema,
   RegisterBodySchema,
@@ -15,3 +16,5 @@ export class RefreshReqDTO extends createZodDto(RefreshReqSchema) {}
 export class LogoutReqDTO extends RefreshReqDTO {}
 
 export class SendOTPBodyDTO extends createZodDto(SendOTPBodySchema) {}
+
+export class ForgetPasswordBodyDTO extends createZodDto(ForgetPasswordSchema) {}

@@ -57,4 +57,19 @@ export type SendOTPResType = {
 
 export enum TypeOTP {
   'REGISTER',
+  'FORGOT_PASSWORD',
 }
+
+export const ForgotPasswordReq = z
+  .object({
+    email: z.string(),
+    otp: z.string().min(6),
+    password: passwordSchema,
+    'confirm-password': z.string(),
+  })
+  .refine((data) => data.password === data['confirm-password'], {
+    message: 'Passwords do not match',
+    path: ['confirm-password'],
+  });
+
+export type ForgotPasswordType = z.infer<typeof ForgotPasswordReq>;

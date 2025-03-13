@@ -15,6 +15,7 @@ import { AuthType } from '@shared/constants/auth.constant';
 import { Auth } from '@shared/decorators/auth.decorator';
 import { AuthenticationGuard } from '@shared/guards/authentication.guard';
 import {
+  ForgetPasswordBodyDTO,
   LoginReqDTO,
   LogoutReqDTO,
   RefreshReqDTO,
@@ -37,7 +38,13 @@ export class AuthController {
   @Post('send-otp')
   @HttpCode(HttpStatus.OK)
   async sendOTP(@Body() body: SendOTPBodyDTO) {
-    const res = await this.authService.sendOTP(body);
+    let res;
+    if (body.type === 'REGISTER') {
+      res = await this.authService.sendOTP(body, true);
+    }
+    if (body.type === 'FORGOT_PASSWORD') {
+      res = await this.authService.sendOTP(body);
+    }
     return res;
   }
 
@@ -61,5 +68,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   logout(@Body() body: LogoutReqDTO) {
     return this.authService.logout(body.refreshToken);
+  }
+
+  @Post('/forget-password')
+  @HttpCode(HttpStatus.OK)
+  forgotPassword(@Body() body: ForgetPasswordBodyDTO) {
+    return this.authService.forgotPassword(body);
   }
 }

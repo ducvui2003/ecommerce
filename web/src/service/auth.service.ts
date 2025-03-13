@@ -4,6 +4,7 @@ import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
 import { LoginResType, RefreshTokenResType } from '@/types/auth.type';
 import {
+  ForgotPasswordType,
   LoginBodyReqType,
   RegisterBodyReqType,
   RegisterResType,
@@ -42,7 +43,7 @@ const authService = {
     );
   },
 
-  sendOTP: (data: SendOTPReqType): Promise<any> => {
+  sendOTPVerify: (data: SendOTPReqType): Promise<any> => {
     return http.post<ResponseApi<SendOTPResType>>('/api/v1/auth/send-otp', {
       email: data.email,
       type: 'REGISTER',
@@ -96,6 +97,31 @@ const authService = {
     } catch (error) {
       console.error('⚠️ Error calling logout API:', error);
     }
+  },
+
+  sendOTPForgetPassword: (data: SendOTPReqType): Promise<any> => {
+    return http.post<ResponseApi<SendOTPResType>>(
+      '/api/v1/auth/send-otp',
+      {
+        email: data.email,
+        type: 'FORGOT_PASSWORD',
+      },
+      undefined,
+      false,
+    );
+  },
+
+  resetPassword: (data: ForgotPasswordType) => {
+    return http.post<ResponseApi<void>>(
+      '/api/v1/auth/forget-password',
+      {
+        email: data.email,
+        otp: data.otp,
+        password: data.password,
+      },
+      undefined,
+      false,
+    );
   },
 };
 export default authService;
