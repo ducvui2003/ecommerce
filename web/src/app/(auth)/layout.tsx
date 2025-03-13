@@ -13,7 +13,6 @@ const AuthLayout = ({
       <div className=" relative flex-1 z-20 bg-pink-100 h-screen overflow-y-scroll scrollbar-hide">
         <article className="flex flex-col gap-4 w-3/4 mx-auto my-28">
           <h1 className="text-3xl">Welcome to my website</h1>
-
           {children}
         </article>
       </div>
