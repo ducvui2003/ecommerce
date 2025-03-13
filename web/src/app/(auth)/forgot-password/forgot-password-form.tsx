@@ -29,7 +29,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogFooter,
-  DialogClose,
 } from '@/components/ui/dialog';
 import {
   InputOTP,
@@ -72,6 +71,7 @@ const ForgotPasswordForm = () => {
           ),
           variant: 'default',
         });
+        form.reset();
         setOpenDialogAlert(false);
       }
     } catch (err: any) {
@@ -87,6 +87,11 @@ const ForgotPasswordForm = () => {
       <VerificationForm
         formOuter={form}
         setOpenDialog={() => {
+          form.reset({
+            otp: '',
+            password: '',
+            'confirm-password': '',
+          });
           setOpenDialogAlert(true);
         }}
       />
