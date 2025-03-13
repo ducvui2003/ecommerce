@@ -1,4 +1,5 @@
 'use client';
+import Link from '@/components/Link';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -94,6 +95,14 @@ const LoginForm = () => {
               </FormControl>
 
               <FormMessage />
+              <span className="block text-right ">
+                <Link
+                  href={'/forgot-password'}
+                  className="hover:underline hover:text-pink-800 text-sm"
+                >
+                  Quên mật khẩu{' '}
+                </Link>
+              </span>
             </FormItem>
           )}
         />

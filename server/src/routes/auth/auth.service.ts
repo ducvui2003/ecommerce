@@ -5,15 +5,18 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
+  ForgetPasswordBodyDTO,
   LoginReqDTO,
   RegisterReqDTO,
   SendOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthRepository } from '@route/auth/auth.repository';
 import { RoleService } from '@route/auth/role.service';
-import { VerificationType } from '@shared/constants/auth.constant';
+import {
+  TypeOfVerificationType,
+  VerificationType,
+} from '@shared/constants/auth.constant';
 import {
   generateOTP,
   isNotFoundError,
@@ -21,7 +24,7 @@ import {
 } from '@shared/helper.shared';
 import { UserRepository } from '@shared/repositories/user.repository';
 import { HashingService } from '@shared/services/hashing.service';
-import { MailService } from '@shared/services/mail.service';
+import { MailFactory } from '@shared/services/mail/mail-factory.service';
 import { TokenService } from '@shared/services/token.service';
 import { JWTPayload } from '@shared/types/jwt.type';
 import { addMilliseconds } from 'date-fns';
@@ -34,7 +37,7 @@ export class AuthService {
     private readonly hashingService: HashingService,
     private readonly jwtService: TokenService,
     private readonly roleService: RoleService,
-    private readonly eventEmitter: EventEmitter2,
+    private readonly mailFactory: MailFactory,
   ) {}
 
   async register(req: RegisterReqDTO) {
@@ -49,7 +52,7 @@ export class AuthService {
       if (!verificationCode) {
         throw new UnprocessableEntityException([
           {
-            field: 'code',
+            field: 'otp',
             error: 'OTP not valid',
           },
         ]);
@@ -59,7 +62,7 @@ export class AuthService {
       if (verificationCode.expiredAt < new Date()) {
         throw new UnprocessableEntityException([
           {
-            field: 'code',
+            field: 'otp',
             error: 'OTP is expired',
           },
         ]);
@@ -96,18 +99,20 @@ export class AuthService {
     }
   }
 
-  async sendOTP(data: SendOTPBodyDTO) {
-    // 1. Kiểm tra OTP có tồn tại chưa?
-    const userExist = await this.userRepository.findUnique({
-      email: data.email,
-    });
-    if (userExist) {
-      throw new UnprocessableEntityException([
-        {
-          field: 'email',
-          error: 'Email is exist',
-        },
-      ]);
+  async sendOTP(data: SendOTPBodyDTO, strictEmail: boolean = false) {
+    if (strictEmail) {
+      // 1. Kiểm tra OTP có tồn tại chưa?
+      const userExist = await this.userRepository.findUnique({
+        email: data.email,
+      });
+      if (userExist) {
+        throw new UnprocessableEntityException([
+          {
+            field: 'email',
+            error: 'Email is exist',
+          },
+        ]);
+      }
     }
 
     // 2. Tạo OTP
@@ -119,7 +124,8 @@ export class AuthService {
       expiredAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRY)),
     });
 
-    this.eventEmitter.emit('email.register', {
+    // Not await
+    this.mailFactory.getEmailService(data.type).send({
       to: data.email,
       name: data.email,
       validationCode: otp,
@@ -212,15 +218,13 @@ export class AuthService {
     }
   }
 
-  async logout(token: string) {
+  async logout(token: string): Promise<void> {
     try {
       // 1. Decode refresh token
       const { id } = await this.jwtService.verifyRefreshToken(token);
 
       // 2. Xóa refresh token có trong database không
       await this.authRepository.deleteRefreshToken(id, token);
-
-      return true;
     } catch (error) {
       // Xử lý trường hợp token đã bị mất
       // P2025 là mã lỗi của Prisma khi không tìm thấy dữ liệu
@@ -228,6 +232,72 @@ export class AuthService {
         throw new UnauthorizedException('Token has been revoked');
       }
       throw new UnauthorizedException('Error when refresh token');
+    }
+  }
+
+  async forgotPassword(req: ForgetPasswordBodyDTO): Promise<void> {
+    const { email, otp, password } = req;
+    // 1. Kiểm tra email có tồn tại trong database
+    const isEmailExist = await this.authRepository.existEmail(email);
+    if (!isEmailExist)
+      throw new UnprocessableEntityException([
+        {
+          field: 'email',
+          error: 'Email not exist',
+        },
+      ]);
+
+    // 2. Kiểm tra otp có hợp lệ hay không?
+    await this.validationCode({
+      email,
+      code: otp,
+      type: 'FORGOT_PASSWORD',
+    });
+
+    const hashing = await this.hashingService.hash(password);
+    await this.authRepository.updatePassword(email, hashing);
+
+    // 3. Xóa OTP
+    await this.authRepository.deleteVerificationCode({
+      email: req.email,
+      code: req.otp,
+      type: VerificationType.FORGOT_PASSWORD,
+    });
+  }
+
+  private async validationCode({
+    email,
+    code,
+    type,
+  }: {
+    email: string;
+    code: string;
+    type: TypeOfVerificationType;
+  }) {
+    // 2. Kiểm tra OTP có tồn tại chưa?
+    const verificationCode =
+      await this.authRepository.findUniqueVerificationCode({
+        code: code,
+        email: email,
+        type: type,
+      });
+    if (!verificationCode) {
+      throw new UnprocessableEntityException([
+        {
+          field: 'otp',
+          error: 'OTP not valid',
+        },
+      ]);
+    }
+
+    // 2. Kiểm tra OTP đã hết hạn chưa?
+    if (verificationCode.expiredAt < new Date()) {
+      throw new UnprocessableEntityException([
+        {
+          field: 'code',
+          error: 'OTP is expired',
+        },
+      ]);
     }
   }
 }

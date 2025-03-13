@@ -1,15 +1,21 @@
-export type Mail = {
+export type BaseMail = {
   to: string;
   subject: string;
+};
+
+export type Mail = BaseMail & {
   html: string;
   text?: string;
 };
 
-export type MailWithTemplate = Omit<Mail, 'html' | 'text'> & {
+export type MailWithTemplate = BaseMail & {
   template: string;
 };
 
-export type MailRegister = Pick<Mail, 'to'> & {
+export type MailRegister = {
+  to: string;
   name: string;
   validationCode: string;
 };
+
+export type MailForgotPassword = MailRegister;

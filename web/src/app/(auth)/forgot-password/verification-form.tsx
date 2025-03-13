@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+
 import {
   Form,
   FormControl,
@@ -9,6 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+
 import { useToast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
@@ -16,9 +18,13 @@ import { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 type VerificationFormProps = {
   formOuter: UseFormReturn<any>;
+  setOpenDialog: () => void;
 };
 
-const VerificationForm = ({ formOuter }: VerificationFormProps) => {
+const VerificationForm = ({
+  formOuter,
+  setOpenDialog,
+}: VerificationFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
@@ -51,8 +57,11 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
     formOuter.clearErrors('email');
     setLoading(true);
     authService
-      .sendOTPVerify({
+      .sendOTPForgetPassword({
         email: email,
+      })
+      .then(() => {
+        setOpenDialog();
       })
       .catch((error) => {
         handleErrorApi({
@@ -63,55 +72,39 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
       .finally(() => {
         setCountdown(5);
         toast({
-          title: 'Gửi email xác thực thành công',
+          title: 'Gửi email tạo lại mật khẩu thành công',
           description: 'Vui lòng kiểm tra email ',
         });
       });
   }
 
   return (
-    <Form {...formOuter}>
-      <FormField
-        control={formOuter.control}
-        name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <Input placeholder="Vui lòng không để trống" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormLabel>Mã xác nhận</FormLabel>
-      <div className="flex gap-1 !mt-2">
-        <div className="flex-1">
-          <FormField
-            control={formOuter.control}
-            name="otp"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Vui lòng không để trống" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <Button
-            loading={loading}
-            type="button"
-            className=""
-            onClick={() => onSubmit(formOuter.getValues().email)}
-          >
-            Gửi mã OTP
-          </Button>
-        </div>
-      </div>
-    </Form>
+    <>
+      <Form {...formOuter}>
+        <FormField
+          control={formOuter.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Vui lòng không để trống" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          loading={loading}
+          type="button"
+          className="w-full"
+          onClick={() => onSubmit(formOuter.getValues().email)}
+        >
+          Lấy lại mật khẩu
+        </Button>
+      </Form>
+    </>
   );
 };
 

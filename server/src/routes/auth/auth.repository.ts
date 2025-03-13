@@ -40,6 +40,10 @@ export interface AuthRepository {
       | { id: number }
       | { email: string; code: string; type: TypeOfVerificationType },
   ): Promise<any>;
+
+  existEmail(email: string): Promise<boolean>;
+
+  updatePassword(email: string, password: string);
 }
 
 @Injectable()
@@ -121,6 +125,25 @@ export class PrismaAuthRepository implements AuthRepository {
   ): Promise<any> {
     return this.prismaService.verificationCode.delete({
       where: uniqueValue,
+    });
+  }
+  async existEmail(email: string): Promise<boolean> {
+    const response = await this.prismaService.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    if (!response) return false;
+    return true;
+  }
+  async updatePassword(email: string, password: string) {
+    return await this.prismaService.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        password: password,
+      },
     });
   }
 }
