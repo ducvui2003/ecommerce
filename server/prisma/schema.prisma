@@ -42,7 +42,6 @@ enum OrderStatus {
 model User {
   id           Int            @id @default(autoincrement())
   email        String         @unique
-  fullname     String
   name         String         @default("")
   password     String
   refreshToken RefreshToken[]
@@ -88,11 +87,11 @@ model RefreshToken {
 }
 
 model VerificationCode {
-  id          Int              @id @default(autoincrement())
-  email       String           @unique
-  type        VerificationType
-  code        String
-  expired_int DateTime
+  id        Int              @id @default(autoincrement())
+  email     String           @unique
+  type      VerificationType
+  code      String
+  expiredAt DateTime
 
   createdAt DateTime @default(now())
 
