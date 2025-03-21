@@ -1,11 +1,11 @@
 name: Notify Telegram
 
 on:
-  pull_request:
-    branches:
-      - dev
+  workflow_run:
+    workflows: ["Develop", "Production"]
     types:
-      - opened
+      - completed
+      - in_progress
 
 jobs:
   notify:
