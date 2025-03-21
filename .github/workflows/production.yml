@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Deploy NestJS
         run: |
-          cd nestjs-service
+
           # Add your deployment script or commands here
 
   deploy-nextjs:
@@ -45,15 +45,7 @@ jobs:
       run:
         working-directory: web
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - name: Deploy NestJS
+        run: |
 
-      - name: Decode and create .env file
-        run: echo "${{ secrets.ENV_WEB }}" > .env
-
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: px vercel --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} --project=${{ secrets.VERCEL_PROJECT_ID_PRO }} --prod false
+          # Add your deployment script or commands here
