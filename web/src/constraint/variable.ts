@@ -5,3 +5,7 @@ export const HTTP_STATUS_CODE = {
   UNAUTHORIZED: 401,
   SUCCESS: 200,
 } as const;
+
+export const LOCAL_STORAGE = {
+  LOGOUT: 'logout-action',
+} as const;

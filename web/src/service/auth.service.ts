@@ -85,7 +85,7 @@ const authService = {
       const body = {
         refreshToken: refreshToken,
       };
-      await fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/logout`, {
+      await fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/logout`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
