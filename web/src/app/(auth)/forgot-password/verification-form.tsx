@@ -98,7 +98,7 @@ const VerificationForm = ({
         <Button
           loading={loading}
           type="button"
-          className="w-full"
+          className="w-full mt-4"
           onClick={() => onSubmit(formOuter.getValues().email)}
         >
           Lấy lại mật khẩu

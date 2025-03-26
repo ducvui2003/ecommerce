@@ -11,11 +11,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { LOCAL_STORAGE } from '@/constraint/variable';
 import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 const LogoutButton = () => {
-  const router = useRouter();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -38,6 +37,7 @@ const LogoutButton = () => {
           <AlertDialogCancel>Ở lại</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
+              localStorage.setItem(LOCAL_STORAGE.LOGOUT, 'true');
               signOut({ callbackUrl: '/' });
             }}
           >
