@@ -56,6 +56,22 @@ const LoginForm = () => {
           },
         });
       }
+      if (response?.error === HTTP_STATUS_CODE.UNAUTHORIZED.toString()) {
+        // Đóng gói error để trả error trên form thay vì toast message error
+        throw new EntityError({
+          status: HTTP_STATUS_CODE.UNAUTHORIZED,
+          payload: {
+            error: '',
+            message: [
+              {
+                field: 'email',
+                error:
+                  'Tài khoản với email này chưa tồn tại, vui lòng thực hiện đăng ký',
+              },
+            ],
+          },
+        });
+      }
       router.push('/');
     } catch (err) {
       handleErrorApi({

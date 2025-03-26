@@ -7,9 +7,8 @@ import { getAccessToken } from '@/lib/http';
 
 const Header = async () => {
   const accessToken = await getAccessToken();
-  console.log('access token', accessToken);
   return (
-    <header className="columns-2 px-5 py-2 bg-pink-100">
+    <header className="columns-2 px-5 py-2 bg-pink-100 flex justify-between items-center">
       <div className="flex">
         <Logo />
         <div>
