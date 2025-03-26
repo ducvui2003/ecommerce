@@ -27,7 +27,10 @@ import { OauthModule } from '@route/oauth/oauth.module';
       provide: APP_PIPE,
       useClass: ZodValidationPipe,
     },
-    { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ZodSerializerInterceptor,
+    },
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

@@ -1,10 +1,5 @@
 import envConfig from '@config/env.config';
-import {
-  Inject,
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import {
   ForgetPasswordBodyDTO,
   LoginReqDTO,
@@ -12,6 +7,15 @@ import {
   SendOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthRepository } from '@route/auth/auth.repository';
+import {
+  EmailExistException,
+  EmailNotExistException,
+  EmailUnauthorizedException,
+  OTPExpiredException,
+  OTPInvalidException,
+  PasswordIncorrectException,
+  TokenRevokedException,
+} from '@route/auth/error.model';
 import { RoleService } from '@route/auth/role.service';
 import {
   TypeOfVerificationType,
@@ -50,22 +54,12 @@ export class AuthService {
           type: VerificationType.REGISTER,
         });
       if (!verificationCode) {
-        throw new UnprocessableEntityException([
-          {
-            field: 'otp',
-            error: 'OTP not valid',
-          },
-        ]);
+        throw OTPInvalidException;
       }
 
       // 2. Kiểm tra OTP đã hết hạn chưa?
       if (verificationCode.expiredAt < new Date()) {
-        throw new UnprocessableEntityException([
-          {
-            field: 'otp',
-            error: 'OTP is expired',
-          },
-        ]);
+        throw OTPExpiredException;
       }
 
       // 3. Tạo user
@@ -88,12 +82,7 @@ export class AuthService {
       return userCreated;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
-        throw new UnprocessableEntityException([
-          {
-            field: 'email',
-            error: 'email has exist',
-          },
-        ]);
+        throw EmailExistException;
       }
       throw error;
     }
@@ -101,17 +90,12 @@ export class AuthService {
 
   async sendOTP(data: SendOTPBodyDTO, strictEmail: boolean = false) {
     if (strictEmail) {
-      // 1. Kiểm tra OTP có tồn tại chưa?
+      // 1. Kiểm tra email có tồn tại chưa?
       const userExist = await this.userRepository.findUnique({
         email: data.email,
       });
-      if (userExist) {
-        throw new UnprocessableEntityException([
-          {
-            field: 'email',
-            error: 'Email is exist',
-          },
-        ]);
+      if (!userExist) {
+        throw EmailNotExistException;
       }
     }
 
@@ -135,25 +119,24 @@ export class AuthService {
   }
 
   async login(req: LoginReqDTO) {
+    // 1. Kiểm tra user có email này không?
     const user = await this.userRepository.findUnique({ email: req.email });
 
     if (!user) {
-      throw new UnauthorizedException('Email not found');
+      throw EmailUnauthorizedException;
     }
 
+    // 2. Kiểm tra password
     const isPasswordMatch = await this.hashingService.compare(
       user.password,
       req.password,
     );
 
     if (!isPasswordMatch) {
-      throw new UnprocessableEntityException([
-        {
-          field: 'password',
-          message: 'Password is incorrect',
-        },
-      ]);
+      throw PasswordIncorrectException;
     }
+
+    // 3. Tạo AT và RT
     const tokens = await this.generateToken({
       id: user.id,
       email: user.email,
@@ -168,6 +151,9 @@ export class AuthService {
     };
   }
 
+  /**
+   * Tạo cặp AT và RT, Lưu RT vào database
+   */
   async generateToken(payload: JWTPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAccessToken(payload),
@@ -209,12 +195,10 @@ export class AuthService {
       return await this.generateToken({ id, email });
     } catch (error) {
       // Xử lý trường hợp token đã bị mất
-      // P2025 là mã lỗi của Prisma khi không tìm thấy dữ liệu
       if (isNotFoundError(error)) {
-        throw new UnauthorizedException('Token has been revoked');
+        throw TokenRevokedException;
       }
-      console.error(error);
-      throw new UnauthorizedException('Error when refresh token');
+      throw error;
     }
   }
 
@@ -227,11 +211,10 @@ export class AuthService {
       await this.authRepository.deleteRefreshToken(id, token);
     } catch (error) {
       // Xử lý trường hợp token đã bị mất
-      // P2025 là mã lỗi của Prisma khi không tìm thấy dữ liệu
       if (isNotFoundError(error)) {
-        throw new UnauthorizedException('Token has been revoked');
+        throw TokenRevokedException;
       }
-      throw new UnauthorizedException('Error when refresh token');
+      throw error;
     }
   }
 
@@ -239,13 +222,8 @@ export class AuthService {
     const { email, otp, password } = req;
     // 1. Kiểm tra email có tồn tại trong database
     const isEmailExist = await this.authRepository.existEmail(email);
-    if (!isEmailExist)
-      throw new UnprocessableEntityException([
-        {
-          field: 'email',
-          error: 'Email not exist',
-        },
-      ]);
+
+    if (!isEmailExist) throw EmailNotExistException;
 
     // 2. Kiểm tra otp có hợp lệ hay không?
     await this.validationCode({
@@ -274,7 +252,7 @@ export class AuthService {
     code: string;
     type: TypeOfVerificationType;
   }) {
-    // 2. Kiểm tra OTP có tồn tại chưa?
+    // 1. Kiểm tra OTP có tồn tại chưa?
     const verificationCode =
       await this.authRepository.findUniqueVerificationCode({
         code: code,
@@ -282,22 +260,12 @@ export class AuthService {
         type: type,
       });
     if (!verificationCode) {
-      throw new UnprocessableEntityException([
-        {
-          field: 'otp',
-          error: 'OTP not valid',
-        },
-      ]);
+      throw OTPInvalidException;
     }
 
     // 2. Kiểm tra OTP đã hết hạn chưa?
     if (verificationCode.expiredAt < new Date()) {
-      throw new UnprocessableEntityException([
-        {
-          field: 'code',
-          error: 'OTP is expired',
-        },
-      ]);
+      throw OTPExpiredException;
     }
   }
 }

@@ -2,22 +2,21 @@ import { UserModel } from '@shared/models/user.model';
 import { VerificationCodeSchema } from '@shared/models/verification-code.model';
 import { z } from 'zod';
 
+const PasswordSchema = z
+  .string()
+  .min(8, ' Mật khẩu tối thiểu 8 ký tự')
+  .regex(/[A-Z]/, 'Mật khẩu có tối thiểu 1 ký tự viết hoa')
+  .regex(/[a-z]/, 'Mật khẩu có tối thiểu 1 ký tự viết thường')
+  .regex(/[0-9]/, 'Mật khẩu có tối thiểu 1 chữ số')
+  .regex(/[@$!%*?&]/, 'Mật khẩu có tối thiêu 1 ký tự đặc biệt (@$!%*?&)');
+
 export const RegisterBodySchema = UserModel.pick({
   email: true,
   name: true,
 })
   .extend({
     otp: z.string(),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters long')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one number')
-      .regex(
-        /[@$!%*?&]/,
-        'Password must contain at least one special character (@$!%*?&)',
-      ),
+    password: PasswordSchema,
   })
   .strict();
 
@@ -75,15 +74,6 @@ export const ForgetPasswordSchema = UserModel.pick({
 })
   .extend({
     otp: z.string(),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters long')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one number')
-      .regex(
-        /[@$!%*?&]/,
-        'Password must contain at least one special character (@$!%*?&)',
-      ),
+    password: PasswordSchema,
   })
   .strict();
