@@ -10,6 +10,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 
 import oauth2Api from '@/service/oauth2.service';
+import { toast } from '@/hooks/use-toast';
 
 export const authOptions: NextAuthOptions = {
   debug: true,
@@ -44,8 +45,11 @@ export const authOptions: NextAuthOptions = {
 
           return res;
         } catch (error: any) {
-          // 422 = email hoặc password không đúng
+          if (error.status === HTTP_STATUS_CODE.UNAUTHORIZED) {
+            throw Error(HTTP_STATUS_CODE.UNAUTHORIZED.toString());
+          }
           if (error.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
+            // 422 = email hoặc password không đúng
             throw Error(HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString());
           }
           throw new Error('Error but not cast in next auth');
@@ -179,6 +183,13 @@ export const authOptions: NextAuthOptions = {
         await authService.logout(token.accessToken, token.refreshToken);
       } catch (error) {
         console.error('⚠️ Error calling logout API:', error);
+      } finally {
+        // toast({
+        //   title: 'Đăng xuất',
+        //   description: error?.payload?.error ?? 'Lỗi không xác định',
+        //   variant: 'destructive',
+        //   duration: duration,
+        // });
       }
     },
   },

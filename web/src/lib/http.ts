@@ -26,16 +26,16 @@ type EntityErrorPayload = {
 };
 
 export class EntityError extends HttpError {
-  status: 422;
+  status: number = 422;
   payload: EntityErrorPayload;
   constructor({
     status,
     payload,
   }: {
-    status: 422;
+    status: number;
     payload: EntityErrorPayload;
   }) {
-    super({ status, payload });
+    super({ status: 422, payload });
     this.status = status;
     this.payload = payload;
   }
