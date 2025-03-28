@@ -1,4 +1,4 @@
-import { EmailForgotPassword } from '@emails/forget-password';
+import { EmailForgotPassword } from 'emails/forget-password';
 import { Injectable, Logger } from '@nestjs/common';
 import { MailService } from '@shared/services/mail/mail.service';
 import { MailForgotPassword } from '@shared/types/mail.type';

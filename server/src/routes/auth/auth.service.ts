@@ -1,5 +1,6 @@
 import envConfig from '@config/env.config';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 import {
   ForgetPasswordBodyDTO,
   LoginReqDTO,
@@ -14,6 +15,7 @@ import {
   OTPExpiredException,
   OTPInvalidException,
   PasswordIncorrectException,
+  TokenInvalidException,
   TokenRevokedException,
 } from '@route/auth/error.model';
 import { RoleService } from '@route/auth/role.service';
@@ -27,10 +29,12 @@ import {
   isUniqueConstraintError,
 } from '@shared/helper.shared';
 import { UserRepository } from '@shared/repositories/user.repository';
+import { CacheService } from '@shared/services/cache/cache.service';
+import { keyRefreshToken } from '@shared/services/cache/cache.util';
 import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
 import { TokenService } from '@shared/services/token.service';
-import { JWTPayload } from '@shared/types/jwt.type';
+import { JwtCustomClaims } from '@shared/types/jwt.type';
 import { addMilliseconds } from 'date-fns';
 import ms from 'ms';
 @Injectable()
@@ -42,6 +46,7 @@ export class AuthService {
     private readonly jwtService: TokenService,
     private readonly roleService: RoleService,
     private readonly mailFactory: MailFactory,
+    private readonly cacheService: CacheService,
   ) {}
 
   async register(req: RegisterReqDTO) {
@@ -108,7 +113,7 @@ export class AuthService {
       expiredAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRY)),
     });
 
-    // Not await
+    // 3. Gửi email
     this.mailFactory.getEmailService(data.type).send({
       to: data.email,
       name: data.email,
@@ -151,45 +156,21 @@ export class AuthService {
     };
   }
 
-  /**
-   * Tạo cặp AT và RT, Lưu RT vào database
-   */
-  async generateToken(payload: JWTPayload) {
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAccessToken(payload),
-      this.jwtService.signRefreshToken(payload),
-    ]);
-
-    // Lưu refresh token vào database
-    const decodeRefreshToken =
-      await this.jwtService.verifyRefreshToken(refreshToken);
-
-    const exp: Date = new Date(decodeRefreshToken.exp || 0 * 1000);
-
-    await this.authRepository.createRefreshToken({
-      token: refreshToken,
-      userId: payload.id,
-      expiredAt: exp,
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      exp: decodeRefreshToken.exp || 0,
-    };
-  }
-
   async refreshToken(token: string) {
     try {
       // 1. Decode refresh token
-      const { id, email } = await this.jwtService.verifyRefreshToken(token);
+      const { id, email, jti } =
+        await this.jwtService.verifyRefreshToken(token);
 
-      // 2. Kiểm tra refresh token có tồn tại trong database không
-      // Nếu ko tồn tại thì refresh token đã bị mất
-      await this.authRepository.findRefreshTokenOrThrown(id, token);
+      // 2. Kiểm tra refresh token có tồn tại trong redis không?
+      const exist = await this.cacheService.exist(keyRefreshToken(id, jti));
 
-      // 3. Xóa refresh token cũ
-      await this.authRepository.deleteRefreshToken(id, token);
+      if (!exist) {
+        return;
+      }
+
+      // 3. Xóa refresh token cũ trong redis
+      await this.cacheService.del(keyRefreshToken(id, jti));
 
       // 4. Tạo mới access token và refresh token
       return await this.generateToken({ id, email });
@@ -205,16 +186,21 @@ export class AuthService {
   async logout(token: string): Promise<void> {
     try {
       // 1. Decode refresh token
-      const { id } = await this.jwtService.verifyRefreshToken(token);
+      const { id, jti } = await this.jwtService.verifyRefreshToken(token);
 
-      // 2. Xóa refresh token có trong database không
-      await this.authRepository.deleteRefreshToken(id, token);
-    } catch (error) {
-      // Xử lý trường hợp token đã bị mất
-      if (isNotFoundError(error)) {
+      // 2. Xóa refresh token có trong redis không
+      const deleted = await this.cacheService.del(keyRefreshToken(id, jti));
+
+      // 3. Xử lý trường hợp token không có trong redis
+      if (!deleted) {
         throw TokenRevokedException;
       }
-      throw error;
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw TokenRevokedException;
+      } else if (error instanceof JsonWebTokenError) {
+        throw TokenInvalidException;
+      }
     }
   }
 
@@ -267,5 +253,27 @@ export class AuthService {
     if (verificationCode.expiredAt < new Date()) {
       throw OTPExpiredException;
     }
+  }
+
+  /**
+   * Tạo cặp AT và RT, Lưu RT vào redis
+   */
+  async generateToken(payload: JwtCustomClaims) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAccessToken(payload),
+      this.jwtService.signRefreshToken(payload),
+    ]);
+
+    // Lưu refresh token vào redis
+    const { exp, iat, jti } =
+      await this.jwtService.verifyRefreshToken(refreshToken);
+    const ttl = exp - iat;
+    this.cacheService.set(keyRefreshToken(payload.id, jti), refreshToken, ttl);
+
+    return {
+      accessToken,
+      refreshToken,
+      exp: exp,
+    };
   }
 }

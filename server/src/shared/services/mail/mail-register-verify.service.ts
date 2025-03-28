@@ -1,4 +1,4 @@
-import EmailVerify from '@emails/register-verify';
+import EmailVerify from 'emails/register-verify';
 import { Injectable, Logger } from '@nestjs/common';
 import { MailService } from '@shared/services/mail/mail.service';
 import { MailRegister } from '@shared/types/mail.type';

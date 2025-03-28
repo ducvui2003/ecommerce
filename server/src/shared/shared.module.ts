@@ -11,6 +11,10 @@ import { MailService } from '@shared/services/mail/mail.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
 import { MailRegisterService } from '@shared/services/mail/mail-register-verify.service';
 import { MailForgotPasswordService } from '@shared/services/mail/mail-forgot-password.service';
+import { CacheService } from '@shared/services/cache/cache.service';
+import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv, Keyv } from '@keyv/redis';
+import envConfig from '@config/env.config';
 
 const sharedServices: Provider[] = [
   PrismaService,
@@ -29,12 +33,29 @@ const sharedServices: Provider[] = [
     provide: 'MAIL_FORGOT_PASSWORD',
     useClass: MailForgotPasswordService,
   },
+  CacheService,
 ];
 
 @Global()
 @Module({
   providers: sharedServices,
   exports: sharedServices,
-  imports: [JwtModule],
+  imports: [
+    JwtModule,
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: () => {
+        return {
+          stores: [
+            createKeyv({
+              url: envConfig.REDIS_URL,
+              username: envConfig.REDIS_USERNAME,
+              password: envConfig.REDIS_PASSWORD,
+            }),
+          ],
+        };
+      },
+    }),
+  ],
 })
 export class SharedModule {}

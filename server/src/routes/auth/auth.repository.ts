@@ -11,12 +11,6 @@ export interface AuthRepository {
     data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId'>,
   ): Promise<any>;
 
-  createRefreshToken(data: any): Promise<any>;
-
-  findRefreshTokenOrThrown(userId: number, refreshToken: string): Promise<any>;
-
-  deleteRefreshToken(userId: number, refreshToken: string): Promise<any>;
-
   getRoleIdByRoleNameOrThrown: (roleName: string) => Promise<RoleType>;
 
   createVerificationCode(
@@ -62,27 +56,6 @@ export class PrismaAuthRepository implements AuthRepository {
       },
     });
   }
-  async createRefreshToken(data: any): Promise<any> {
-    return await this.prismaService.refreshToken.create({ data });
-  }
-
-  async findRefreshTokenOrThrown(userId: number, refreshToken: string) {
-    return await this.prismaService.refreshToken.findFirstOrThrow({
-      where: {
-        userId: userId,
-        token: refreshToken,
-      },
-    });
-  }
-
-  deleteRefreshToken(userId: number, refreshToken: string): Promise<any> {
-    return this.prismaService.refreshToken.delete({
-      where: {
-        userId: userId,
-        token: refreshToken,
-      },
-    });
-  }
 
   getRoleIdByRoleNameOrThrown(roleName: string): Promise<RoleType> {
     return this.prismaService.role.findUniqueOrThrow({
@@ -117,6 +90,7 @@ export class PrismaAuthRepository implements AuthRepository {
       where: uniqueValue,
     });
   }
+
   deleteVerificationCode(
     uniqueValue:
       | { email: string }
