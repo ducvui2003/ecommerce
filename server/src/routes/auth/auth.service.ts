@@ -166,7 +166,7 @@ export class AuthService {
       const exist = await this.cacheService.exist(keyRefreshToken(id, jti));
 
       if (!exist) {
-        return;
+        throw TokenRevokedException;
       }
 
       // 3. Xóa refresh token cũ trong redis
