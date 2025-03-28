@@ -42,6 +42,10 @@ export const TokenRevokedException = new UnauthorizedException(
   'Token has been revoked',
 );
 
+export const TokenInvalidException = new UnauthorizedException(
+  'Invalid JWT Token',
+);
+
 export const EmailUnauthorizedException = new UnauthorizedException(
   'Email not found',
 );

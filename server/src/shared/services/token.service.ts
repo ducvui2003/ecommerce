@@ -1,35 +1,63 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import envConfig from 'src/configs/env.config';
-import { JWTPayload } from 'src/shared/types/jwt.type';
+import { JwtCustomClaims, JwtPayload } from 'src/shared/types/jwt.type';
+import ms from 'ms';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
-  signAccessToken(payload: JWTPayload): Promise<string> {
+  signAccessToken(customPayload: JwtCustomClaims): Promise<string> {
+    // issue at:  thời gian tạo jwt (unix timestamp)
+    const iat = Math.floor(Date.now() / 1000);
+    // expires in:  thời gian hết hạn jwt (unix timestamp)
+    const exp = iat + ms(envConfig.ACCESS_TOKEN_EXPIRY);
+    // jwt id
+    const jti = uuidv4();
+
+    const payload: JwtPayload = {
+      ...customPayload,
+      iat: iat,
+      exp: exp,
+      jti: jti,
+    };
+
     return this.jwtService.signAsync(payload, {
       secret: envConfig.ACCESS_TOKEN_SECRET,
-      expiresIn: envConfig.ACCESS_TOKEN_EXPIRY,
       algorithm: 'HS256',
     });
   }
 
-  signRefreshToken(payload: JWTPayload): Promise<string> {
+  signRefreshToken(customPayload: JwtCustomClaims): Promise<string> {
+    // issue at:  thời gian tạo jwt (unix timestamp)
+    const iat = Math.floor(Date.now() / 1000);
+    // expires in:  thời gian hết hạn jwt (unix timestamp)
+    const exp = iat + ms(envConfig.REFRESH_TOKEN_EXPIRY);
+    // jwt id
+    const jti = uuidv4();
+
+    const payload: JwtPayload = {
+      ...customPayload,
+      iat: iat,
+      exp: exp,
+      jti: jti,
+    };
+
     return this.jwtService.signAsync(payload, {
       secret: envConfig.REFRESH_TOKEN_SECRET,
-      expiresIn: envConfig.REFRESH_TOKEN_EXPIRY,
       algorithm: 'HS256',
     });
   }
 
-  verifyAccessToken(token: string): Promise<JWTPayload> {
+  verifyAccessToken(token: string): Promise<JwtPayload> {
     return this.jwtService.verifyAsync(token, {
       secret: envConfig.ACCESS_TOKEN_SECRET,
     });
   }
 
-  verifyRefreshToken(token: string): Promise<JWTPayload> {
+  verifyRefreshToken(token: string): Promise<JwtPayload> {
     return this.jwtService.verifyAsync(token, {
       secret: envConfig.REFRESH_TOKEN_SECRET,
     });

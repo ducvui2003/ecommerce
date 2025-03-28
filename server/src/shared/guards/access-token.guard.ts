@@ -5,6 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
+import {
+  TokenInvalidException,
+  TokenRevokedException,
+} from '@route/auth/error.model';
 import { REQUEST_USER_KEY } from 'src/shared/constants/auth.constant';
 import { TokenService } from 'src/shared/services/token.service';
 
@@ -20,13 +24,14 @@ export class AccessTokenGuard implements CanActivate {
     try {
       const decodedAccessToken =
         await this.tokenService.verifyAccessToken(accessToken);
+
       request[REQUEST_USER_KEY] = decodedAccessToken;
       return true;
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        throw new UnauthorizedException('JWT Token has expired');
+        throw TokenRevokedException;
       } else if (error instanceof JsonWebTokenError) {
-        throw new UnauthorizedException('Invalid JWT Token');
+        throw TokenInvalidException;
       }
     }
     return false;
