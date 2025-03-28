@@ -6,19 +6,4 @@
     "dist",
     "**/*spec.ts"
   ],
-  "baseUrl": "./",
-  "paths": {
-    "@emails/*": [
-      "emails/*"
-    ],
-    "@route/*": [
-      "src/routes/*"
-    ],
-    "@shared/*": [
-      "src/shared/*"
-    ],
-    "@config/*": [
-      "src/configs/*"
-    ],
-  }
 }

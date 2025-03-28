@@ -12,6 +12,7 @@ import { SharedModule } from '@shared/shared.module';
 import { HttpExceptionFilter } from '@shared/filters/validation-exception.filter';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { OauthModule } from '@route/oauth/oauth.module';
+
 @Module({
   imports: [
     SharedModule,

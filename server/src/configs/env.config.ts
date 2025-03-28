@@ -27,6 +27,10 @@ const envSchema = z.object({
   EMAIL_PORT: z.string().transform(Number),
   EMAIL_USER: z.string().email(),
   EMAIL_PASSWORD: z.string(),
+
+  REDIS_URL: z.string(),
+  REDIS_USERNAME: z.string(),
+  REDIS_PASSWORD: z.string().optional(),
 });
 
 const configServer = envSchema.safeParse(process.env);
@@ -34,7 +38,7 @@ const configServer = envSchema.safeParse(process.env);
 if (!configServer.success) {
   console.error('Env has conflict');
   const errors = configServer.error.errors.map((error) => {
-    console.log(error);
+    console.error(error);
     return {
       property: error.path.join('.'),
       constraints: error['expected'],

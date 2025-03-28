@@ -1,5 +1,10 @@
-export class JWTPayload {
+export class JwtCustomClaims {
   id: number;
   email: string;
-  exp?: number;
+}
+
+export class JwtPayload extends JwtCustomClaims {
+  iat: number;
+  exp: number;
+  jti: string;
 }
