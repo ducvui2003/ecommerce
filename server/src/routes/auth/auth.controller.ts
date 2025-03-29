@@ -40,10 +40,10 @@ export class AuthController {
   async sendOTP(@Body() body: SendOTPBodyDTO) {
     let res;
     if (body.type === 'REGISTER') {
-      res = await this.authService.sendOTP(body, true);
+      res = await this.authService.sendOTP(body);
     }
     if (body.type === 'FORGOT_PASSWORD') {
-      res = await this.authService.sendOTP(body);
+      res = await this.authService.sendOTP(body, true);
     }
     return res;
   }
