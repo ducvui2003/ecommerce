@@ -7,19 +7,11 @@ import React from 'react';
 
 export abstract class MailService<T> {
   private transporter = nodemailer.createTransport({
-    host: envConfig.EMAIL_HOST,
-    port: envConfig.EMAIL_PORT,
-    service: 'gmail',
-    secure: false,
-    auth: {
-      user: envConfig.EMAIL_USER,
-      pass: envConfig.EMAIL_PASSWORD,
-    },
+    url: envConfig.EMAIL_URL,
   });
 
   protected async sendWithTemplate(data: MailWithTemplate) {
     await this.transporter.sendMail({
-      from: envConfig.EMAIL_USER,
       to: data.to,
       subject: data.subject,
       html: data.template,

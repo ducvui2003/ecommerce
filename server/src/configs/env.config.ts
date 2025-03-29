@@ -15,6 +15,7 @@ if (!fs.existsSync(path.resolve('.env'))) {
 const envSchema = z.object({
   PORT: z.string().transform(Number),
   DATABASE_URL: z.string(),
+
   ACCESS_TOKEN_SECRET: z.string(),
   ACCESS_TOKEN_EXPIRY: z.string(),
   REFRESH_TOKEN_SECRET: z.string(),
@@ -23,14 +24,9 @@ const envSchema = z.object({
   ORIGIN_ALLOWED: z.string().transform((value) => value.split(',')),
   OTP_EXPIRY: z.string(),
 
-  EMAIL_HOST: z.string(),
-  EMAIL_PORT: z.string().transform(Number),
-  EMAIL_USER: z.string().email(),
-  EMAIL_PASSWORD: z.string(),
-
   REDIS_URL: z.string(),
-  REDIS_USERNAME: z.string(),
-  REDIS_PASSWORD: z.string().optional(),
+
+  EMAIL_URL: z.string(),
 });
 
 const configServer = envSchema.safeParse(process.env);
