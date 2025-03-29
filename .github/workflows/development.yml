@@ -31,50 +31,97 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.nestjs == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: ecommerce
+          POSTGRES_USER: ecommerce
+          POSTGRES_PASSWORD: 123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ecommerce -d ecommerce"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: "postgresql://ecommerce:123@127.0.0.1:5432/ecommerce"
+      DATABASE_USERNAME: ecommerce
+      DATABASE_NAME: ecommerce
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
         with:
-          node-version: 22.13.1
-          cache: "npm"
+          node_version: 22.13.1
+          cache: npm
+          working-directory: server
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h 127.0.0.1 -U ${{env.DATABASE_USERNAME}} -d ${{env.DATABASE_NAME}}; then
+              echo "PostgreSQL is ready"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL did not start in time"
+          exit 1
+
+      - name: Setup Redis
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: "7"
+          redis-port: "6379"
 
       - name: Create env
-        run: echo"${{ secrets.ENV_SERVER }}" > .env
+        run: echo "${{ secrets.ENV_SERVER }}" > .env
+        working-directory: server
 
-      - name: Install dependencies
-        run: npm i --force
+      - name: Override DATABASE_URL
+        run: sed -i 's|DATABASE_URL=.*|DATABASE_URL=${{env.DATABASE_URL}}|' .env
+        working-directory: server
+
+      - name: Display Final .env (Debugging)
+        run: cat .env
+        working-directory: server
+
+      - name: Run Prisma DB push
+        run: npx prisma db push --accept-data-loss
+        working-directory: server
 
       - name: Build NestJS
         run: npm run build
+        working-directory: server
 
   build-nextjs:
     needs: detect-changes
     if: needs.detect-changes.outputs.nextjs == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
         with:
-          node-version: 22.13.1
-          cache: "npm"
+          node_version: 22.13.1
+          cache: npm
+          working-directory: web
 
       - name: Create env
-        run: echo"${{ secrets.ENV_WEB }}" > .env
-
-      - name: Install dependencies
-        run: npm i --force
+        run: echo "${{ secrets.ENV_WEB }}" > .env
+        working-directory: web
 
       - name: Build Next.js
         run: npm run build
+        working-directory: web
