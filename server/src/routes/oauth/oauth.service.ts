@@ -4,9 +4,9 @@ import { OAuthRepository } from '@route/oauth/oauth.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { HashingService } from '@shared/services/hashing.service';
 import { AuthService } from '@route/auth/auth.service';
-import { UserRepository } from '@shared/repositories/user.repository';
+import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { buildUrl } from '@shared/helper.shared';
-import { RoleService } from '@route/auth/role.service';
+import { RoleService } from '@shared/services/role.service';
 
 @Injectable()
 export abstract class OauthService {
@@ -16,7 +16,7 @@ export abstract class OauthService {
     private readonly hashingService: HashingService,
     private readonly roleService: RoleService,
     private readonly authService: AuthService,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: SharedUserRepository,
   ) {}
 
   abstract getInfo(accessToken: string): Promise<UserOauth2 | undefined>;
@@ -71,7 +71,7 @@ export class GoogleService extends OauthService {
     hashingService: HashingService,
     roleService: RoleService,
     authService: AuthService,
-    userRepository: UserRepository,
+    userRepository: SharedUserRepository,
   ) {
     super(
       oauthRepository,
@@ -106,7 +106,7 @@ export class FacebookService extends OauthService {
     hashingService: HashingService,
     roleService: RoleService,
     authService: AuthService,
-    userRepository: UserRepository,
+    userRepository: SharedUserRepository,
   ) {
     super(
       oauthRepository,

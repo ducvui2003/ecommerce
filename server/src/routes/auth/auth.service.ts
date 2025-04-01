@@ -18,7 +18,7 @@ import {
   TokenInvalidException,
   TokenRevokedException,
 } from '@route/auth/error.model';
-import { RoleService } from '@route/auth/role.service';
+import { RoleService } from '@shared/services/role.service';
 import {
   TypeOfVerificationType,
   VerificationType,
@@ -28,7 +28,7 @@ import {
   isNotFoundError,
   isUniqueConstraintError,
 } from '@shared/helper.shared';
-import { UserRepository } from '@shared/repositories/user.repository';
+import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
 import { keyRefreshToken } from '@shared/services/cache/cache.util';
 import { HashingService } from '@shared/services/hashing.service';
@@ -41,7 +41,7 @@ import ms from 'ms';
 export class AuthService {
   constructor(
     @Inject('AuthRepository') private readonly authRepository: AuthRepository,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: SharedUserRepository,
     private readonly hashingService: HashingService,
     private readonly jwtService: TokenService,
     private readonly roleService: RoleService,
