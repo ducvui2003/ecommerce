@@ -18,17 +18,28 @@ export interface Response<T> {
 export class SerializerInterceptor<T>
   implements NestInterceptor<T, Response<T>>
 {
-  constructor(private readonly reflector: Reflector){}
+  constructor(private readonly reflector: Reflector) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) => {
-        const response = context.switchToHttp().getResponse();  
+        const response = context.switchToHttp().getResponse();
         const statusCode = response.statusCode;
         const schema: ZodSchema<any> = this.reflector.get(
           SCHEMA_KEY,
           context.getHandler(),
         );
-        const dataParser = schema ? schema.parse(data) : data;
+
+        let dataParser = schema ? schema.parse(data) : data;
+
+        // Remove field null or undefined
+        if (dataParser) {
+          dataParser = Object.fromEntries(
+            Object.entries(dataParser).filter(
+              ([__dirname, value]) => value != null || value != undefined,
+            ),
+          );
+        }
+
         return {
           data: dataParser,
           statusCode,

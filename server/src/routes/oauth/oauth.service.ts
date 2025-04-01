@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { FacebookInfo, GoogleInfo, UserOauth2 } from '@route/oauth/oauth.model';
-import { RoleService } from '@route/auth/role.service';
 import { OAuthRepository } from '@route/oauth/oauth.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { HashingService } from '@shared/services/hashing.service';
 import { AuthService } from '@route/auth/auth.service';
 import { UserRepository } from '@shared/repositories/user.repository';
 import { buildUrl } from '@shared/helper.shared';
+import { RoleService } from '@route/auth/role.service';
 
 @Injectable()
 export abstract class OauthService {

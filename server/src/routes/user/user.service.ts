@@ -1,27 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InfoReqDTO } from 'src/routes/user/user.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { UserInfoBodyReq } from '@route/user/user.dto';
+import { UserRepository } from '@route/user/user.repository';
 import { isNotFoundError } from 'src/shared/helper.shared';
-import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
-  async getInfo(id: number): Promise<InfoReqDTO> {
-    try {
-      const user = await this.prismaService.user.findFirstOrThrow({
-        where: {
-          id: id,
-        },
-        include: { Role: true },
-      });
+  constructor(
+    @Inject('USER_REPOSITORY_MODULE')
+    private readonly userRepository: UserRepository,
+  ) {}
 
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.Role.name,
-        avatar: user.avatar,
-      };
+  async getInfo(id: number) {
+    try {
+      return await this.userRepository.getInfo(id);
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        throw new NotFoundException('User not found');
+      }
+
+      throw error;
+    }
+  }
+
+  async updateInfo(id: number, info: UserInfoBodyReq) {
+    try {
+      return await this.userRepository.updateInfo(id, info);
     } catch (error) {
       if (isNotFoundError(error)) {
         throw new NotFoundException('User not found');
