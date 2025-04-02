@@ -6,7 +6,7 @@ import { isNotFoundError } from 'src/shared/helper.shared';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject()
+    @Inject('USER_REPOSITORY')
     private readonly userRepository: UserRepository,
   ) {}
 
