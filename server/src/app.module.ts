@@ -12,6 +12,7 @@ import { SharedModule } from '@shared/shared.module';
 import { HttpExceptionFilter } from '@shared/filters/validation-exception.filter';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { OauthModule } from '@route/oauth/oauth.module';
+import { AddressModule } from './routes/address/address.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { OauthModule } from '@route/oauth/oauth.module';
     UserModule,
     EventEmitterModule.forRoot(),
     OauthModule,
+    AddressModule,
   ],
   controllers: [AppController],
   providers: [
