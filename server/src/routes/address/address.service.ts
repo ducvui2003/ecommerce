@@ -1,6 +1,11 @@
 import envConfig from '@config/env.config';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  CreatedAddressDTO,
+  UpdatedAddressDTO,
+} from '@route/address/address.dto';
+import { AddressRepository } from '@route/address/address.repository';
+import {
   ADDRESS_TYPE,
   ADDRESS_URL,
   ADDRESS_VERSION,
@@ -40,7 +45,11 @@ type Response = {
 
 @Injectable()
 export class AddressService {
-  constructor(private readonly cacheService: CacheService) {}
+  constructor(
+    private readonly cacheService: CacheService,
+    @Inject('ADDRESS_REPOSITORY')
+    private readonly addressRepository: AddressRepository,
+  ) {}
 
   async getAddress(
     type: ADDRESS_TYPE,
@@ -64,7 +73,41 @@ export class AddressService {
     }
   }
 
-  public async getAddressExternal(
+  public async createAddress(userId: number, body: CreatedAddressDTO) {
+    const isValid = await this.isAddressValid({
+      ward: body.ward,
+      district: body.district,
+      province: body.province,
+    });
+    if (!isValid) throw new NotFoundException('Address not valid');
+
+    await this.addressRepository.save({
+      detail: body.detail,
+      ward: body.ward,
+      district: body.district,
+      province: body.province,
+      userId: userId,
+    });
+  }
+
+  public async updateAddress(userId: number, body: UpdatedAddressDTO) {
+    const isValid = await this.isAddressValid({
+      ward: body.ward,
+      district: body.district,
+      province: body.province,
+    });
+    if (!isValid) throw new NotFoundException('Address not valid');
+
+    await this.addressRepository.update(body.id, {
+      detail: body.detail,
+      ward: body.ward,
+      district: body.district,
+      province: body.province,
+      userId: userId,
+    });
+  }
+
+  private async getAddressExternal(
     type: ADDRESS_TYPE,
     parentId: number | null = null,
   ): Promise<Address> {
@@ -98,5 +141,49 @@ export class AddressService {
     }
 
     return body.data;
+  }
+
+  public async isAddressValid(data: {
+    province: string;
+    district: string;
+    ward: string;
+  }): Promise<boolean> {
+    try {
+      // 1. Get ProvinceId By Province Name
+      const provinces: Province[] = (await this.getAddress(
+        'CITY',
+      )) as Province[];
+      const provinceId =
+        provinces.find((item) => item.name == data.province)?.id ?? 0;
+
+      // 2. Check ProvinceId !=0
+      if (!provinceId) return false;
+
+      // 3. Get Districts By ProvinceId
+      const districts: District[] = (await this.getAddress(
+        'DISTRICT',
+        provinceId,
+      )) as District[];
+      const districtId =
+        districts.find((item) => item.name == data.district)?.id ?? 0;
+
+      // 4. Check DistrictId
+      if (!districtId) return false;
+
+      // 5. Get Wards By DistrictId
+      const wards: Ward[] = (await this.getAddress(
+        'WARD',
+        districtId,
+      )) as Ward[];
+      const wardId = wards.find((item) => item.name == data.ward)?.id ?? 0;
+
+      // 6. Check WardId
+      if (!wardId) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
