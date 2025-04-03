@@ -98,10 +98,11 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
+      "^@emails/(.*)$": "<rootDir>/../emails/$1",
       "^@shared/(.*)$": "<rootDir>/shared/$1",
       "^@config/(.*)$": "<rootDir>/configs/$1",
       "^@route/(.*)$": "<rootDir>/routes/$1",
-      "^src/(.*)$": "<rootDir>/src/$1"
+      "^src/(.*)$": "<rootDir>/$1"
     }
   }
 }

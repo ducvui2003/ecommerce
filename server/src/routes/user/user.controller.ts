@@ -8,12 +8,12 @@ import {
   Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ActiveUser } from 'src/shared/decorators/actice-user.decorator';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import { AuthType } from 'src/shared/constants/auth.constant';
 import { AuthenticationGuard } from 'src/shared/guards/authentication.guard';
 import { UserInfoBodyReq } from '@route/user/user.dto';
 import { InfoAllow } from '@route/user/user.type';
+import { ActiveUser } from '@shared/decorators/actice-user.decorator';
 
 @Controller('/api/v1/user')
 export class UserController {

@@ -1,10 +1,11 @@
 import envConfig from '@config/env.config';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   ADDRESS_TYPE,
   ADDRESS_URL,
   ADDRESS_VERSION,
 } from '@shared/constants/api.constraint';
+import { CacheService } from '@shared/services/cache/cache.service';
 
 type Province = {
   id: number;
@@ -16,23 +17,36 @@ type District = Province & {
 };
 
 type Ward = District;
+// eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
+type Address = Province[] | District[] | Ward[];
 
 type Response = {
   code: number;
   message: string;
-  // eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
-  data: Province[] | District[] | Ward[];
+  data: Address;
 };
 
 @Injectable()
 export class AddressService {
-  getAddress(type: ADDRESS_TYPE, parentId: number | null = null) {}
+  constructor(private readonly cacheService: CacheService) {}
+
+  async getAddress(type: ADDRESS_TYPE, parentId: number | null = null) {
+    const key = parentId ? `${parentId}:${type}` : `${type}`;
+
+    const cacheData: Address | null = await this.cacheService.get<Address>(key);
+    if (cacheData) {
+      return cacheData;
+    }
+
+    const data: Address = await this.getAddressExternal(type, parentId);
+    this.cacheService.set<Address>(key, data);
+    return data;
+  }
 
   public async getAddressExternal(
     type: ADDRESS_TYPE,
     parentId: number | null = null,
-    // eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
-  ): Promise<Province[] | District[] | Ward[]> {
+  ): Promise<Address> {
     const data = {
       type: type,
     };
