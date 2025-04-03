@@ -9,10 +9,12 @@ import '@config/env.config';
 import { AuthModule } from '@route/auth/auth.module';
 import { UserModule } from '@route/user/user.module';
 import { SharedModule } from '@shared/shared.module';
-import { HttpExceptionFilter } from '@shared/filters/validation-exception.filter';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { OauthModule } from '@route/oauth/oauth.module';
 import { AddressModule } from './routes/address/address.module';
+import { SerializerInterceptor } from '@shared/interceptors/serializer.interceptor';
+import { UnprocessableEntityExceptionFilter } from '@shared/filters/unprocessable-entity.exception.filter';
+import { HttpExceptionFilter } from '@shared/filters/http.exception.filter';
 
 @Module({
   imports: [
@@ -35,8 +37,16 @@ import { AddressModule } from './routes/address/address.module';
       useClass: ZodSerializerInterceptor,
     },
     {
+      provide: APP_INTERCEPTOR,
+      useClass: SerializerInterceptor,
+    },
+    {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: UnprocessableEntityExceptionFilter,
     },
   ],
 })

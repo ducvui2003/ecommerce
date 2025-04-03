@@ -11,7 +11,8 @@ async function bootstrap() {
 
   setupCors(app);
 
-  app.useGlobalInterceptors(new SerializerInterceptor(new Reflector()));
+  // Serializer Response
+  // app.useGlobalInterceptors(new SerializerInterceptor());
 
   setupSwagger(app);
   await app.listen(envConfig.PORT);

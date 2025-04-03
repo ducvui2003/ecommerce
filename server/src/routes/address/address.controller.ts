@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { AddressService } from './address.service';
+import { AddressService } from '@route/address/address.service';
 
 @Controller('/api/v1/address')
 export class AddressController {

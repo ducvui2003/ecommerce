@@ -1,5 +1,5 @@
 import envConfig from '@config/env.config';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   ADDRESS_TYPE,
   ADDRESS_URL,
@@ -14,8 +14,8 @@ type Base = {
 };
 
 type Province = Base & {
-  parentId: 0;
-  countryId: 0;
+  parentId: number;
+  countryId: number;
 };
 
 type District = Base & {
@@ -42,17 +42,26 @@ type Response = {
 export class AddressService {
   constructor(private readonly cacheService: CacheService) {}
 
-  async getAddress(type: ADDRESS_TYPE, parentId: number | null = null) {
-    const key = keyAddress(type, parentId);
+  async getAddress(
+    type: ADDRESS_TYPE,
+    parentId: number | null = null,
+  ): Promise<Address> {
+    try {
+      const key = keyAddress(type, parentId);
 
-    const cacheData: Address | null = await this.cacheService.get<Address>(key);
-    if (cacheData) {
-      return cacheData;
+      const cacheData: Address | null =
+        await this.cacheService.get<Address>(key);
+      if (cacheData) {
+        return cacheData;
+      }
+
+      const data: Address = await this.getAddressExternal(type, parentId);
+      this.cacheService.set<Address>(key, data);
+      return data;
+    } catch (e) {
+      const error = e as Error;
+      throw new NotFoundException(error.message);
     }
-
-    const data: Address = await this.getAddressExternal(type, parentId);
-    this.cacheService.set<Address>(key, data);
-    return data;
   }
 
   public async getAddressExternal(
@@ -84,9 +93,8 @@ export class AddressService {
     });
 
     const body: Response = await res.json();
-
-    if (body.code === 0) {
-      throw new Error('Empty address');
+    if (body.data.length === 0) {
+      throw new Error(`Empty ${type.toLowerCase()} fetch`);
     }
 
     return body.data;
