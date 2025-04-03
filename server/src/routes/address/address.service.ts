@@ -6,17 +6,29 @@ import {
   ADDRESS_VERSION,
 } from '@shared/constants/api.constraint';
 import { CacheService } from '@shared/services/cache/cache.service';
+import { keyAddress } from '@shared/services/cache/cache.util';
 
-type Province = {
+type Base = {
   id: number;
   name: string;
 };
 
-type District = Province & {
-  parentId: number;
+type Province = Base & {
+  parentId: 0;
+  countryId: 0;
 };
 
-type Ward = District;
+type District = Base & {
+  cityId: string;
+  cityLocationId: string;
+  parentId: string;
+};
+
+type Ward = Base & {
+  districtId: string;
+  districtLocationId: string;
+  parentId: string;
+};
 // eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 type Address = Province[] | District[] | Ward[];
 
@@ -31,7 +43,7 @@ export class AddressService {
   constructor(private readonly cacheService: CacheService) {}
 
   async getAddress(type: ADDRESS_TYPE, parentId: number | null = null) {
-    const key = parentId ? `${parentId}:${type}` : `${type}`;
+    const key = keyAddress(type, parentId);
 
     const cacheData: Address | null = await this.cacheService.get<Address>(key);
     if (cacheData) {
