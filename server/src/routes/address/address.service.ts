@@ -100,7 +100,7 @@ type CalculateResponse = {
 @Injectable()
 export class AddressService {
   private readonly MAX_ENTRIES = 5;
-  private readonly DEFAULT_CAREER_ID = '5';
+  private readonly DEFAULT_CARRIER_ID = '5';
   private readonly DEFAULT_SHIPPING_WEIGHT = 9000;
   constructor(
     private readonly cacheService: CacheService,
@@ -311,7 +311,7 @@ export class AddressService {
       throw new Error('Error when fetch');
     }
 
-    const carrier = body.data[this.DEFAULT_CAREER_ID];
+    const carrier = body.data[this.DEFAULT_CARRIER_ID];
 
     return carrier;
   }
@@ -332,7 +332,7 @@ export class AddressService {
       toCityName: toCityName,
       toDistrictName: toDistrictName,
       shippingWeight: this.DEFAULT_SHIPPING_WEIGHT,
-      carrierIds: [this.DEFAULT_CAREER_ID],
+      carrierIds: [this.DEFAULT_CARRIER_ID],
       length: length,
       width: width,
       height: height,

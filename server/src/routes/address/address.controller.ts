@@ -65,7 +65,7 @@ export class AddressController {
     @ActiveUser('id') userId,
     @Body() body: UpdatedAddressDTO,
   ) {
-    return this.addressService.createAddress(userId, body);
+    return this.addressService.updateAddress(userId, body);
   }
 
   @UseGuards(AuthenticationGuard)
