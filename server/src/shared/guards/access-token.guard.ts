@@ -8,7 +8,7 @@ import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 import {
   TokenInvalidException,
   TokenRevokedException,
-} from '@route/auth/error.model';
+} from '@route/auth/auth.error';
 import { REQUEST_USER_KEY } from 'src/shared/constants/auth.constant';
 import { TokenService } from 'src/shared/services/token.service';
 

@@ -27,7 +27,6 @@ const LoginForm = () => {
     resolver: zodResolver(LoginBodyReq),
     defaultValues: {
       email: '',
-      password: '',
     },
   });
 
@@ -46,8 +45,8 @@ const LoginForm = () => {
         throw new EntityError({
           status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
           payload: {
-            error: '',
-            message: [
+            message: '',
+            error: [
               {
                 field: 'password',
                 error: 'Email hoặc mật khẩu không đúng',
@@ -61,8 +60,8 @@ const LoginForm = () => {
         throw new EntityError({
           status: HTTP_STATUS_CODE.UNAUTHORIZED,
           payload: {
-            error: '',
-            message: [
+            message: '',
+            error: [
               {
                 field: 'email',
                 error:

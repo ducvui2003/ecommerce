@@ -1,7 +1,6 @@
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { useSession } from 'next-auth/react';
-import { tree } from 'next/dist/build/templates/app-page';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -10,7 +9,7 @@ type CustomOptions = RequestInit & {
 export class HttpError extends Error {
   status: number;
   payload: {
-    error: string;
+    message: string;
     [key: string]: any;
   };
   constructor({ status, payload }: { status: number; payload?: any }) {
@@ -21,8 +20,8 @@ export class HttpError extends Error {
 }
 
 type EntityErrorPayload = {
-  error: string;
-  message: { field: string; error: string }[];
+  message: string;
+  error: { field: string; error: string }[];
 };
 
 export class EntityError extends HttpError {

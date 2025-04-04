@@ -27,6 +27,10 @@ const envSchema = z.object({
   REDIS_URL: z.string(),
 
   EMAIL_URL: z.string(),
+
+  ADDRESS_ACCESS_TOKEN: z.string(),
+  ADDRESS_APP_ID: z.string(),
+  ADDRESS_BUSINESS_ID: z.string(),
 });
 
 const configServer = envSchema.safeParse(process.env);
