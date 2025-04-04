@@ -31,7 +31,7 @@ describe('Test AddressService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('get address from external service', () => {
+  describe('External service', () => {
     let province, district, ward;
     it('should get provinces', async () => {
       const provinces = await service.getAddress('CITY');
@@ -49,6 +49,21 @@ describe('Test AddressService', () => {
       const wards = await service.getAddress('WARD', district);
       expect(wards).toBeDefined();
       ward = wards[0].id;
+    });
+
+    it('getCarrier', async () => {
+      const carrier = await service.getCarrier();
+      expect(carrier).toBeDefined();
+    });
+
+    it('calculateFeeByWeight', async () => {
+      const response = await service.calculateFeeByWeight({
+        fromCityName: 'Hà Nội',
+        fromDistrictName: 'Quận Ba Đình',
+        toCityName: 'Bình Dương',
+        toDistrictName: 'Thành phố Dĩ An',
+      });
+      console.log(response);
     });
   });
 

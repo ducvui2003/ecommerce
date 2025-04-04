@@ -1,5 +1,5 @@
 import envConfig from '@config/env.config';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   CreatedAddressDTO,
   UpdatedAddressDTO,
@@ -14,10 +14,17 @@ import {
   ADDRESS_TYPE,
   ADDRESS_URL,
   ADDRESS_VERSION,
+  CARRIER_URL,
+  SHIPPING_FEE_URL,
 } from '@shared/constants/api.constraint';
 import { isNotFoundError } from '@shared/helper.shared';
 import { CacheService } from '@shared/services/cache/cache.service';
-import { keyAddress } from '@shared/services/cache/cache.util';
+import {
+  createNamespaces,
+  KEY_CARRIER,
+  keyAddress,
+  NAMESPACE_ADDRESS,
+} from '@shared/services/cache/cache.util';
 
 type Base = {
   id: number;
@@ -43,15 +50,58 @@ type Ward = Base & {
 // eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 type Address = Province[] | District[] | Ward[];
 
-type Response = {
+type Response<T> = {
   code: number;
   message: string;
-  data: Address;
+  data: T;
+};
+
+type Carrier = {
+  id: number;
+  name: string;
+  logo: string;
+  services: Record<
+    string,
+    {
+      id: number;
+      name: string;
+      description: string;
+    }
+  >;
+};
+
+type CalculationRequest = {
+  fromCityName: string;
+  fromDistrictName: string;
+  toCityName: string;
+  toDistrictName: string;
+  codMoney?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+};
+
+type CalculateResponse = {
+  carrierId: number;
+  carrierName: string;
+  logo: string;
+  serviceId: number;
+  serviceName: string;
+  serviceTypeName: string;
+  serviceDescription: string;
+  estimatedDeliveryTime: number;
+  shipFee: number;
+  codFee: number;
+  declaredFee: number;
+  isBulkyGoods: 1 | 0;
+  isRequiredInsurance: 1 | 0;
 };
 
 @Injectable()
 export class AddressService {
   private readonly MAX_ENTRIES = 5;
+  private readonly DEFAULT_CAREER_ID = '5';
+  private readonly DEFAULT_SHIPPING_WEIGHT = 9000;
   constructor(
     private readonly cacheService: CacheService,
     @Inject('ADDRESS_REPOSITORY')
@@ -163,11 +213,7 @@ export class AddressService {
       data['parentId'] = parentId;
     }
 
-    const formData = new FormData();
-    formData.append('version', ADDRESS_VERSION);
-    formData.append('appId', envConfig.ADDRESS_APP_ID.toString());
-    formData.append('businessId', envConfig.ADDRESS_BUSINESS_ID);
-    formData.append('accessToken', envConfig.ADDRESS_ACCESS_TOKEN);
+    const formData = this.createFormData();
     formData.append('data', JSON.stringify(data));
 
     const res = await fetch(ADDRESS_URL, {
@@ -176,7 +222,7 @@ export class AddressService {
     });
 
     // 2. Check response has data
-    const body: Response = await res.json();
+    const body: Response<Address> = await res.json();
     if (body.data.length === 0) {
       throw new Error(`Empty ${type.toLowerCase()} fetch`);
     }
@@ -226,5 +272,85 @@ export class AddressService {
     } catch (e) {
       return false;
     }
+  }
+
+  private createFormData(): FormData {
+    const formData = new FormData();
+    formData.append('version', ADDRESS_VERSION);
+    formData.append('appId', envConfig.ADDRESS_APP_ID.toString());
+    formData.append('businessId', envConfig.ADDRESS_BUSINESS_ID);
+    formData.append('accessToken', envConfig.ADDRESS_ACCESS_TOKEN);
+    return formData;
+  }
+
+  public async getCarrier(): Promise<Carrier> {
+    // 1. Define key of address that saved in redis
+    const key = createNamespaces(NAMESPACE_ADDRESS, KEY_CARRIER) as string;
+
+    // 2. Check if redis has value with key, return value.
+    // Otherwise get fetch data from external resource
+    const cacheData: Carrier | null = await this.cacheService.get<Carrier>(key);
+    if (cacheData) {
+      return cacheData;
+    }
+    const data = await this.getExternalCarrier();
+    this.cacheService.set<Carrier>(key, data);
+    return data;
+  }
+
+  private async getExternalCarrier() {
+    const formData = this.createFormData();
+
+    const res = await fetch(CARRIER_URL, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const body: Response<Record<string, Carrier>> = await res.json();
+    if (body.code === 0) {
+      throw new Error('Error when fetch');
+    }
+
+    const carrier = body.data[this.DEFAULT_CAREER_ID];
+
+    return carrier;
+  }
+
+  public async calculateFeeByWeight({
+    fromCityName,
+    fromDistrictName,
+    toCityName,
+    toDistrictName,
+    width,
+    height,
+    length,
+    codMoney = 0,
+  }: CalculationRequest): Promise<CalculateResponse> {
+    const data = {
+      fromCityName: fromCityName,
+      fromDistrictName: fromDistrictName,
+      toCityName: toCityName,
+      toDistrictName: toDistrictName,
+      shippingWeight: this.DEFAULT_SHIPPING_WEIGHT,
+      carrierIds: [this.DEFAULT_CAREER_ID],
+      length: length,
+      width: width,
+      height: height,
+      codMoney: codMoney,
+    };
+
+    const formData = this.createFormData();
+    formData.append('data', JSON.stringify(data));
+    const res = await fetch(SHIPPING_FEE_URL, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const body: Response<CalculateResponse[]> = await res.json();
+    if (body.code === 0) {
+      throw new Error('Error when fetch');
+    }
+
+    return body.data[0];
   }
 }

@@ -1,7 +1,8 @@
 // <namespace>:<entity>:<id>:<attribute>
 
 const NAMESPACE_REFRESH_TOKEN = 'refresh_token:user';
-const NAMESPACE_ADDRESS = 'address';
+export const NAMESPACE_ADDRESS = 'address';
+export const KEY_CARRIER = 'carrier';
 
 export function keyRefreshToken(userId: number | string, jti: string): string {
   return `${NAMESPACE_REFRESH_TOKEN}:${userId}:${jti}`;
