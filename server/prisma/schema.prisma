@@ -87,11 +87,12 @@ enum OrderStatus {
 model User {
   id       Int        @id @default(autoincrement())
   email    String     @unique
-  name     String     @default("")
+  name     String?    @default("")
   password String     @db.VarChar(255)
-  phone    String     @default("")
-  avatar   String     @default("")
+  phone    String?    @default("")
+  avatar   String?    @default("")
   status   UserStatus @default(INACTIVE)
+  dob      DateTime?  @db.Date
 
   roleId Int  @map("role_id")
   Role   Role @relation(fields: [roleId], references: [id])
