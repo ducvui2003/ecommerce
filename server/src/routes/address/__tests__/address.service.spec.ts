@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AddressService } from '../address.service';
 import { SharedModule } from '@shared/shared.module';
 import { PrismaAddressRepository } from '@route/address/address.repository';
+import { AddressService } from '@route/address/address.service';
 
-describe('AddressService', () => {
+describe('Test AddressService', () => {
   let service: AddressService;
   let module: TestingModule;
 

@@ -9,7 +9,6 @@ import {
   ResponseValidationError,
   ValidationError,
 } from '@shared/types/response.type';
-import { ZodValidationException } from 'nestjs-zod';
 import { Response } from 'express';
 
 @Catch(UnprocessableEntityException)

@@ -17,7 +17,7 @@ import {
   PasswordIncorrectException,
   TokenInvalidException,
   TokenRevokedException,
-} from '@route/auth/error.model';
+} from '@route/auth/auth.error';
 import { RoleService } from '@shared/services/role.service';
 import {
   TypeOfVerificationType,

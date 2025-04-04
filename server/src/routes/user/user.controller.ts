@@ -13,7 +13,7 @@ import { AuthType } from 'src/shared/constants/auth.constant';
 import { AuthenticationGuard } from 'src/shared/guards/authentication.guard';
 import { UserInfoBodyReq } from '@route/user/user.dto';
 import { InfoAllow } from '@route/user/user.type';
-import { ActiveUser } from '@shared/decorators/actice-user.decorator';
+import { ActiveUser } from '@shared/decorators/active-user.decorator';
 
 @Controller('/api/v1/user')
 export class UserController {

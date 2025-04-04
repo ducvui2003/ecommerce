@@ -1,7 +1,7 @@
 export type Response = {
   statusCode: number;
   message: string;
-  data: any;
+  data?: any;
   timestamp: Date;
 };
 export type ResponseError = {
