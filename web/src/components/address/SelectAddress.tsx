@@ -2,7 +2,6 @@
 import SelectDistrict from '@/components/address/SelectDistrict';
 import SelectProvince from '@/components/address/SelectProvince';
 import SelectWard from '@/components/address/SelectWard';
-import { stat } from 'fs';
 import React, { useEffect, useState } from 'react';
 
 type AddressType = {

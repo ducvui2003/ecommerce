@@ -1,4 +1,5 @@
 'use client';
+import StoreProvider from '@/app/provider/StoreProvinder';
 import { Toaster } from '@/components/ui/toaster';
 import { LOCAL_STORAGE } from '@/constraint/variable';
 import { useToast } from '@/hooks/use-toast';
@@ -19,14 +20,14 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
   return (
-    <>
+    <StoreProvider>
       <SessionProvider>
         <main>
           <Toaster />
           <div>{children}</div>
         </main>
       </SessionProvider>
-    </>
+    </StoreProvider>
   );
 };
 

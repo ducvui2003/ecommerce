@@ -6,8 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import addressService from '@/service/address.service';
-import React, { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useGetWardsQuery } from '@/features/address/address.slice';
+import { uuid } from '@/lib/utils';
 type SelectWardProps = {
   districtId: number | null;
   setValue: (value: number, text: string) => void;
@@ -18,29 +19,9 @@ type Ward = {
   parentId: string;
 };
 const SelectWard = ({ districtId, setValue }: SelectWardProps) => {
-  const [wards, setWards] = useState<Ward[] | undefined>(undefined);
-
-  useEffect(() => {
-    if (districtId) {
-      addressService
-        .getWard(districtId)
-        .then((res) => {
-          if (res)
-            setWards((_) => {
-              return res.map((item) => {
-                return {
-                  id: item.id,
-                  name: item.name,
-                  parentId: item.parentId,
-                };
-              });
-            });
-        })
-        .catch(() => {
-          console.error('Error province');
-        });
-    }
-  }, [districtId]);
+  const { data, isFetching } = useGetWardsQuery(districtId as number, {
+    skip: !districtId,
+  });
 
   return (
     <Select
@@ -53,9 +34,21 @@ const SelectWard = ({ districtId, setValue }: SelectWardProps) => {
         <SelectValue placeholder="Chọn quận/huyện" />
       </SelectTrigger>
       <SelectContent>
-        {wards &&
-          wards.map((item) => (
-            <SelectItem value={JSON.stringify(item)}>{item.name}</SelectItem>
+        {!districtId && <Skeleton className="w-full h-[20px] rounded-full" />}
+        {isFetching &&
+          Array(5)
+            .fill(null)
+            .map((_, index) => (
+              <Skeleton
+                key={index}
+                className="w-full h-[20px] rounded-full my-2"
+              />
+            ))}
+        {data &&
+          data?.map((item) => (
+            <SelectItem key={uuid()} value={JSON.stringify(item)}>
+              {item.name}
+            </SelectItem>
           ))}
       </SelectContent>
     </Select>
