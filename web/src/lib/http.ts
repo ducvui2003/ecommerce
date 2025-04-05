@@ -52,9 +52,7 @@ export const getAccessToken = async (): Promise<string> => {
     } else {
       // Server
       const { getServerSession } = await import('next-auth');
-      const { authOptions } = await import(
-        '@/app/api/auth/[...nextauth]/route'
-      );
+      const { default: authOptions } = await import('@/config/auth.config');
       const session = await getServerSession(authOptions);
       return session?.accessToken || '';
     }
