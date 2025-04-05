@@ -5,10 +5,8 @@ import React from 'react';
 
 const AuthLayout = ({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { slug?: string };
 }>) => {
   return (
     <div className="w-screen h-screen flex">
