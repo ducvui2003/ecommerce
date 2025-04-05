@@ -1,6 +1,6 @@
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import { getSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -47,15 +47,12 @@ export const getAccessToken = async (): Promise<string> => {
       // const session = await getSession();
       // return session?.accessToken || '';
       const res = await fetch('/api/auth/session');
-      const session = await res.json();
-      console.log('session', session);
+      const session: Session = await res.json();
       return session?.accessToken || '';
     } else {
       // Server
       const { getServerSession } = await import('next-auth');
-      const { authOptions } = await import(
-        '@/app/api/auth/[...nextauth]/route'
-      );
+      const { default: authOptions } = await import('@/config/auth.config');
       const session = await getServerSession(authOptions);
       return session?.accessToken || '';
     }
@@ -141,12 +138,14 @@ const request = async <Response>(
 
 const logging = async (url: string, options: RequestInit) => {
   // Log request details
-  console.log('Request:', {
-    method: options.method,
-    url,
-    headers: options.headers,
-    body: options.body,
-  });
+
+  if (envConfig.NEXT_PUBLIC_LOG_CLIENT)
+    console.log('Request:', {
+      method: options.method,
+      url,
+      headers: options.headers,
+      body: options.body,
+    });
 
   try {
     const response = await fetch(url, options);
@@ -169,17 +168,19 @@ const logging = async (url: string, options: RequestInit) => {
     const clonedResponse = response.clone();
     // Parse and return the JSON response if successful
     const data = await response.json();
-    console.log('Response Data:', data);
+
+    if (envConfig.NEXT_PUBLIC_LOG_CLIENT) console.log('Response Data:', data);
+
     return clonedResponse;
   } catch (error: any) {
     // Catch network errors, HTTP errors, or any errors thrown above
-
-    console.error('Error during request:', {
-      message: error.message,
-      status: error.status || 'N/A',
-      statusText: error.statusText || 'N/A',
-      body: error.body || 'N/A',
-    });
+    if (envConfig.NEXT_PUBLIC_LOG_CLIENT)
+      console.error('Error during request:', {
+        message: error.message,
+        status: error.status || 'N/A',
+        statusText: error.statusText || 'N/A',
+        body: error.body || 'N/A',
+      });
 
     throw error; // Rethrow the error for further handling
   }
