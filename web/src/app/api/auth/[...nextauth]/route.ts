@@ -10,10 +10,9 @@ import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 
 import oauth2Api from '@/service/oauth2.service';
-import { toast } from '@/hooks/use-toast';
 
 export const authOptions: NextAuthOptions = {
-  debug: true,
+  debug: false,
   providers: [
     CredentialsProvider<Record<string, CredentialInput>>({
       name: 'Credentials',
