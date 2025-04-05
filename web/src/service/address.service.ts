@@ -17,7 +17,11 @@ const addressService = {
   },
 
   getDistrict: async (provinceId: number): Promise<DistrictType[]> => {
+    const sleep = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
     try {
+      await sleep(5000);
       const res = await http.get<ResponseApi<DistrictType[]>>(
         `/api/v1/address/district/${provinceId}`,
       );

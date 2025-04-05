@@ -6,8 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import addressService from '@/service/address.service';
-import React, { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useGetDistrictsQuery } from '@/features/address/address.slice';
+import { uuid } from '@/lib/utils';
 
 type SelectDistrictProps = {
   provinceId: number | null;
@@ -21,32 +22,12 @@ type District = {
 };
 
 const SelectDistrict = ({ setValue, provinceId }: SelectDistrictProps) => {
-  const [districts, setDistricts] = useState<District[] | undefined>(undefined);
-  useEffect(() => {
-    if (provinceId) {
-      addressService
-        .getDistrict(provinceId)
-        .then((res) => {
-          if (res)
-            setDistricts((_) => {
-              return res.map((item) => {
-                return {
-                  id: item.id,
-                  name: item.name,
-                  parentId: item.parentId,
-                };
-              });
-            });
-        })
-        .catch(() => {
-          console.error('Error province');
-        });
-    }
-  }, [provinceId]);
+  const { data, isFetching } = useGetDistrictsQuery(provinceId as number, {
+    skip: !provinceId,
+  });
 
   return (
     <Select
-      value={undefined}
       onValueChange={(value) => {
         const item = JSON.parse(value) as District;
         setValue(item.id, item.name);
@@ -56,9 +37,21 @@ const SelectDistrict = ({ setValue, provinceId }: SelectDistrictProps) => {
         <SelectValue placeholder="Chọn quận/huyện" />
       </SelectTrigger>
       <SelectContent>
-        {districts &&
-          districts.map((item) => (
-            <SelectItem value={JSON.stringify(item)}>{item.name}</SelectItem>
+        {!provinceId && <Skeleton className="w-full h-[20px] rounded-full" />}
+        {isFetching &&
+          Array(5)
+            .fill(null)
+            .map((_, index) => (
+              <Skeleton
+                key={index}
+                className="w-full h-[20px] rounded-full my-2"
+              />
+            ))}
+        {!isFetching &&
+          data?.map((item) => (
+            <SelectItem key={uuid()} value={JSON.stringify(item)}>
+              {item.name}
+            </SelectItem>
           ))}
       </SelectContent>
     </Select>
