@@ -1,13 +1,13 @@
+import React from 'react';
 import SelectAddress from '@/components/address/SelectAddress';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 
-export default function Home({ children }: { children: React.ReactNode }) {
+export default function Home() {
   return (
     <>
       <Header />
       <SelectAddress />
-      {children}
       <Footer />
     </>
   );
