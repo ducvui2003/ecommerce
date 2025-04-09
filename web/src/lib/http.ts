@@ -1,6 +1,6 @@
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -44,20 +44,20 @@ export const getAccessToken = async (): Promise<string> => {
   try {
     if (typeof window !== 'undefined') {
       // Client
-      const { data: session } = useSession();
+      // const session = await getSession();
+      // return session?.accessToken || '';
+      const res = await fetch('/api/auth/session');
+      const session: Session = await res.json();
       return session?.accessToken || '';
     } else {
       // Server
       const { getServerSession } = await import('next-auth');
-      const { authOptions } = await import(
-        '@/app/api/auth/[...nextauth]/route'
-      );
+      const { default: authOptions } = await import('@/config/auth.config');
       const session = await getServerSession(authOptions);
-      3;
       return session?.accessToken || '';
     }
   } catch (e) {
-    console.error('Get access token failed');
+    console.error('Get access token failed', e);
     return '';
   }
 };
@@ -81,15 +81,28 @@ const request = async <Response>(
   const fullUrl = url.startsWith('/')
     ? `${baseUrl}${url} `
     : `${baseUrl}/${url}`;
-  const res = await fetch(fullUrl, {
-    ...options,
-    headers: {
-      ...baseHeaders,
-      ...options?.headers,
-    },
-    body,
-    method,
-  });
+
+  let res;
+  if (typeof window !== 'undefined')
+    res = await logging(fullUrl, {
+      ...options,
+      headers: {
+        ...baseHeaders,
+        ...options?.headers,
+      },
+      body,
+      method,
+    });
+  else
+    res = await fetch(fullUrl, {
+      ...options,
+      headers: {
+        ...baseHeaders,
+        ...options?.headers,
+      },
+      body,
+      method,
+    });
 
   const payload: Response = await res.json();
   const data = {
@@ -121,6 +134,56 @@ const request = async <Response>(
   //   }
 
   return data;
+};
+
+const logging = async (url: string, options: RequestInit) => {
+  // Log request details
+
+  if (envConfig.NEXT_PUBLIC_LOG_CLIENT)
+    console.log('Request:', {
+      method: options.method,
+      url,
+      headers: options.headers,
+      body: options.body,
+    });
+
+  try {
+    const response = await fetch(url, options);
+
+    // Check if the response is not successful (non-2xx status)
+    if (!response.ok) {
+      // Read the response body to get any error details
+      const errorBody = await response.text();
+
+      // Create a custom error object with all relevant details
+      const error = new Error(
+        `HTTP error! Status: ${response.status} - ${response.statusText}`,
+      );
+      (error as any).status = response.status;
+      (error as any).statusText = response.statusText;
+      (error as any).body = errorBody;
+
+      throw error; // Throw error to be caught in catch block
+    }
+    const clonedResponse = response.clone();
+    // Parse and return the JSON response if successful
+    const data = await response.json();
+
+    if (envConfig.NEXT_PUBLIC_LOG_CLIENT) console.log('Response Data:', data);
+
+    return clonedResponse;
+  } catch (error: any) {
+    // Catch network errors, HTTP errors, or any errors thrown above
+    if (envConfig.NEXT_PUBLIC_LOG_CLIENT)
+      console.error('Error during request:', {
+        message: error.message,
+        status: error.status || 'N/A',
+        statusText: error.statusText || 'N/A',
+        body: error.body || 'N/A',
+      });
+
+    throw error; // Rethrow the error for further handling
+  }
 };
 
 const http = {

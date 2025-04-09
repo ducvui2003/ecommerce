@@ -6,8 +6,8 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
-import addressService from '@/service/address.service';
-import { useEffect, useState } from 'react';
+import { useGetProvincesQuery } from '@/features/address/address.slice';
+import { uuid } from '@/lib/utils';
 
 type SelectProvinceProps = {
   setValue: (value: number, text: string) => void;
@@ -19,26 +19,7 @@ type Province = {
 };
 
 const SelectProvince = ({ setValue }: SelectProvinceProps) => {
-  const [provinces, setProvinces] = useState<Province[] | undefined>(undefined);
-
-  useEffect(() => {
-    addressService
-      .getProvince()
-      .then((res) => {
-        if (res)
-          setProvinces((_) => {
-            return res.map((item) => {
-              return {
-                id: item.id,
-                name: item.name,
-              };
-            });
-          });
-      })
-      .catch(() => {
-        console.error('Error province');
-      });
-  }, []);
+  const { data, isFetching } = useGetProvincesQuery();
 
   return (
     <Select
@@ -51,9 +32,11 @@ const SelectProvince = ({ setValue }: SelectProvinceProps) => {
         <SelectValue placeholder="Chọn tỉnh/thành phố" />
       </SelectTrigger>
       <SelectContent>
-        {provinces &&
-          provinces.map((item) => (
-            <SelectItem value={JSON.stringify(item)}>{item.name}</SelectItem>
+        {!isFetching &&
+          data?.map((item) => (
+            <SelectItem key={uuid()} value={JSON.stringify(item)}>
+              {item.name}
+            </SelectItem>
           ))}
       </SelectContent>
     </Select>
