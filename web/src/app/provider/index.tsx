@@ -24,7 +24,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       <SessionProvider>
         <main>
           <Toaster />
-          <div>{children}</div>
+          {children}
         </main>
       </SessionProvider>
     </StoreProvider>
