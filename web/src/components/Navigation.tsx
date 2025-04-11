@@ -81,13 +81,16 @@ const Navigation = ({ components }: NavigationProps) => {
             <NavigationMenuItem>
               {!component.child ? (
                 <Link href={component.href} legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  <NavigationMenuLink
+                    className={(navigationMenuTriggerStyle(), 'text-xl')}
+                  >
                     {component.title}
                   </NavigationMenuLink>
                 </Link>
               ) : (
                 <>
                   <NavigationMenuTrigger
+                    className="text-xl"
                     ref={(ref) => {
                       if (ref) {
                         triggerRef.current[index] = ref;
@@ -101,7 +104,9 @@ const Navigation = ({ components }: NavigationProps) => {
                       return (
                         <Link href={item.href} legacyBehavior passHref>
                           <NavigationMenuLink
-                            className={navigationMenuTriggerStyle()}
+                            className={
+                              (navigationMenuTriggerStyle(), 'text-xl')
+                            }
                           >
                             {item.title}
                           </NavigationMenuLink>
