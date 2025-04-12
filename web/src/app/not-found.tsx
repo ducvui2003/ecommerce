@@ -1,4 +1,3 @@
-import { AspectRatio } from '@/components/ui/aspect-ratio';
 import Image from 'next/image';
 import image from '/public/images/notfound.png';
 import { ALT, HOME_PAGE } from '@/constraint/variable';

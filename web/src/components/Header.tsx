@@ -3,15 +3,13 @@ import ClientIcon from '@/components/ClientIcon';
 import Logo from '@/components/Logo';
 import SearchBar from '@/components/SearchBar';
 import UserButton from '@/components/UserButton';
-import { getAccessToken } from '@/lib/http';
 
 const Header = async () => {
-  const accessToken = await getAccessToken();
   return (
-    <header className="container py-5 bg-white ">
-      <div className="flex justify-between items-center">
+    <header className="container bg-white py-5">
+      <div className="flex items-center justify-between">
         <Logo />
-        <SearchBar className="basis-1/2 " />
+        <SearchBar className="basis-1/2" />
         <div className="flex gap-16">
           <CartButton />
           <ClientIcon icon={'lucide:heart'} size={24} />

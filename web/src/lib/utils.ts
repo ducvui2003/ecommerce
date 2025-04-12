@@ -47,3 +47,12 @@ export const normalizePath = (path: string) => {
 export const uuid = (): string => {
   return uuidv4();
 };
+
+const VietNamDong = new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND',
+});
+
+export const currency = (currency: number): string => {
+  return VietNamDong.format(currency);
+};

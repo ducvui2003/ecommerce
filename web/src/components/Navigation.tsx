@@ -10,6 +10,7 @@ import {
   navigationMenuTriggerStyle,
   NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
+import { uuid } from '@/lib/utils';
 import React, { useEffect, useRef } from 'react';
 
 type NavigationLinkType = {
@@ -78,7 +79,7 @@ const Navigation = ({ components }: NavigationProps) => {
       <NavigationMenuList>
         {components.map((component, index) => {
           return (
-            <NavigationMenuItem>
+            <NavigationMenuItem key={uuid()}>
               {!component.child ? (
                 <Link href={component.href} legacyBehavior passHref>
                   <NavigationMenuLink
@@ -88,7 +89,7 @@ const Navigation = ({ components }: NavigationProps) => {
                   </NavigationMenuLink>
                 </Link>
               ) : (
-                <>
+                <React.Fragment key={uuid()}>
                   <NavigationMenuTrigger
                     className="text-xl"
                     ref={(ref) => {
@@ -114,7 +115,7 @@ const Navigation = ({ components }: NavigationProps) => {
                       );
                     })}
                   </NavigationMenuContent>
-                </>
+                </React.Fragment>
               )}
             </NavigationMenuItem>
           );

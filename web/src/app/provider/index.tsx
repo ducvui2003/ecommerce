@@ -22,7 +22,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
       <SessionProvider>
-        <main>
+        <main className="relative">
           <Toaster />
           {children}
         </main>
