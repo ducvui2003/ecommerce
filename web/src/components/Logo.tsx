@@ -4,7 +4,7 @@ import React from 'react';
 
 const Logo = () => {
   return (
-    <Link href="/" className="relative size-[100px] overflow-hidden">
+    <Link href="/" className="relative block size-[100px] overflow-hidden">
       <Image
         src="/images/logo.png"
         alt="logo"

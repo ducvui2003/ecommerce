@@ -71,7 +71,7 @@ body {
   }
 
   h2 {
-    @apply text-[30px] font-bold;
+    @apply text-[40px] font-bold;
   }
 
   h3 {

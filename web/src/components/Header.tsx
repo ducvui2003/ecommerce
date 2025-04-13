@@ -6,7 +6,7 @@ import UserButton from '@/components/UserButton';
 
 const Header = async () => {
   return (
-    <header className="container bg-white py-5">
+    <header className="container bg-white pt-5">
       <div className="flex items-center justify-between">
         <Logo />
         <SearchBar className="basis-1/2" />

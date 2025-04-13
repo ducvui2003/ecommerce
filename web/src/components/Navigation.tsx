@@ -46,16 +46,6 @@ export const components: NavigationType[] = [
   {
     title: 'Về chúng tôi',
     href: '/',
-    child: [
-      {
-        title: 'Tinh dầu',
-        href: '/',
-      },
-      {
-        title: 'Tinh dầu',
-        href: '/',
-      },
-    ],
   },
   {
     title: 'Tư vấn',
@@ -83,7 +73,9 @@ const Navigation = ({ components }: NavigationProps) => {
               {!component.child ? (
                 <Link href={component.href} legacyBehavior passHref>
                   <NavigationMenuLink
-                    className={(navigationMenuTriggerStyle(), 'text-xl')}
+                    className={
+                      (navigationMenuTriggerStyle(), 'px-4 py-2 text-xl')
+                    }
                   >
                     {component.title}
                   </NavigationMenuLink>
