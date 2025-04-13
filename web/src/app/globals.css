@@ -79,5 +79,5 @@ body {
   }
 }
 .container {
-  @apply px-16;
+  @apply mx-auto;
 }

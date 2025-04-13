@@ -6,7 +6,7 @@ import React from 'react';
 
 const CollectionSection = () => {
   return (
-    <section className="container h-screen overflow-hidden">
+    <section>
       <h2 className="text-center">Bộ sưu tập mới</h2>
       <p className="mx-auto w-1/2 pb-10 pt-3 text-center">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas
