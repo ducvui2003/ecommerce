@@ -50,6 +50,7 @@ const ReviewSection = () => {
         <div className="mx-auto flex w-fit gap-3 pb-2 pt-4">
           {Array.from({ length: count }).map((_, index) => (
             <span
+              key={index}
               className={cn(
                 'border-1 inline-block size-2.5 rounded-full',
                 current - 1 == index ? 'bg-[#FFC382]' : 'bg-[#D9D9D9]',

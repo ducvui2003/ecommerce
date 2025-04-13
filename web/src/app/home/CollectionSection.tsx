@@ -8,15 +8,15 @@ const CollectionSection = () => {
   return (
     <section className="container h-screen overflow-hidden">
       <h2 className="text-center">Bộ sưu tập mới</h2>
-      <p className="text-center w-1/2 mx-auto pb-10 pt-3">
+      <p className="mx-auto w-1/2 pb-10 pt-3 text-center">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas
         ut dolorum consequuntur, adipisci repellat! Eveniet commodi voluptatem
         voluptate, eum minima, in suscipit explicabo voluptatibus harum,
         quibusdam ex repellat eaque!
       </p>
-      <div className="flex justify-between ">
-        {products.map((item) => (
-          <Product {...item} container="w-[370px]" />
+      <div className="flex justify-between">
+        {products.map((item, index) => (
+          <Product {...item} key={index} container="w-[370px]" />
         ))}
       </div>
     </section>
@@ -55,7 +55,7 @@ const Product = ({
 }: ProductProps & { container?: string }) => {
   return (
     <article className={cn(container)}>
-      <AspectRatio ratio={3 / 2} className="rounded-3xl overflow-hidden ">
+      <AspectRatio ratio={3 / 2} className="overflow-hidden rounded-3xl">
         <Image
           src={thumbnail}
           alt={title}
@@ -63,7 +63,7 @@ const Product = ({
           className="w-full object-cover"
         />
       </AspectRatio>
-      <h3 className="pt-2 pb-4">{title}</h3>
+      <h3 className="pb-4 pt-2">{title}</h3>
       <p>{desc}</p>
       <div className="flex justify-end">
         <Button>Khám phá ngay</Button>

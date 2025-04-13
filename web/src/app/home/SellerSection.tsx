@@ -20,8 +20,8 @@ const SellerSection = () => {
         <h2 className="mx-5 text-yellow-400">Best Seller</h2>
       </div>
       <div className="mt-16 grid grid-cols-4 grid-rows-2 gap-28">
-        {data.map((item) => (
-          <ProductCard key={uuid()} {...item} />
+        {data.map((item, index) => (
+          <ProductCard key={index} {...item} />
         ))}
       </div>
       <Button className="mx-auto mt-16 block">Xem thêm</Button>

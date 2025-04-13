@@ -1,12 +1,12 @@
 import ClientIcon from '@/components/ClientIcon';
-import { cn } from '@/lib/utils';
+import { cn, uuid } from '@/lib/utils';
 import React from 'react';
 
 const FeatureSection = () => {
   return (
-    <div className="container flex gap-12 justify-between">
+    <div className="container flex justify-between gap-12">
       {data.map((item) => (
-        <Card {...item} />
+        <Card {...item} key={uuid()} />
       ))}
     </div>
   );
@@ -44,7 +44,7 @@ const Card = ({ title, description, icon, highlight = false }: CardProps) => {
   return (
     <article
       className={cn(
-        'flex flex-col justify-center text-center px-5 pt-8 pb-12 rounded-xl',
+        'flex flex-col justify-center rounded-xl px-5 pb-12 pt-8 text-center',
         highlight && 'bg-[#FFF5EA]',
       )}
     >
