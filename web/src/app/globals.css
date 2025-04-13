@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
 }
 
 @layer base {
@@ -69,4 +69,15 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  h2 {
+    @apply text-[40px] font-bold;
+  }
+
+  h3 {
+    @apply text-[20px] font-bold;
+  }
+}
+.container {
+  @apply px-16;
 }
