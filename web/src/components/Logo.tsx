@@ -4,15 +4,13 @@ import React from 'react';
 
 const Logo = () => {
   return (
-    <Link href="/">
-      <div className="relative size-[100px] overflow-hidden">
-        <Image
-          src="/images/logo.png"
-          alt="logo"
-          fill
-          className="scale-[1.75] object-contain"
-        />
-      </div>
+    <Link href="/" className="relative block size-[100px] overflow-hidden">
+      <Image
+        src="/images/logo.png"
+        alt="logo"
+        fill
+        className="object-contain"
+      />
     </Link>
   );
 };

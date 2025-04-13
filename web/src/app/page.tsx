@@ -1,14 +1,5 @@
-import React from 'react';
-import SelectAddress from '@/components/address/SelectAddress';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
+import HomePage from '@/app/home/page';
 
-export default function Home() {
-  return (
-    <>
-      <Header />
-      <SelectAddress />
-      <Footer />
-    </>
-  );
+export default function RootPage() {
+  return <HomePage />;
 }

@@ -1,33 +1,20 @@
-import Link from '@/components/Link';
+import CartButton from '@/components/CartButton';
+import ClientIcon from '@/components/ClientIcon';
 import Logo from '@/components/Logo';
-import LogoutButton from '@/components/LogoutButton';
-import ConditionalRenderer from '@/components/protected/ConditionalRenderer';
-import { Button } from '@/components/ui/button';
-import { getAccessToken } from '@/lib/http';
+import SearchBar from '@/components/SearchBar';
+import UserButton from '@/components/UserButton';
 
 const Header = async () => {
-  const accessToken = await getAccessToken();
   return (
-    <header className="columns-2 px-5 py-2 bg-pink-100 flex justify-between items-center">
-      <div className="flex">
+    <header className="container bg-white pt-5">
+      <div className="flex items-center justify-between">
         <Logo />
-        <div>
-          <p>0965809127</p>
-          <p>80/50, An Binh</p>
+        <SearchBar className="basis-1/2" />
+        <div className="flex gap-16">
+          <CartButton />
+          <ClientIcon icon={'lucide:heart'} size={24} />
+          <UserButton />
         </div>
-      </div>
-      <div className="flex justify-end">
-        <ConditionalRenderer
-          condition={accessToken == ''}
-          whenTrue={
-            <Link href={'/login'}>
-              <Button className="w-full" variant={'outline'}>
-                Đăng Nhập
-              </Button>
-            </Link>
-          }
-          whenFalse={<LogoutButton />}
-        />
       </div>
     </header>
   );
