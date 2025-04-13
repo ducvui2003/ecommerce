@@ -21,7 +21,7 @@ const HomePage = () => {
         </div>
       </div>
       <Banner />
-      <div className="mt-5">
+      <div className="container mt-5">
         <CollectionSection />
       </div>
       <div>
@@ -37,7 +37,9 @@ const HomePage = () => {
         <StorySection2 />
       </div>
       <div className="mt-10">
-        <ReviewSection />
+        <div className="container">
+          <ReviewSection />
+        </div>
       </div>
       <div className="mt-10">
         <VendorSection />
