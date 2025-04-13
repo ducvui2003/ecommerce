@@ -6,7 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AccessTokenGuard } from '@shared/guards/access-token.guard';
 import { APIKeyGuard } from '@shared/guards/api-key.guard';
 import { LoggingMiddleware } from '@shared/middlewares/logging.middleware';
-import { UserRepository } from '@shared/repositories/user.repository';
+import { SharedRoleRepository } from '@shared/repositories/shared-role.repository';
+import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
 import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
@@ -22,7 +23,7 @@ const sharedServices: Provider[] = [
   AccessTokenGuard,
   APIKeyGuard,
   LoggingMiddleware,
-  UserRepository,
+  SharedUserRepository,
   MailFactory,
   {
     provide: 'MAIL_REGISTER',
@@ -33,6 +34,7 @@ const sharedServices: Provider[] = [
     useClass: MailForgotPasswordService,
   },
   CacheService,
+  SharedRoleRepository,
 ];
 
 @Global()

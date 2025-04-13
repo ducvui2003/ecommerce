@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// npx prisma db push
+
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
@@ -87,11 +89,12 @@ enum OrderStatus {
 model User {
   id       Int        @id @default(autoincrement())
   email    String     @unique
-  name     String     @default("")
+  name     String?    @default("")
   password String     @db.VarChar(255)
-  phone    String     @default("")
-  avatar   String     @default("")
+  phone    String?    @default("")
+  avatar   String?    @default("")
   status   UserStatus @default(INACTIVE)
+  dob      DateTime?  @db.Date
 
   roleId Int  @map("role_id")
   Role   Role @relation(fields: [roleId], references: [id])
@@ -468,5 +471,3 @@ model Faq {
 
   @@map("faqs")
 }
-
-// npx prisma db push

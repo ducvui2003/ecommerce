@@ -46,5 +46,5 @@ export default async function middleware(
   return NextResponse.next();
 }
 export const config = {
-  matcher: routes,
+  matcher: ['/login', '/register', '/forgot-password'],
 };

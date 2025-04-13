@@ -3,6 +3,7 @@ import { EntityError } from '@/lib/http';
 import { clsx, type ClassValue } from 'clsx';
 import { UseFormSetError } from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
+import { v4 as uuidv4 } from 'uuid';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,7 +19,7 @@ export function handleErrorApi({
   duration?: number;
 }) {
   if (error instanceof EntityError && setError) {
-    const errors = error.payload.message as {
+    const errors = error.payload.error as {
       field: string;
       error: string;
     }[];
@@ -41,4 +42,17 @@ export function handleErrorApi({
 
 export const normalizePath = (path: string) => {
   return path.startsWith('/') ? path.slice(1) : path;
+};
+
+export const uuid = (): string => {
+  return uuidv4();
+};
+
+const VietNamDong = new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND',
+});
+
+export const currency = (currency: number): string => {
+  return VietNamDong.format(currency);
 };

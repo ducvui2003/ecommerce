@@ -40,12 +40,9 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
     }
   }, [loading]);
 
-  function onSubmit(email: string) {
-    if (!formOuter.getValues().email) {
-      formOuter.setError('email', {
-        type: 'manual',
-        message: 'Vui lòng không để trống',
-      });
+  async function onSubmit(email: string) {
+    const emailValid = await formOuter.trigger('email');
+    if (!emailValid) {
       return;
     }
     formOuter.clearErrors('email');

@@ -11,8 +11,6 @@ export interface AuthRepository {
     data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId'>,
   ): Promise<any>;
 
-  getRoleIdByRoleNameOrThrown: (roleName: string) => Promise<RoleType>;
-
   createVerificationCode(
     data: Pick<VerificationCodeType, 'email' | 'type' | 'code' | 'expiredAt'>,
   ): Promise<VerificationCodeType>;
@@ -54,12 +52,6 @@ export class PrismaAuthRepository implements AuthRepository {
       omit: {
         password: true,
       },
-    });
-  }
-
-  getRoleIdByRoleNameOrThrown(roleName: string): Promise<RoleType> {
-    return this.prismaService.role.findUniqueOrThrow({
-      where: { name: roleName },
     });
   }
 
