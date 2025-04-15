@@ -17,7 +17,7 @@ const SearchBar = ({
       <input
         type="text"
         placeholder="Tìm kiếm"
-        className="rounded-none !border-none !outline-none flex-1 py-4"
+        className="rounded-none border-none! outline-hidden! flex-1 py-4"
       />
       <ClientIcon icon={'lucide:search'} size={24} />
     </div>

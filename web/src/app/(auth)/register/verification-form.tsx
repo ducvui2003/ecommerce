@@ -9,17 +9,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
 import { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { toast } from 'sonner';
 type VerificationFormProps = {
   formOuter: UseFormReturn<any>;
 };
 
 const VerificationForm = ({ formOuter }: VerificationFormProps) => {
-  const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
 
@@ -59,8 +58,7 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
       })
       .finally(() => {
         setCountdown(5);
-        toast({
-          title: 'Gửi email xác thực thành công',
+        toast.success('Gửi email xác thực thành công', {
           description: 'Vui lòng kiểm tra email ',
         });
       });
@@ -82,7 +80,7 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
         )}
       />
       <FormLabel>Mã xác nhận</FormLabel>
-      <div className="flex gap-1 !mt-2">
+      <div className="mt-2! flex gap-1">
         <div className="flex-1">
           <FormField
             control={formOuter.control}
