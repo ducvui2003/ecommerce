@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import { toast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
 import {
@@ -36,6 +35,7 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const ForgotPasswordForm = () => {
   const router = useRouter();
@@ -56,20 +56,12 @@ const ForgotPasswordForm = () => {
     try {
       const res = await authService.resetPassword(values);
       if (res.status === HTTP_STATUS_CODE.SUCCESS) {
-        toast({
-          title: 'Thay đổi mật khẩu thành công',
-          description: (
-            <>
-              <p>Vui lòng đăng nhâp lại.</p>
-              <button
-                onClick={() => router.push('/login')}
-                className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Đăng nhập
-              </button>
-            </>
-          ),
-          variant: 'default',
+        toast.success('Thay đổi mật khẩu thành công', {
+          description: 'Vui lòng đăng nhâp lại.',
+          action: {
+            label: ' Đăng nhập',
+            onClick: () => router.push('/login'),
+          },
         });
         form.reset();
         setOpenDialogAlert(false);

@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import { toast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
 import {
@@ -21,6 +20,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -41,20 +41,12 @@ const RegisterForm = () => {
     try {
       const res = await authService.register(values);
       if (res.status === HTTP_STATUS_CODE.SUCCESS) {
-        toast({
-          title: 'Đăng ký thành công',
-          description: (
-            <>
-              <p>You have logged in successfully.</p>
-              <button
-                onClick={() => router.push('/login')}
-                className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Go to Dashboard
-              </button>
-            </>
-          ),
-          variant: 'default',
+        toast.success('Đăng ký thành công', {
+          description: 'You have logged in successfully.',
+          action: {
+            label: 'Go to Dashboard',
+            onClick: () => router.push('/login'),
+          },
         });
       }
     } catch (err: any) {
