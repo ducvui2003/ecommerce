@@ -11,11 +11,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { useToast } from '@/hooks/use-toast';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
 import { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { toast } from 'sonner';
 type VerificationFormProps = {
   formOuter: UseFormReturn<any>;
   setOpenDialog: () => void;
@@ -25,7 +25,6 @@ const VerificationForm = ({
   formOuter,
   setOpenDialog,
 }: VerificationFormProps) => {
-  const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
 
@@ -71,8 +70,7 @@ const VerificationForm = ({
       })
       .finally(() => {
         setCountdown(5);
-        toast({
-          title: 'Gửi email tạo lại mật khẩu thành công',
+        toast.warning('Gửi email tạo lại mật khẩu thành công', {
           description: 'Vui lòng kiểm tra email ',
         });
       });
@@ -98,7 +96,7 @@ const VerificationForm = ({
         <Button
           loading={loading}
           type="button"
-          className="w-full mt-4"
+          className="mt-4 w-full"
           onClick={() => onSubmit(formOuter.getValues().email)}
         >
           Lấy lại mật khẩu

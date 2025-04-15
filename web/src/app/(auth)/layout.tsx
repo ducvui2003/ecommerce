@@ -20,7 +20,7 @@ const AuthLayout = ({
         </Link>
       </div>
 
-      <div className="grow-[1] ">
+      <div className="grow-1 ">
         <Image src="/images/bg_auth.jpeg" alt="" fill />
       </div>
     </div>

@@ -118,7 +118,7 @@ const ForgotPasswordForm = () => {
                       <InputOTP
                         {...field}
                         maxLength={6}
-                        containerClassName="justify-center !mt-4"
+                        containerClassName="justify-center mt-4!"
                       >
                         <InputOTPGroup>
                           <InputOTPSlot index={0} />

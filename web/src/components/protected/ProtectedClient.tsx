@@ -2,7 +2,7 @@
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
-type Mode = 'hide' | 'disable' | 'blur' | 'none';
+type Mode = 'hide' | 'disable' | 'blur-sm' | 'none';
 
 const ProtectedClient = ({
   children,
@@ -21,8 +21,8 @@ const ProtectedClient = ({
         return null; // Completely remove element
       case 'disable':
         return <div className="opacity-50 pointer-events-none">{children}</div>; // Disable element
-      case 'blur':
-        return <div className="filter blur-sm">{children}</div>; // Blur effect
+      case 'blur-sm':
+        return <div className="filter blur-xs">{children}</div>; // Blur effect
       case 'none':
       default:
         return <>{children}</>;

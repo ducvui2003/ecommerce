@@ -82,7 +82,7 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
         )}
       />
       <FormLabel>Mã xác nhận</FormLabel>
-      <div className="flex gap-1 !mt-2">
+      <div className="flex gap-1 mt-2!">
         <div className="flex-1">
           <FormField
             control={formOuter.control}
