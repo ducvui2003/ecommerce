@@ -11,7 +11,7 @@ export default {
   theme: {
     extend: {
       container: {
-        padding: '1rem', // 1rem = 16px
+        padding: '4rem', // 1rem = 16px
         screens: {
           sm: '640px',
           md: '768px',
