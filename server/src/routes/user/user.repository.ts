@@ -8,7 +8,6 @@ export interface UserRepository {
 
   updateInfo(id: number, info: InfoUpdate): Promise<InfoAllow>;
 
-  findById(id: number): Promise<UserType | null>;
 }
 
 @Injectable()
@@ -49,12 +48,4 @@ export class PrismaUserRepository implements UserRepository {
       role: Role.name,
     };
   }
-
-    async findById(id: number): Promise<UserType | null> {
-        return this.prismaService.user.findUnique({
-        where: {
-            id: id,
-        },
-        });
-    }
 }

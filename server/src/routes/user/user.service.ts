@@ -35,12 +35,8 @@ export class UserService {
       throw error;
     }
   }
-
-  async findById(id: number): Promise<UserType> {
-    const user = await this.userRepository.findById(id);
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-    return user;
+  // test exception
+   findById(id: number): Promise<UserType> {
+       throw new UserNotFoundException();
   }
 }
