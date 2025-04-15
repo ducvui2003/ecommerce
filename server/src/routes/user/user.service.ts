@@ -2,6 +2,8 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UserInfoBodyReq } from '@route/user/user.dto';
 import { UserRepository } from '@route/user/user.repository';
 import { isNotFoundError } from '@shared/helper.shared';
+import { UserNotFoundException } from '@shared/exceptions/user.exception';
+import {UserType} from "@shared/models/user.model";
 
 @Injectable()
 export class UserService {
@@ -32,5 +34,13 @@ export class UserService {
 
       throw error;
     }
+  }
+
+  async findById(id: number): Promise<UserType> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    return user;
   }
 }
