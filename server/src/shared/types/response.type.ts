@@ -7,8 +7,9 @@ export type Response = {
 export type ResponseError = {
   statusCode: number;
   error: string;
-  message: string;
+  message: string | string[];
   timestamp: Date;
+  path?: string;
 };
 
 export type ResponseValidationError = Omit<ResponseError, 'error'> & {
