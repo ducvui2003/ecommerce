@@ -38,11 +38,4 @@ export class UserController {
   ): Promise<InfoAllow> {
     return this.userService.updateInfo(id, body);
   }
-
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  async findById(@Param('id', ParseIntPipe) id: number): Promise<UserType> {
-    return this.userService.findById(id);
-  }
-
 }

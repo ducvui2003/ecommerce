@@ -35,8 +35,4 @@ export class UserService {
       throw error;
     }
   }
-  // test exception
-   findById(id: number): Promise<UserType> {
-       throw new UserNotFoundException();
-  }
 }
