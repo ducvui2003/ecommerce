@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { EntityError } from '@/lib/http';
 import { handleErrorApi } from '@/lib/utils';
-import { LoginBodyReq, LoginBodyReqType } from '@/types/schema/auth.schema';
+import { LoginFormSchema, LoginFormType } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -23,15 +23,15 @@ const LoginForm = () => {
   const router = useRouter();
 
   // 1. Define your form.
-  const form = useForm<LoginBodyReqType>({
-    resolver: zodResolver(LoginBodyReq),
+  const form = useForm<LoginFormType>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       email: '',
     },
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: LoginBodyReqType) {
+  async function onSubmit(values: LoginFormType) {
     try {
       const response = await signIn('credentials', {
         email: values.email,
@@ -110,12 +110,12 @@ const LoginForm = () => {
               </FormControl>
 
               <FormMessage />
-              <span className="block text-right ">
+              <span className="block text-right">
                 <Link
                   href={'/forgot-password'}
-                  className="hover:underline hover:text-pink-800 text-sm"
+                  className="hover:text-accent text-sm hover:underline"
                 >
-                  Quên mật khẩu{' '}
+                  Quên mật khẩu
                 </Link>
               </span>
             </FormItem>

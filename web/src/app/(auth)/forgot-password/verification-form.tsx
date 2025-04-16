@@ -1,4 +1,5 @@
 'use client';
+import ClientIcon from '@/components/ClientIcon';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -6,28 +7,48 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
+import {
+  VerifyForgetPasswordFormSchema,
+  VerifyForgetPasswordFormType,
+} from '@/types/schema/auth.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { useEffect, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+
 type VerificationFormProps = {
-  formOuter: UseFormReturn<any>;
-  setOpenDialog: () => void;
+  data: {
+    email: string;
+  };
+  onUpdate: (data: { otp: string }) => void;
+  onNextStep: () => void;
 };
 
 const VerificationForm = ({
-  formOuter,
-  setOpenDialog,
+  data,
+  onNextStep,
+  onUpdate,
 }: VerificationFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
-
+  // 1. Define your form.
+  const form = useForm<VerifyForgetPasswordFormType>({
+    resolver: zodResolver(VerifyForgetPasswordFormSchema),
+    defaultValues: {
+      otp: '',
+    },
+  });
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -45,27 +66,21 @@ const VerificationForm = ({
     }
   }, [loading]);
 
-  function onSubmit(email: string) {
-    if (!formOuter.getValues().email) {
-      formOuter.setError('email', {
-        type: 'manual',
-        message: 'Vui lòng không để trống',
-      });
-      return;
-    }
-    formOuter.clearErrors('email');
-    setLoading(true);
+  function onSubmit(values: VerifyForgetPasswordFormType) {
     authService
-      .sendOTPForgetPassword({
-        email: email,
+      .verifyOTPForgetPassword({
+        email: data.email,
+        otp: values.otp,
       })
       .then(() => {
-        setOpenDialog();
+        console.log('Set');
+        onUpdate({ otp: values.otp });
+        onNextStep();
       })
       .catch((error) => {
         handleErrorApi({
           error: error,
-          setError: formOuter.setError,
+          setError: form.setError,
         });
       })
       .finally(() => {
@@ -77,32 +92,45 @@ const VerificationForm = ({
   }
 
   return (
-    <>
-      <Form {...formOuter}>
-        <FormField
-          control={formOuter.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button
-          loading={loading}
-          type="button"
-          className="mt-4 w-full"
-          onClick={() => onSubmit(formOuter.getValues().email)}
-        >
-          Lấy lại mật khẩu
-        </Button>
+    <div>
+      <span className="bg-secondary mx-auto flex size-[80px] items-center justify-center rounded-full">
+        <ClientIcon icon={'tabler:lock'} size={40} />
+      </span>
+      <h1 className="mt-8 text-center text-3xl font-bold">Nhập Mã OTP</h1>
+      <p className="foreground text-foreground mt-2 text-center text-sm">
+        Vui lòng kiểm tra email để nhập mã OTP
+      </p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10">
+          <FormField
+            control={form.control}
+            name="otp"
+            render={({ field }) => (
+              <FormItem className="gap-8">
+                <FormControl>
+                  <InputOTP
+                    maxLength={6}
+                    {...field}
+                    pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                  >
+                    <InputOTPGroup className="gap-5">
+                      <InputOTPSlot index={0} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={1} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={2} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={3} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={4} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={5} className="size-12 !rounded-xl" />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+                <FormMessage className="text-center" />
+              </FormItem>
+            )}
+          />
+          <Button className="mx-auto mt-8! flex gap-1">Gửi mã OTP</Button>
+        </form>
       </Form>
-    </>
+    </div>
   );
 };
 

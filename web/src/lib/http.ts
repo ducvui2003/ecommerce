@@ -82,27 +82,15 @@ const request = async <Response>(
     ? `${baseUrl}${url} `
     : `${baseUrl}/${url}`;
 
-  let res;
-  if (typeof window !== 'undefined')
-    res = await logging(fullUrl, {
-      ...options,
-      headers: {
-        ...baseHeaders,
-        ...options?.headers,
-      },
-      body,
-      method,
-    });
-  else
-    res = await fetch(fullUrl, {
-      ...options,
-      headers: {
-        ...baseHeaders,
-        ...options?.headers,
-      },
-      body,
-      method,
-    });
+  const res = await fetch(fullUrl, {
+    ...options,
+    headers: {
+      ...baseHeaders,
+      ...options?.headers,
+    },
+    body,
+    method,
+  });
 
   const payload: Response = await res.json();
   const data = {

@@ -93,14 +93,30 @@ export class AuthService {
     }
   }
 
-  async sendOTP(data: SendOTPBodyDTO, strictEmail: boolean = false) {
-    if (strictEmail) {
-      // 1. Kiểm tra email có tồn tại chưa?
-      const userExist = await this.userRepository.findUnique({
-        email: data.email,
-      });
-      if (!userExist) {
-        throw EmailNotExistException;
+  async sendOTP(
+    data: SendOTPBodyDTO,
+    strictEmail: 'exist' | 'not-exist' | 'none' = 'none',
+  ) {
+    switch (strictEmail) {
+      case 'exist': {
+        // 1. Kiểm tra email có tồn tại chưa?
+        const userExist = await this.userRepository.findUnique({
+          email: data.email,
+        });
+        if (!userExist) {
+          throw EmailNotExistException;
+        }
+        break;
+      }
+      case 'not-exist': {
+        // 1. Kiểm tra email có ko tồn tại chưa?
+        const userExist = await this.userRepository.findUnique({
+          email: data.email,
+        });
+        if (userExist) {
+          throw EmailExistException;
+        }
+        break;
       }
     }
 

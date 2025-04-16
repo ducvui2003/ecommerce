@@ -17,16 +17,20 @@ const UserButton = () => {
         <ClientIcon
           icon={'lucide:user'}
           size={24}
-          className="hover:cursor-pointer hover:opacity-50 transition-opacity"
+          className="transition-opacity hover:cursor-pointer hover:opacity-50"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
         <DropdownMenuCheckboxItem>
-          <Link href={'/login'}>Đăng nhập</Link>
+          <Link href={'/login'} className="w-full">
+            Đăng nhập
+          </Link>
         </DropdownMenuCheckboxItem>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem>
-          <Link href={'/register'}>Đăng ký</Link>
+          <Link href={'/register'} className="w-full">
+            Đăng ký
+          </Link>
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

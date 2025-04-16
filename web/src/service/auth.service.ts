@@ -1,20 +1,28 @@
 import envConfig from '@/config/env.config';
-import http from '@/lib/http';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
+import http, { EntityError } from '@/lib/http';
 import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
-import { LoginResType, RefreshTokenResType } from '@/types/auth.type';
 import {
-  ForgotPasswordType,
-  LoginBodyReqType,
-  RegisterBodyReqType,
-  RegisterResType,
-  SendOTPReqType,
-  SendOTPResType,
+  LoginReqType,
+  LoginResType,
+  OTPReqType,
+  OTPResType,
+  RefreshTokenResType,
+  RegisterReqType,
+  ResetPasswordReqType,
+  VerifyOTPReqType,
+} from '@/types/auth.type';
+import {
+  ForgotPasswordFormType,
+  LoginFormType,
+  RegisterFormType,
+  SendOTPFormType,
 } from '@/types/schema/auth.schema';
 import { User } from 'next-auth';
 
 const authService = {
-  login: async (data: LoginBodyReqType): Promise<User> => {
+  login: async (data: LoginReqType): Promise<User> => {
     try {
       const res = await http.post<ResponseApi<LoginResType>>(
         '/api/v1/auth/login',
@@ -35,19 +43,37 @@ const authService = {
     }
   },
 
-  register: (data: RegisterBodyReqType) => {
-    const { 'confirm-password': _, ...dataAfter } = data;
-    return http.post<ResponseApi<RegisterResType>>(
+  register: (data: RegisterReqType) => {
+    return http.post<ResponseApi<RegisterFormType>>(
       '/api/v1/auth/register',
-      dataAfter,
+      data,
     );
   },
 
-  sendOTPVerify: (data: SendOTPReqType): Promise<any> => {
-    return http.post<ResponseApi<SendOTPResType>>('/api/v1/auth/send-otp', {
-      email: data.email,
-      type: 'REGISTER',
-    });
+  sendOTPVerify: async (data: OTPReqType): Promise<OTPResType> => {
+    try {
+      const response = await http.post<ResponseApi<OTPResType>>(
+        '/api/v1/auth/send-otp',
+        {
+          email: data.email,
+          type: 'REGISTER',
+        },
+      );
+      return response.payload.data;
+    } catch (_) {
+      throw new EntityError({
+        status: HTTP_STATUS_CODE.UNAUTHORIZED,
+        payload: {
+          message: '',
+          error: [
+            {
+              field: 'email',
+              error: 'Email này đã tồn tại',
+            },
+          ],
+        },
+      });
+    }
   },
 
   renewToken: async (refreshToken: string): Promise<User> => {
@@ -99,11 +125,11 @@ const authService = {
     }
   },
 
-  sendOTPForgetPassword: (data: SendOTPReqType): Promise<any> => {
-    return http.post<ResponseApi<SendOTPResType>>(
+  sendOTPForgetPassword: (email: string): Promise<any> => {
+    return http.post<ResponseApi<void>>(
       '/api/v1/auth/send-otp',
       {
-        email: data.email,
+        email: email,
         type: 'FORGOT_PASSWORD',
       },
       undefined,
@@ -111,7 +137,20 @@ const authService = {
     );
   },
 
-  resetPassword: (data: ForgotPasswordType) => {
+  verifyOTPForgetPassword: (data: VerifyOTPReqType) => {
+    return http.post<ResponseApi<void>>(
+      '/api/v1/auth/verify-otp',
+      {
+        email: data.email,
+        type: 'FORGOT_PASSWORD',
+        otp: data.otp,
+      },
+      undefined,
+      false,
+    );
+  },
+
+  resetPassword: (data: ResetPasswordReqType) => {
     return http.post<ResponseApi<void>>(
       '/api/v1/auth/forget-password',
       {

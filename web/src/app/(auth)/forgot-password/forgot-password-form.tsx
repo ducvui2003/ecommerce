@@ -4,175 +4,96 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
 import {
-  ForgotPasswordReq,
-  ForgotPasswordType,
+  ForgotPasswordFormSchema,
+  ForgotPasswordFormType,
 } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import {
-  Dialog,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/ui/input-otp';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import Logo from '@/components/Logo';
 
-const ForgotPasswordForm = () => {
-  const router = useRouter();
-  const [openDialogAlert, setOpenDialogAlert] = useState<boolean>(false);
+type ForgotPasswordFormProps = {
+  onUpdate: (data: { email: string }) => void;
+  onNextStep: () => void;
+};
+
+const ForgotPasswordForm = ({
+  onUpdate,
+  onNextStep,
+}: ForgotPasswordFormProps) => {
   // 1. Define your form.
-  const form = useForm<ForgotPasswordType>({
-    resolver: zodResolver(ForgotPasswordReq),
+  const form = useForm<ForgotPasswordFormType>({
+    resolver: zodResolver(ForgotPasswordFormSchema),
     defaultValues: {
       email: '',
-      otp: '',
-      password: '',
-      'confirm-password': '',
     },
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: ForgotPasswordType) {
-    try {
-      const res = await authService.resetPassword(values);
-      if (res.status === HTTP_STATUS_CODE.SUCCESS) {
-        toast.success('Thay đổi mật khẩu thành công', {
-          description: 'Vui lòng đăng nhâp lại.',
-          action: {
-            label: ' Đăng nhập',
-            onClick: () => router.push('/login'),
-          },
+  function onSubmit(value: ForgotPasswordFormType) {
+    authService
+      .sendOTPForgetPassword(value.email)
+      .then(() => {
+        onUpdate({ email: value.email });
+        onNextStep();
+      })
+      .catch((error) => {
+        handleErrorApi({
+          error: error,
+          setError: form.setError,
         });
-        form.reset();
-        setOpenDialogAlert(false);
-      }
-    } catch (err: any) {
-      handleErrorApi({
-        error: err,
-        setError: form.setError,
+      })
+      .finally(() => {
+        toast.warning('Gửi email tạo lại mật khẩu thành công', {
+          description: 'Vui lòng kiểm tra email ',
+        });
       });
-    }
   }
 
   return (
     <>
-      <VerificationForm
-        formOuter={form}
-        setOpenDialog={() => {
-          form.reset({
-            otp: '',
-            password: '',
-            'confirm-password': '',
-          });
-          setOpenDialogAlert(true);
-        }}
-      />
-      <Form {...form}>
-        <Dialog
-          open={openDialogAlert}
-          onOpenChange={(value) => setOpenDialogAlert(value)}
-        >
-          <DialogContent>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <DialogHeader>
-                <DialogTitle>Vui lòng nhập mã OTP</DialogTitle>
-                <DialogDescription>
-                  Kiểm tra email và nhập mã OTP
-                </DialogDescription>
-              </DialogHeader>
-              <FormField
-                control={form.control}
-                name="otp"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>OTP</FormLabel>
-                    <FormControl>
-                      <InputOTP
-                        {...field}
-                        maxLength={6}
-                        containerClassName="justify-center mt-4!"
-                      >
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                        </InputOTPGroup>
-                        <InputOTPGroup>
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                          <InputOTPSlot index={5} />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </FormControl>
-                    <FormDescription>
-                      Vui lòng nhập OTP từ email của bạn
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Vui lòng không để trống"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirm-password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Vui lòng không để trống"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit">Xác thực</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </Form>
+      <div className="mx-auto">
+        <Logo />
+      </div>
+      <div className="mt-2">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Vui lòng không để trống" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+              type="submit"
+            >
+              {form.formState.isSubmitting && (
+                <span className="spinner-border spinner-border-sm mr-1"></span>
+              )}
+              Gửi OTP
+            </Button>
+          </form>
+        </Form>
+      </div>
     </>
   );
 };
