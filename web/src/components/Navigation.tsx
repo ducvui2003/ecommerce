@@ -60,10 +60,10 @@ type NavigationProps = {
 const Navigation = ({ components }: NavigationProps) => {
   const triggerRef = useRef<HTMLButtonElement[]>([]);
   const viewPortRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    console.log('viewPortRef', viewPortRef.current);
-    console.log('navRefs', triggerRef.current);
-  }, [triggerRef.current, viewPortRef.current]);
+  // useEffect(() => {
+  //   console.log('viewPortRef', viewPortRef.current);
+  //   console.log('navRefs', triggerRef.current);
+  // }, [triggerRef.current, viewPortRef.current]);
   return (
     <NavigationMenu className="mx-auto">
       <NavigationMenuList>

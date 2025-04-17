@@ -1,8 +1,12 @@
 // <namespace>:<entity>:<id>:<attribute>
 
+import { VerificationType } from '@prisma/client';
+import { VerificationCodeType } from '@shared/models/verification-code.model';
+
 const NAMESPACE_REFRESH_TOKEN = 'refresh_token:user';
 export const NAMESPACE_ADDRESS = 'address';
 export const KEY_CARRIER = 'carrier';
+const NAMESPACE_VERIFICATION_CODE = 'verification_code';
 
 export function keyRefreshToken(userId: number | string, jti: string): string {
   return `${NAMESPACE_REFRESH_TOKEN}:${userId}:${jti}`;
@@ -17,6 +21,10 @@ export function keyAddress(
   parentId: string | number | null,
 ): string {
   return createNamespaces(NAMESPACE_ADDRESS, parentId, type) as string;
+}
+
+export function keyVerificationCode(email: string, type: VerificationType) {
+  return createNamespaces(NAMESPACE_VERIFICATION_CODE, type, email) as string;
 }
 
 export function createNamespaces(...values: unknown[]): string | null {

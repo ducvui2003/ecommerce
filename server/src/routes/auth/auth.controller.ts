@@ -3,7 +3,9 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -21,6 +23,7 @@ import {
   RefreshReqDTO,
   RegisterReqDTO,
   SendOTPBodyDTO,
+  VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthService } from '@route/auth/auth.service';
 
@@ -40,12 +43,18 @@ export class AuthController {
   async sendOTP(@Body() body: SendOTPBodyDTO) {
     let res;
     if (body.type === 'REGISTER') {
-      res = await this.authService.sendOTP(body);
+      res = await this.authService.sendOTP(body, 'not-exist');
     }
     if (body.type === 'FORGOT_PASSWORD') {
-      res = await this.authService.sendOTP(body, true);
+      res = await this.authService.sendOTP(body, 'exist');
     }
     return res;
+  }
+
+  @Post('verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyOTP(@Body() body: VerifyOTPBodyDTO) {
+    await this.authService.verifyOTP(body);
   }
 
   @Post('login')

@@ -1,4 +1,5 @@
 'use client';
+import ClientIcon from '@/components/ClientIcon';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -6,27 +7,48 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
+import {
+  VerifyForgetPasswordFormSchema,
+  VerifyForgetPasswordFormType,
+} from '@/types/schema/auth.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { useEffect, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+
 type VerificationFormProps = {
-  formOuter: UseFormReturn<any>;
-  setOpenDialog: () => void;
+  data: {
+    email: string;
+  };
+  onUpdate: (data: { otp: string }) => void;
+  onNextStep: () => void;
 };
 
 const VerificationForm = ({
-  formOuter,
-  setOpenDialog,
+  data,
+  onNextStep,
+  onUpdate,
 }: VerificationFormProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
+  // 1. Define your form.
+  const form = useForm<VerifyForgetPasswordFormType>({
+    resolver: zodResolver(VerifyForgetPasswordFormSchema),
+    defaultValues: {
+      otp: '',
+    },
+  });
+  const { isSubmitting } = form.formState;
 
   useEffect(() => {
     if (countdown > 0) {
@@ -35,74 +57,76 @@ const VerificationForm = ({
     }
   }, [countdown]);
 
-  useEffect(() => {
-    if (loading) {
-      const timer = setTimeout(() => {
-        setLoading(false);
-        console.log('Stopped loading after 5 minutes');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
-
-  function onSubmit(email: string) {
-    if (!formOuter.getValues().email) {
-      formOuter.setError('email', {
-        type: 'manual',
-        message: 'Vui lòng không để trống',
-      });
-      return;
-    }
-    formOuter.clearErrors('email');
-    setLoading(true);
-    authService
-      .sendOTPForgetPassword({
-        email: email,
+  function onSubmit(values: VerifyForgetPasswordFormType) {
+    return authService
+      .verifyOTPForgetPassword({
+        email: data.email,
+        otp: values.otp,
       })
       .then(() => {
-        setOpenDialog();
+        onUpdate({ otp: values.otp });
+        onNextStep();
       })
       .catch((error) => {
         handleErrorApi({
           error: error,
-          setError: formOuter.setError,
+          setError: form.setError,
+        });
+        toast.warning('Gửi email tạo lại mật khẩu thành công', {
+          description: 'Vui lòng kiểm tra email ',
         });
       })
       .finally(() => {
         setCountdown(5);
-        toast.warning('Gửi email tạo lại mật khẩu thành công', {
-          description: 'Vui lòng kiểm tra email ',
-        });
       });
   }
 
   return (
-    <>
-      <Form {...formOuter}>
-        <FormField
-          control={formOuter.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button
-          loading={loading}
-          type="button"
-          className="mt-4 w-full"
-          onClick={() => onSubmit(formOuter.getValues().email)}
-        >
-          Lấy lại mật khẩu
-        </Button>
+    <div>
+      <span className="bg-secondary mx-auto flex size-[80px] items-center justify-center rounded-full">
+        <ClientIcon icon={'tabler:lock'} size={40} />
+      </span>
+      <h1 className="mt-8 text-center text-3xl font-bold">Nhập Mã OTP</h1>
+      <p className="foreground text-foreground mt-2 text-center text-sm">
+        Vui lòng kiểm tra email để nhập mã OTP
+      </p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10">
+          <FormField
+            control={form.control}
+            name="otp"
+            render={({ field }) => (
+              <FormItem className="gap-8">
+                <FormControl>
+                  <InputOTP
+                    maxLength={6}
+                    {...field}
+                    pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                  >
+                    <InputOTPGroup className="gap-5">
+                      <InputOTPSlot index={0} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={1} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={2} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={3} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={4} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={5} className="size-12 !rounded-xl" />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+                <FormMessage className="text-center" />
+              </FormItem>
+            )}
+          />
+          <Button
+            className="mx-auto mt-8! flex gap-1"
+            loading={isSubmitting}
+            disabled={isSubmitting}
+          >
+            Xác nhận
+          </Button>
+        </form>
       </Form>
-    </>
+    </div>
   );
 };
 

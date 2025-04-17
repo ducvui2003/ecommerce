@@ -1,7 +1,8 @@
 import ClientIcon from '@/components/ClientIcon';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import Logo from '@/components/Logo';
+import { HOME_PAGE } from '@/constraint/variable';
 
 const AuthLayout = ({
   children,
@@ -9,19 +10,15 @@ const AuthLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="w-screen h-screen flex">
-      <div className="relative flex-1 z-20 bg-pink-100 h-screen overflow-y-scroll scrollbar-hide">
-        <article className="flex flex-col gap-4 w-3/4 mx-auto my-28">
-          <h1 className="text-3xl">Welcome to my website</h1>
+    <div className="relative flex h-screen w-screen">
+      <div className="absolute inset-0 bg-[url(/images/bg_auth.png)] bg-cover bg-center bg-no-repeat blur-sm"></div>
+      <div className="scrollbar-hide absolute top-1/2 left-1/2 min-w-2/7 -translate-1/2 overflow-y-scroll">
+        <article className="flex flex-col gap-4 rounded-xl bg-white px-5 py-2.5">
           {children}
         </article>
-        <Link href={'/'} className="absolute top-5 left-5">
+        {/* <Link href={HOME_PAGE} className="top-5 left-5">
           <ClientIcon icon={'material-symbols-light:home-rounded'} size={24} />
-        </Link>
-      </div>
-
-      <div className="grow-1 ">
-        <Image src="/images/bg_auth.jpeg" alt="" fill />
+        </Link> */}
       </div>
     </div>
   );
