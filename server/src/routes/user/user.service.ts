@@ -2,6 +2,8 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UserInfoBodyReq } from '@route/user/user.dto';
 import { UserRepository } from '@route/user/user.repository';
 import { isNotFoundError } from '@shared/helper.shared';
+import { UserNotFoundException } from '@shared/exceptions/user.exception';
+import {UserType} from "@shared/models/user.model";
 
 @Injectable()
 export class UserService {

@@ -7,6 +7,7 @@ export interface UserRepository {
   getInfo(id: number): Promise<InfoAllow>;
 
   updateInfo(id: number, info: InfoUpdate): Promise<InfoAllow>;
+
 }
 
 @Injectable()
