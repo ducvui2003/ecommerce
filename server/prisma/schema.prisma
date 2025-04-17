@@ -125,23 +125,6 @@ model Role {
   @@map("roles")
 }
 
-model VerificationCode {
-  id        Int              @id @default(autoincrement())
-  email     String           @unique
-  type      VerificationType
-  code      String
-  expiredAt DateTime         @map("expired_at")
-  createdAt DateTime         @default(now()) @map("created_at")
-
-  @@index([id, email, type])
-  @@map("verification_codes")
-}
-
-enum VerificationType {
-  REGISTER
-  FORGOT_PASSWORD
-}
-
 model Address {
   id       Int    @id @default(autoincrement())
   detail   String
