@@ -9,7 +9,7 @@ type CustomOptions = RequestInit & {
 export class HttpError extends Error {
   status: number;
   payload: {
-    message: string;
+    error: string;
     [key: string]: any;
   };
   constructor({ status, payload }: { status: number; payload?: any }) {
@@ -20,8 +20,8 @@ export class HttpError extends Error {
 }
 
 type EntityErrorPayload = {
-  message: string;
-  error: { field: string; error: string }[];
+  error: string;
+  message: { field: string; error: string }[];
 };
 
 export class EntityError extends HttpError {
@@ -99,14 +99,19 @@ const request = async <Response>(
   };
 
   if (!res.ok) {
-    if (res.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE)
-      throw new EntityError(
-        data as {
-          status: 422;
-          payload: EntityErrorPayload;
+    if (res.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
+      console.log({
+        status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
+        payload: data.payload,
+      });
+      throw new EntityError({
+        status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
+        payload: {
+          message: data.payload.message,
+          error: data.payload.error,
         },
-      );
-    else {
+      });
+    } else {
       throw new HttpError(data);
     }
   }

@@ -30,54 +30,58 @@ const LoginForm = () => {
     },
   });
 
+  const { isSubmitting } = form.formState;
+
   // 2. Define a submit handler.
-  async function onSubmit(values: LoginFormType) {
-    try {
-      const response = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
-      if (
-        response?.error === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
-      ) {
-        // Đóng gói error để trả error trên form thay vì toast message error
-        throw new EntityError({
-          status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
-          payload: {
-            message: '',
-            error: [
-              {
-                field: 'password',
-                error: 'Email hoặc mật khẩu không đúng',
-              },
-            ],
-          },
+  function onSubmit(values: LoginFormType) {
+    return signIn('credentials', {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    })
+      .then((response) => {
+        if (
+          response?.error ===
+          HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
+        ) {
+          // Đóng gói error để trả error trên form thay vì toast message error
+          throw new EntityError({
+            status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
+            payload: {
+              error: '',
+              message: [
+                {
+                  field: 'password',
+                  error: 'Email hoặc mật khẩu không đúng',
+                },
+              ],
+            },
+          });
+        }
+        if (response?.error === HTTP_STATUS_CODE.UNAUTHORIZED.toString()) {
+          // Đóng gói error để trả error trên form thay vì toast message error
+          throw new EntityError({
+            status: HTTP_STATUS_CODE.UNAUTHORIZED,
+            payload: {
+              error: '',
+              message: [
+                {
+                  field: 'email',
+                  error:
+                    'Tài khoản với email này chưa tồn tại, vui lòng thực hiện đăng ký',
+                },
+              ],
+            },
+          });
+        }
+        router.push('/');
+      })
+      .catch((error) => {
+        handleErrorApi({
+          error: error,
+          setError: form.setError,
         });
-      }
-      if (response?.error === HTTP_STATUS_CODE.UNAUTHORIZED.toString()) {
-        // Đóng gói error để trả error trên form thay vì toast message error
-        throw new EntityError({
-          status: HTTP_STATUS_CODE.UNAUTHORIZED,
-          payload: {
-            message: '',
-            error: [
-              {
-                field: 'email',
-                error:
-                  'Tài khoản với email này chưa tồn tại, vui lòng thực hiện đăng ký',
-              },
-            ],
-          },
-        });
-      }
-      router.push('/');
-    } catch (err) {
-      handleErrorApi({
-        error: err,
-        setError: form.setError,
       });
-    }
   }
   return (
     <Form {...form}>
@@ -121,7 +125,12 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={isSubmitting}
+          loading={isSubmitting}
+        >
           Đăng nhập
         </Button>
       </form>

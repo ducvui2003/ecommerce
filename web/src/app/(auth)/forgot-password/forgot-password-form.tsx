@@ -18,7 +18,6 @@ import {
 } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import Logo from '@/components/Logo';
 
@@ -38,14 +37,20 @@ const ForgotPasswordForm = ({
       email: '',
     },
   });
+  const { isSubmitting } = form.formState;
 
   // 2. Define a submit handler.
   function onSubmit(value: ForgotPasswordFormType) {
-    authService
+    return authService
       .sendOTPForgetPassword(value.email)
       .then(() => {
         onUpdate({ email: value.email });
         onNextStep();
+      })
+      .then(() => {
+        toast.warning('Gửi email tạo lại mật khẩu thành công', {
+          description: 'Vui lòng kiểm tra email ',
+        });
       })
       .catch((error) => {
         handleErrorApi({
@@ -54,9 +59,7 @@ const ForgotPasswordForm = ({
         });
       })
       .finally(() => {
-        toast.warning('Gửi email tạo lại mật khẩu thành công', {
-          description: 'Vui lòng kiểm tra email ',
-        });
+        console.log(form.formState.isSubmitting);
       });
   }
 
@@ -83,12 +86,10 @@ const ForgotPasswordForm = ({
             />
             <Button
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={isSubmitting}
               type="submit"
+              loading={isSubmitting}
             >
-              {form.formState.isSubmitting && (
-                <span className="spinner-border spinner-border-sm mr-1"></span>
-              )}
               Gửi OTP
             </Button>
           </form>

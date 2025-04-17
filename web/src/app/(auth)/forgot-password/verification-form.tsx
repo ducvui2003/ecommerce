@@ -40,7 +40,6 @@ const VerificationForm = ({
   onNextStep,
   onUpdate,
 }: VerificationFormProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
   // 1. Define your form.
   const form = useForm<VerifyForgetPasswordFormType>({
@@ -49,6 +48,8 @@ const VerificationForm = ({
       otp: '',
     },
   });
+  const { isSubmitting } = form.formState;
+
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -56,24 +57,13 @@ const VerificationForm = ({
     }
   }, [countdown]);
 
-  useEffect(() => {
-    if (loading) {
-      const timer = setTimeout(() => {
-        setLoading(false);
-        console.log('Stopped loading after 5 minutes');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
-
   function onSubmit(values: VerifyForgetPasswordFormType) {
-    authService
+    return authService
       .verifyOTPForgetPassword({
         email: data.email,
         otp: values.otp,
       })
       .then(() => {
-        console.log('Set');
         onUpdate({ otp: values.otp });
         onNextStep();
       })
@@ -82,12 +72,12 @@ const VerificationForm = ({
           error: error,
           setError: form.setError,
         });
-      })
-      .finally(() => {
-        setCountdown(5);
         toast.warning('Gửi email tạo lại mật khẩu thành công', {
           description: 'Vui lòng kiểm tra email ',
         });
+      })
+      .finally(() => {
+        setCountdown(5);
       });
   }
 
@@ -127,7 +117,13 @@ const VerificationForm = ({
               </FormItem>
             )}
           />
-          <Button className="mx-auto mt-8! flex gap-1">Gửi mã OTP</Button>
+          <Button
+            className="mx-auto mt-8! flex gap-1"
+            loading={isSubmitting}
+            disabled={isSubmitting}
+          >
+            Xác nhận
+          </Button>
         </form>
       </Form>
     </div>

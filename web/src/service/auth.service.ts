@@ -64,8 +64,8 @@ const authService = {
       throw new EntityError({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
         payload: {
-          message: '',
-          error: [
+          error: '',
+          message: [
             {
               field: 'email',
               error: 'Email này đã tồn tại',
@@ -143,7 +143,7 @@ const authService = {
       {
         email: data.email,
         type: 'FORGOT_PASSWORD',
-        otp: data.otp,
+        code: data.otp,
       },
       undefined,
       false,

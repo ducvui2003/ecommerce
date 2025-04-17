@@ -6,6 +6,7 @@ import {
   LoginReqDTO,
   RegisterReqDTO,
   SendOTPBodyDTO,
+  VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthRepository } from '@route/auth/auth.repository';
 import {
@@ -137,6 +138,24 @@ export class AuthService {
     });
 
     return { ...data, expiredAt: verificationCode.expiredAt };
+  }
+
+  async verifyOTP(req: VerifyOTPBodyDTO): Promise<void> {
+    // 1. Kiểm tra OTP có tồn tại chưa?
+    const verificationCode =
+      await this.authRepository.findUniqueVerificationCode({
+        code: req.code,
+        email: req.email,
+        type: req.type,
+      });
+    if (!verificationCode) {
+      throw OTPInvalidException;
+    }
+
+    // 2. Kiểm tra OTP đã hết hạn chưa?
+    if (verificationCode.expiredAt < new Date()) {
+      throw OTPExpiredException;
+    }
   }
 
   async login(req: LoginReqDTO) {

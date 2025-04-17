@@ -19,7 +19,7 @@ export function handleErrorApi({
   duration?: number;
 }) {
   if (error instanceof EntityError && setError) {
-    const errors = error.payload.error as {
+    const errors = error.payload.message as {
       field: string;
       error: string;
     }[];

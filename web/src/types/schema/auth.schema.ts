@@ -48,7 +48,7 @@ export const SendOTPReq = z.object({
 type SendOTPFormType = z.infer<typeof SendOTPReq>;
 
 const ForgotPasswordFormSchema = z.object({
-  email: z.string(),
+  email: z.string().email(),
 });
 
 type ForgotPasswordFormType = z.infer<typeof ForgotPasswordFormSchema>;

@@ -19,7 +19,7 @@ const SellerSection = () => {
       <div className="flex items-center justify-between gap-3 before:h-[2px] before:flex-1 before:bg-yellow-400 after:h-[2px] after:flex-1 after:bg-yellow-400">
         <h2 className="mx-5 text-yellow-400">Best Seller</h2>
       </div>
-      <div className="mt-16 grid grid-cols-4 grid-rows-2 gap-28">
+      <div className="mt-16 grid grid-cols-4 grid-rows-2 gap-10">
         {data.map((item, index) => (
           <ProductCard key={index} {...item} />
         ))}

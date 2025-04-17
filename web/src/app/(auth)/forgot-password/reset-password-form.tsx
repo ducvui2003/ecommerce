@@ -40,29 +40,32 @@ const ResetPasswordForm = ({ data }: ResetPasswordFormProps) => {
     },
   });
 
-  const onSubmit = async (value: ResetPasswordFormType) => {
-    try {
-      const res = await authService.resetPassword({
+  const { isSubmitting } = form.formState;
+
+  const onSubmit = (value: ResetPasswordFormType) => {
+    return authService
+      .resetPassword({
         email: data.email,
         otp: data.otp,
         password: value.password,
-      });
-      if (res.status === HTTP_STATUS_CODE.SUCCESS) {
-        toast.success('Thay đổi mật khẩu thành công', {
-          description: 'Vui lòng đăng nhâp lại.',
-          action: {
-            label: ' Đăng nhập',
-            onClick: () => router.push('/login'),
-          },
+      })
+      .then((res) => {
+        if (res.status === HTTP_STATUS_CODE.SUCCESS) {
+          toast.success('Thay đổi mật khẩu thành công', {
+            description: 'Vui lòng đăng nhâp lại.',
+            action: {
+              label: ' Đăng nhập',
+              onClick: () => router.push('/login'),
+            },
+          });
+        }
+      })
+      .catch((error) => {
+        handleErrorApi({
+          error: error,
+          setError: form.setError,
         });
-        form.reset();
-      }
-    } catch (err: any) {
-      handleErrorApi({
-        error: err,
-        setError: form.setError,
       });
-    }
   };
 
   return (
@@ -78,7 +81,7 @@ const ResetPasswordForm = ({ data }: ResetPasswordFormProps) => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel> Mật khẩu</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -107,7 +110,12 @@ const ResetPasswordForm = ({ data }: ResetPasswordFormProps) => {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button
+              className="w-full"
+              type="submit"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+            >
               Gửi OTP
             </Button>
           </form>
