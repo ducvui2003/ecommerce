@@ -69,6 +69,12 @@ export const SendOTPBodySchema = VerificationCodeSchema.pick({
   type: true,
 }).strict();
 
+export const verifyOTPBodySchema = VerificationCodeSchema.pick({
+  email: true,
+  code: true,
+  type: true,
+}).strict();
+
 export const ForgetPasswordSchema = UserModel.pick({
   email: true,
 })

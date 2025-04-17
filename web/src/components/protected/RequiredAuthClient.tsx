@@ -4,31 +4,31 @@ import React from 'react';
 
 type Mode = 'hide' | 'disable' | 'blur-sm' | 'none';
 
-const ProtectedClient = ({
+// Prevent guest use component for user authenticated
+// Work in server component
+// Component will hide if user authenticated
+const RequiredAuthClient = ({
   children,
   mode = 'none',
 }: {
-  children: React.ReactNode;
-  mode: Mode;
+  children?: React.ReactNode;
+  mode?: Mode;
 }) => {
   const { data: session, status } = useSession();
 
-  if (status === 'loading') return <p>Loading...</p>;
-
-  if (!session) {
+  if (status !== 'authenticated') {
     switch (mode) {
       case 'hide':
         return null; // Completely remove element
       case 'disable':
-        return <div className="opacity-50 pointer-events-none">{children}</div>; // Disable element
+        return <div className="pointer-events-none opacity-50">{children}</div>; // Disable element
       case 'blur-sm':
-        return <div className="filter blur-xs">{children}</div>; // Blur effect
+        return <div className="blur-xs filter">{children}</div>; // Blur effect
       case 'none':
-      default:
         return <>{children}</>;
     }
   }
 
   return <>{children}</>;
 };
-export default ProtectedClient;
+export default RequiredAuthClient;

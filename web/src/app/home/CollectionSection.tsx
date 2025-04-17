@@ -8,7 +8,7 @@ const CollectionSection = () => {
   return (
     <section>
       <h2 className="text-center">Bộ sưu tập mới</h2>
-      <p className="mx-auto w-1/2 pb-10 pt-3 text-center">
+      <p className="mx-auto w-1/2 pt-3 pb-10 text-center">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas
         ut dolorum consequuntur, adipisci repellat! Eveniet commodi voluptatem
         voluptate, eum minima, in suscipit explicabo voluptatibus harum,
@@ -63,10 +63,10 @@ const Product = ({
           className="w-full object-cover"
         />
       </AspectRatio>
-      <h3 className="pb-4 pt-2">{title}</h3>
-      <p>{desc}</p>
-      <div className="flex justify-end">
-        <Button>Khám phá ngay</Button>
+      <h3 className="pt-2">{title}</h3>
+      <p className="mt-2">{desc}</p>
+      <div className="mt-5 flex">
+        <Button size={'lg'}>Khám phá ngay</Button>
       </div>
     </article>
   );

@@ -4,6 +4,7 @@ import {
   RefreshReqSchema,
   RegisterBodySchema,
   SendOTPBodySchema,
+  verifyOTPBodySchema,
 } from '@route/auth/auth.schema';
 import { createZodDto } from 'nestjs-zod';
 
@@ -16,5 +17,7 @@ export class RefreshReqDTO extends createZodDto(RefreshReqSchema) {}
 export class LogoutReqDTO extends RefreshReqDTO {}
 
 export class SendOTPBodyDTO extends createZodDto(SendOTPBodySchema) {}
+
+export class VerifyOTPBodyDTO extends createZodDto(verifyOTPBodySchema) {}
 
 export class ForgetPasswordBodyDTO extends createZodDto(ForgetPasswordSchema) {}

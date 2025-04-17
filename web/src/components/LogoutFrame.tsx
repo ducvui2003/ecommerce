@@ -14,17 +14,15 @@ import { Button } from '@/components/ui/button';
 import { LOCAL_STORAGE } from '@/constraint/variable';
 import { signOut } from 'next-auth/react';
 
-const LogoutButton = () => {
+type LogoutButtonProps = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+const LogoutFrame = ({ open, setOpen }: LogoutButtonProps) => {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-red-500 hover:bg-red-700 text-white"
-        >
-          Đăng xuất
-        </Button>
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={() => setOpen(!open)}>
+      <AlertDialogTrigger asChild></AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -34,7 +32,9 @@ const LogoutButton = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Ở lại</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => setOpen(false)}>
+            Ở lại
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
               localStorage.setItem(LOCAL_STORAGE.LOGOUT, 'true');
@@ -49,4 +49,4 @@ const LogoutButton = () => {
   );
 };
 
-export default LogoutButton;
+export default LogoutFrame;
