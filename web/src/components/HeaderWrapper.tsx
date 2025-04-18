@@ -1,16 +1,17 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import LogoutFrame from '@/components/LogoutFrame';
 import Navigation, { components } from '@/components/Navigation';
 import React, { ReactNode } from 'react';
 
 type HeaderWrapperProp = {
   children?: ReactNode;
-  enableFooter?: boolean;
+  footer?: boolean;
+  container?: boolean;
 };
 const HeaderWrapper = ({
   children,
-  enableFooter = false,
+  footer: enableFooter = false,
+  container = false,
 }: HeaderWrapperProp) => {
   return (
     <>
@@ -20,8 +21,8 @@ const HeaderWrapper = ({
           <Navigation components={components} />
         </div>
       </div>
-      {children}
-      <Footer />
+      {container ? <div className="container">{children}</div> : children}
+      {enableFooter && <Footer />}
     </>
   );
 };

@@ -11,7 +11,7 @@ import HeaderWrapper from '@/components/HeaderWrapper';
 const HomePage = () => {
   return (
     <>
-      <HeaderWrapper enableFooter>
+      <HeaderWrapper footer>
         <Banner />
         <div className="container mt-5">
           <CollectionSection />
