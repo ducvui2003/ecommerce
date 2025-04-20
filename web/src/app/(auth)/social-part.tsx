@@ -5,7 +5,7 @@ import React from 'react';
 const SocialPart = () => {
   return (
     <div>
-      <span className="text-center block py-2">Hoặc đăng nhập với</span>
+      <span className="text-center block py-2 text-sm">Hoặc đăng nhập với</span>
       <div className="flex justify-evenly">
         <GoogleButton />
         <FacebookButton />
