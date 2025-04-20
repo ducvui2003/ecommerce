@@ -1,12 +1,5 @@
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
+import HomePage from '@/app/home/page';
 
-export default function Home({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Header />
-      {children}
-      <Footer />
-    </>
-  );
+export default function RootPage() {
+  return <HomePage />;
 }

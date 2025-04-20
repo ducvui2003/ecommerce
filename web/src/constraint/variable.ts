@@ -9,3 +9,5 @@ export const HTTP_STATUS_CODE = {
 export const LOCAL_STORAGE = {
   LOGOUT: 'logout-action',
 } as const;
+
+export const ALT = 'An Nhiem';
