@@ -17,6 +17,7 @@ import { UnprocessableEntityExceptionFilter } from '@shared/filters/unprocessabl
 import { HttpExceptionFilter } from '@shared/filters/http.exception.filter';
 import { AppException } from '@shared/app.error';
 import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
+import { ProductModule } from './routes/product/product.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
     EventEmitterModule.forRoot(),
     OauthModule,
     AddressModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [
