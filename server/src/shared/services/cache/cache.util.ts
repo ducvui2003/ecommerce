@@ -1,7 +1,6 @@
 // <namespace>:<entity>:<id>:<attribute>
 
-import { VerificationType } from '@prisma/client';
-import { VerificationCodeType } from '@shared/models/verification-code.model';
+import { TypeOfVerificationType } from '@shared/constants/auth.constant';
 
 const NAMESPACE_REFRESH_TOKEN = 'refresh_token:user';
 export const NAMESPACE_ADDRESS = 'address';
@@ -23,7 +22,10 @@ export function keyAddress(
   return createNamespaces(NAMESPACE_ADDRESS, parentId, type) as string;
 }
 
-export function keyVerificationCode(email: string, type: VerificationType) {
+export function keyVerificationCode(
+  email: string,
+  type: TypeOfVerificationType,
+) {
   return createNamespaces(NAMESPACE_VERIFICATION_CODE, type, email) as string;
 }
 

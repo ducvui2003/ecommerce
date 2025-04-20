@@ -93,22 +93,19 @@ const request = async <Response>(
   });
 
   const payload: Response = await res.json();
-  const data = {
+  let data = {
     status: res.status,
     payload,
   };
 
   if (!res.ok) {
     if (res.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
-      console.log({
-        status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
-        payload: data.payload,
-      });
+      const payloadCasting = data.payload as EntityErrorPayload;
       throw new EntityError({
         status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
         payload: {
-          message: data.payload.message,
-          error: data.payload.error,
+          message: payloadCasting.message,
+          error: payloadCasting.error,
         },
       });
     } else {
