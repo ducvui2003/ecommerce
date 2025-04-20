@@ -25,7 +25,7 @@ const coreValues = [
 
 const CoreValuesSection = () => {
   return (
-    <section className="py-16 px-4 max-w-7xl mx-auto">
+    <section className="container py-16 max-w-[7.5]xl mx-auto">
       <h2 className="text-4xl font-bold text-center text-[#FFAB66] mb-12">
         Giá trị cốt lõi
       </h2>

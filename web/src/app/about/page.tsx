@@ -11,7 +11,7 @@ import HeaderWrapper from '@/components/HeaderWrapper';
 const testimonials = [
   {
     id: 1,
-    quote: "“Tôi hài lòng với sản phẩm mà công ty mang lại.”",
+    quote: "“Tôi hài lòng với sản phẩm và những dịch vụ mà công ty mang lại.”",
     name: "Nguyễn Thanh Bình",
     position: "Đồng sáng lập An Nhiên",
     image: brian,
@@ -46,7 +46,7 @@ function Page() {
       <HeaderWrapper footer>
       <HeroBar/>
       <WhyChooseUs/>
-      <div className="flex justify-center items-center gap-8 my-36">
+      <div className="container flex justify-center items-center gap-8 my-36">
         {testimonials.map((item) => (
           <BackgroundGradient
             key={item.id}
