@@ -24,6 +24,7 @@ type UploadSignatureResult = {
   timestamp: number;
   signature: string;
   apiKey: string;
+  folder: string;
 };
 
 export type {

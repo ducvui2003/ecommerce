@@ -27,3 +27,7 @@ export function buildUrl(baseUrl, params) {
   const queryString = new URLSearchParams(params).toString();
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }
+
+export function getCurrentDatetime(): Date {
+  return new Date();
+}

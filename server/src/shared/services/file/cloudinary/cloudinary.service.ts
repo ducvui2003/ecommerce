@@ -6,18 +6,21 @@ import {
   UploadSignature,
   UploadSignatureResult,
 } from '@shared/types/file.type';
+import path from 'path';
 
 @Injectable()
 export class CloudinaryService implements FileService {
+  private folderRoot = 'ecommerce';
   getUrl(publicId: string, options?: any): string {
     return cloudinaryInstance.url(publicId, options);
   }
 
   sign(upload: UploadSignature): UploadSignatureResult {
     const timestamp = Math.round(new Date().getTime() / 1000);
+    const folderUpload = path.join(this.folderRoot, upload.folder);
     const paramsToSign = {
       public_id: upload.publicId,
-      folder: upload.folder,
+      folder: folderUpload,
       timestamp: timestamp,
     };
     const signature = cloudinaryInstance.utils.api_sign_request(
@@ -29,6 +32,7 @@ export class CloudinaryService implements FileService {
       timestamp,
       signature,
       apiKey: envConfig.CLOUDINARY_API_KEY,
+      folder: folderUpload,
     };
   }
 
