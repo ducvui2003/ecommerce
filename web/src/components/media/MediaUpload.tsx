@@ -17,12 +17,21 @@ import { toast } from 'sonner';
 
 type MediaFileUploadProps = {
   onValueChange: (files: File[]) => void;
-  children: React.ReactNode;
+  onUpload: (
+    files: File[],
+    options: {
+      onProgress: (file: File, progress: number) => void;
+      onSuccess: (file: File) => void;
+      onError: (file: File, error: Error) => void;
+    },
+  ) => void;
+  children?: React.ReactNode;
 };
 
 export function MediaFileUpload({
   children,
   onValueChange,
+  onUpload,
 }: MediaFileUploadProps) {
   const onFileReject = React.useCallback((file: File, message: string) => {
     toast(message, {
@@ -35,6 +44,7 @@ export function MediaFileUpload({
       maxFiles={2}
       maxSize={5 * 1024 * 1024}
       className="w-full"
+      onUpload={onUpload}
       onValueChange={(files) => onValueChange(files)}
       onFileReject={onFileReject}
       multiple

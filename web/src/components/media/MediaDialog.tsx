@@ -3,27 +3,24 @@ import ClientIcon from '@/components/ClientIcon';
 import ListView from '@/components/ListView';
 import { MediaFileUpload } from '@/components/media/MediaUpload';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   FileUploadItem,
-  FileUploadItemDelete,
-  FileUploadItemMetadata,
   FileUploadItemPreview,
   FileUploadItemProgress,
 } from '@/components/ui/file-upload';
 import { Input } from '@/components/ui/input';
 import { uuid } from '@/lib/utils';
+import mediaService from '@/service/media.service';
 import { Media, MediaUploading } from '@/types/media.type';
-import Image from 'next/image';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
+import { toast } from 'sonner';
 type MediaDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -41,6 +38,82 @@ const data: Media[] = Array(5)
 
 const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
   const [files, setFiles] = useState<(Media | MediaUploading)[]>(data);
+
+  const onUpload = useCallback(
+    async (
+      files: File[],
+      {
+        onProgress,
+        onSuccess,
+        onError,
+      }: {
+        onProgress: (file: File, progress: number) => void;
+        onSuccess: (file: File) => void;
+        onError: (file: File, error: Error) => void;
+      },
+    ) => {
+      try {
+        const signaturePromises = await mediaService.sign(
+          files.map((file) => ({
+            folder: 'test',
+            publicId: file.name,
+          })),
+        );
+
+        console.log(signaturePromises);
+        const uploadPromises = files.map(async (file, index) => {
+          try {
+            console.log('Preparing upload for', file.name);
+
+            // Simulate file upload with progress
+            const totalChunks = 10;
+            let uploadedChunks = 0;
+
+            // Simulate chunk upload with delays
+            for (let i = 0; i < totalChunks; i++) {
+              // Simulate network delay (100-300ms per chunk)
+              await new Promise((resolve) =>
+                setTimeout(resolve, Math.random() * 200 + 100),
+              );
+
+              // Update progress for this specific file
+              uploadedChunks++;
+              const progress = (uploadedChunks / totalChunks) * 100;
+              onProgress(file, progress);
+            }
+
+            // Simulate server processing delay
+            console.log('Uploading to Cloudinary for', file.name);
+
+            const result = await mediaService.uploadFileToCloudinary(file, {
+              apiKey: signaturePromises.apiKey,
+              folder: signaturePromises.properties[index].folder,
+              signature: signaturePromises.properties[index].signature,
+              timestamp: signaturePromises.timestamp,
+              publicId: file.name,
+            });
+            console.log('Upload complete:', result);
+            onSuccess(file);
+          } catch (error) {
+            console.log('Upload error:', error);
+            onError(
+              file,
+              error instanceof Error ? error : new Error('Upload failed'),
+            );
+          }
+        });
+        console.log(uploadPromises);
+        await Promise.all(uploadPromises);
+        toast.success('Upload success');
+      } catch (error) {
+        // This handles any error that might occur outside the individual upload processes
+        console.error('Unexpected error during upload:', error);
+        toast.success('Upload failed');
+      }
+    },
+    [],
+  );
+
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger>Open</DialogTrigger>
@@ -58,6 +131,7 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
           </div>
         </div>
         <MediaFileUpload
+          onUpload={onUpload}
           onValueChange={(files) =>
             setFiles((prev) => [
               {
