@@ -22,9 +22,13 @@ type UploadSignature = {
 
 type UploadSignatureResult = {
   timestamp: number;
-  signature: string;
+  properties: SignatureProperties[];
   apiKey: string;
+};
+
+type SignatureProperties = {
   folder: string;
+  signature: string;
 };
 
 export type {
@@ -32,4 +36,5 @@ export type {
   MetadataResult,
   UploadSignature,
   UploadSignatureResult,
+  SignatureProperties,
 };

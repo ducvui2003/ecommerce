@@ -31,10 +31,7 @@ export class MediaController {
   @MessageHttp('Get signature to upload media from client')
   @HttpCode(HttpStatus.OK)
   signMedia(@Body() req: SignatureDTO) {
-    return this.fileService.sign({
-      folder: req.folder,
-      publicId: req.publicId,
-    });
+    return this.fileService.sign(req);
   }
 
   @Post()

@@ -7,10 +7,12 @@ export const CreatedMediaBodySchema = MediaModel.pick({
   format: true,
 });
 
-export const SignatureBodySchema = z.object({
-  publicId: z.string(),
-  folder: z.string(),
-});
+export const SignatureBodySchema = z.array(
+  z.object({
+    publicId: z.string(),
+    folder: z.string(),
+  }),
+);
 
 export const ChangeVisibilitySchema = z.object({
   id: z.number(),
