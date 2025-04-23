@@ -4,13 +4,12 @@ import { MediaType } from '@shared/models/media.model';
 import { PrismaService } from '@shared/services/prisma.service';
 import { Pageable } from '@shared/types/request.type';
 import { Paging } from '@shared/types/response.type';
-import { limits } from 'argon2';
 
 export interface MediaRepository {
-  getMedia(
+  getMedia<K extends keyof MediaType>(
     pageable: Pageable,
-    fields?: (keyof MediaType)[],
-  ): Promise<Paging<Partial<MediaType>>>;
+    fields?: K[],
+  ): Promise<Paging<Pick<MediaType, K>>>;
 
   createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>);
 
@@ -20,10 +19,10 @@ export interface MediaRepository {
 export class PrismaMediaRepository implements MediaRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getMedia(
+  async getMedia<K extends keyof MediaType>(
     pageable: Pageable,
-    fields?: (keyof MediaType)[],
-  ): Promise<Paging<Partial<MediaType>>> {
+    fields?: K[],
+  ): Promise<Paging<Pick<MediaType, K>>> {
     const { page, size } = pageable;
     const select = fields?.reduce(
       (acc, field) => {

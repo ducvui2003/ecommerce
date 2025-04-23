@@ -1,4 +1,4 @@
-import { MediaModel } from '@shared/models/media.model';
+import { MediaModel, MediaType } from '@shared/models/media.model';
 import { z } from 'zod';
 
 export const CreatedMediaBodySchema = MediaModel.pick({
@@ -18,6 +18,13 @@ export const ChangeVisibilitySchema = z.object({
   id: z.number(),
   visibility: z.boolean(),
 });
+
+export type MediaResponseType = Pick<
+  MediaType,
+  'id' | 'format' | 'publicId'
+> & {
+  url: string;
+};
 
 export type CreatedMediaBodyType = z.infer<typeof CreatedMediaBodySchema>;
 

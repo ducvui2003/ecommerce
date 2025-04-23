@@ -4,14 +4,8 @@ import { Button } from '@/components/ui/button';
 import {
   FileUpload,
   FileUploadDropzone,
-  FileUploadItem,
-  FileUploadItemDelete,
-  FileUploadItemMetadata,
-  FileUploadItemPreview,
-  FileUploadList,
   FileUploadTrigger,
 } from '@/components/ui/file-upload';
-import { Upload, X } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
 
@@ -41,7 +35,6 @@ export function MediaFileUpload({
 
   return (
     <FileUpload
-      maxFiles={2}
       maxSize={5 * 1024 * 1024}
       className="w-full"
       onUpload={onUpload}

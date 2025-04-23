@@ -16,8 +16,10 @@ import {
   FileUploadItemProgress,
 } from '@/components/ui/file-upload';
 import { Input } from '@/components/ui/input';
+import { useGetPagingMediaQuery } from '@/features/media/media.api';
 import { uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
+import { Paging, RequestPaging } from '@/types/api.type';
 import { Media, MediaUploading } from '@/types/media.type';
 import { ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -34,10 +36,19 @@ const data: Media[] = Array(5)
   .map(() => ({
     id: uuid(),
     url: url,
+    name: '12d.png',
   }));
 
 const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
   const [files, setFiles] = useState<(Media | MediaUploading)[]>(data);
+  const [paging, setPaging] = useState<RequestPaging>({
+    page: 1,
+    size: 3,
+  });
+  // const { isFetching, data } = useGetPagingMediaQuery({
+  //   page: paging.page,
+  //   size: paging.size,
+  // });
 
   const onUpload = useCallback(
     async (
@@ -60,7 +71,6 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
           })),
         );
 
-        console.log(signaturePromises);
         const uploadPromises = files.map(async (file, index) => {
           try {
             console.log('Preparing upload for', file.name);
@@ -82,9 +92,6 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
               onProgress(file, progress);
             }
 
-            // Simulate server processing delay
-            console.log('Uploading to Cloudinary for', file.name);
-
             const result = await mediaService.uploadFileToCloudinary(file, {
               apiKey: signaturePromises.apiKey,
               folder: signaturePromises.properties[index].folder,
@@ -92,19 +99,36 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
               timestamp: signaturePromises.timestamp,
               publicId: file.name,
             });
-            console.log('Upload complete:', result);
+            const response = await mediaService.createMedia({
+              format: result.format,
+              publicId: result.public_id,
+              type: result.resource_type,
+            });
+
+            if (response) {
+              setFiles((prev) => [
+                {
+                  id: response.id.toString(),
+                  name: response.publicId,
+                  url: result.url,
+                },
+                ...prev.filter((item) => !('file' in item)),
+              ]);
+            }
+            toast.success(`Upload Success`, {
+              description: response.publicId,
+            });
             onSuccess(file);
           } catch (error) {
-            console.log('Upload error:', error);
+            toast.success(`Upload Failed`);
             onError(
               file,
               error instanceof Error ? error : new Error('Upload failed'),
             );
           }
         });
-        console.log(uploadPromises);
+
         await Promise.all(uploadPromises);
-        toast.success('Upload success');
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
         console.error('Unexpected error during upload:', error);
@@ -132,36 +156,23 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
         </div>
         <MediaFileUpload
           onUpload={onUpload}
-          onValueChange={(files) =>
+          onValueChange={() => {
             setFiles((prev) => [
               {
                 id: '123123',
-                url: '123123.png',
+                name: files[0].name,
                 file: files[0],
               },
               ...prev,
-            ])
-          }
+            ]);
+          }}
         >
           <ListView<Media | MediaUploading>
             display="grid"
             className="grid-cols-5 gap-4"
-            data={files}
+            data={data}
             render={(item, _) => {
-              if ('file' in item) {
-                return (
-                  <FileUploadItem
-                    key={item.id}
-                    value={item.file}
-                    className="justify-between"
-                  >
-                    <FileUploadItemPreview className="w-full flex-1" />
-                    {/* <FileUploadItemMetadata /> */}
-                    <FileUploadItemProgress />
-                  </FileUploadItem>
-                );
-              }
-              return <MediaViewerCard url={item.url} key={item.id} />;
+              return <MediaViewerCard {...item} />;
             }}
           />
         </MediaFileUpload>
@@ -171,14 +182,33 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
 };
 
 type MediaViewerCardProps = {
-  url: string;
+  id: string;
+  url?: string;
+  name: string;
   checked?: boolean;
+  file?: File;
 };
 
-const MediaViewerCard = ({ url, checked }: MediaViewerCardProps) => {
+const MediaViewerCard = ({
+  url,
+  checked,
+  file,
+  id,
+  name,
+}: MediaViewerCardProps) => {
+  if (file)
+    return (
+      <FileUploadItem key={id} value={file} className="justify-between">
+        <FileUploadItemPreview className="w-full flex-1" />
+        <FileUploadItemProgress />
+      </FileUploadItem>
+    );
   return (
     <div className="border-accent aspect-square rounded-xl border-2 p-1">
       <img src={url} className="size-full rounded-xl bg-white object-center" />
+      <div className="text-center">
+        <span className="block truncate text-xs">{name}</span>
+      </div>
     </div>
   );
 };

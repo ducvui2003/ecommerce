@@ -2,7 +2,7 @@ import {
   UploadResult,
   UploadSignature,
   UploadSignatureResult,
-} from '@shared/types/file.type';
+} from '@shared/types/media.type';
 
 export interface FileService {
   getUrl(publicId: string, options?: any): string;

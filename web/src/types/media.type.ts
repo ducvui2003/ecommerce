@@ -1,6 +1,7 @@
 type Media = {
   id: string;
-  url: string;
+  url?: string;
+  name: string;
 };
 
 type MediaUploading = Media & {
@@ -23,11 +24,28 @@ type SignatureProperties = {
   signature: string;
 };
 
+type CloudinaryUploadResult = {
+  public_id: string;
+  signature: string;
+  resource_type: string;
+  format: string;
+  url: string;
+};
+
 type CreateMediaReqType = {
   publicId: string;
   type: string;
   format: string;
 };
+
+type CreatedMediaResType = {
+  publicId: string;
+  type: string;
+  format: string;
+  id: number;
+};
+
+type PagingMediaType = CreatedMediaResType;
 
 export type {
   Media,
@@ -36,4 +54,7 @@ export type {
   UploadSignatureResult,
   SignatureProperties,
   CreateMediaReqType,
+  CreatedMediaResType,
+  CloudinaryUploadResult,
+  PagingMediaType,
 };

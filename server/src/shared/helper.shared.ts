@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Paging } from '@shared/types/response.type';
 import { randomInt } from 'crypto';
 
 export function isUniqueConstraintError(
@@ -30,4 +31,14 @@ export function buildUrl(baseUrl, params) {
 
 export function getCurrentDatetime(): Date {
   return new Date();
+}
+
+export function transformItemsPaging<T, S>(
+  page: Paging<S>,
+  mapper: (item: S) => T,
+): Paging<T> {
+  return {
+    ...page,
+    items: page.items.map((item) => mapper(item)),
+  };
 }

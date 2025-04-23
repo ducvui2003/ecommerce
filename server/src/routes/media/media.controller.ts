@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
-  Param,
   Post,
   Put,
   Query,
@@ -15,10 +14,10 @@ import {
   CreatedMediaDTO,
   SignatureDTO,
 } from '@route/media/media.dto';
-import { FileService } from '@shared/services/file/file.service';
-import { MediaService } from './media.service';
-import { Pageable, PageableDTO } from '@shared/types/request.type';
 import { MessageHttp } from '@shared/decorators/message.decorator';
+import { FileService } from '@shared/services/file/file.service';
+import { PageableDTO } from '@shared/types/request.type';
+import { MediaService } from './media.service';
 
 @Controller('/api/v1/media')
 export class MediaController {

@@ -6,7 +6,7 @@ import {
   SignatureProperties,
   UploadSignature,
   UploadSignatureResult,
-} from '@shared/types/file.type';
+} from '@shared/types/media.type';
 import path from 'path';
 
 @Injectable()

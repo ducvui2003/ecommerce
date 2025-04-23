@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import {
   UploadSignature,
   UploadSignatureResult,
-} from '@shared/types/file.type';
+} from '@shared/types/media.type';
 import path from 'path';
 import FormData from 'form-data';
 import fetch from 'node-fetch';

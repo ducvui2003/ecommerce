@@ -1,4 +1,4 @@
-export type ResponseApi<T> = {
+type ResponseApi<T> = {
   status: number;
   data: T & {
     createdAt?: Date | undefined;
@@ -10,3 +10,35 @@ export type ResponseApi<T> = {
   };
   message: string;
 };
+
+type ResponseApiPaging<T> = {
+  status: number;
+  data: Paging<T>;
+  message: string;
+};
+
+type Paging<T> = {
+  items: (T & Metadata)[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
+};
+
+type Metadata = {
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+  createdBy?: string;
+  updatedBy?: string;
+  deletedBy?: string;
+};
+
+type RequestPaging = {
+  page: number;
+  size: number;
+};
+
+export type { ResponseApi, ResponseApiPaging, Paging, RequestPaging };

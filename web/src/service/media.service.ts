@@ -1,7 +1,15 @@
 import http from '@/lib/http';
-import { ResponseApi } from '@/types/api.type';
 import {
+  ResponseApi,
+  ResponseApiPaging,
+  Paging,
+  RequestPaging,
+} from '@/types/api.type';
+import {
+  CloudinaryUploadResult,
+  CreatedMediaResType,
   CreateMediaReqType,
+  PagingMediaType,
   UploadSignature,
   UploadSignatureResult,
 } from '@/types/media.type';
@@ -14,6 +22,7 @@ const mediaService = {
       '/api/v1/media/signature',
       data,
       undefined,
+      true,
     );
     return res.payload.data;
   },
@@ -33,7 +42,7 @@ const mediaService = {
       folder: string;
       publicId: string;
     },
-  ): Promise<CreateMediaReqType> => {
+  ): Promise<CloudinaryUploadResult> => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('api_key', apiKey);
@@ -47,17 +56,33 @@ const mediaService = {
       body: formData,
     });
 
-    const body: {
-      public_id: string;
-      format: string;
-      resource_type: string;
-    } = await res.json();
+    return await res.json();
+  },
 
-    return {
-      publicId: body.public_id,
-      format: body.format,
-      type: body.resource_type,
-    };
+  createMedia: async (
+    data: CreateMediaReqType,
+  ): Promise<CreatedMediaResType> => {
+    const res = await http.post<ResponseApi<CreatedMediaResType>>(
+      '/api/v1/media',
+      data,
+      undefined,
+      true,
+    );
+    return res.payload.data;
+  },
+
+  getMedia: async (req: RequestPaging): Promise<Paging<PagingMediaType>> => {
+    const query = new URLSearchParams({
+      size: req.size.toString(),
+      page: req.page.toString(),
+    });
+
+    const res = await http.get<ResponseApiPaging<PagingMediaType>>(
+      `/api/v1/media?${query.toString()}`,
+      undefined,
+      true,
+    );
+    return res.payload.data;
   },
 };
 
