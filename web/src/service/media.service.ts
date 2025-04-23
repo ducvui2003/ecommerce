@@ -50,6 +50,7 @@ const mediaService = {
     formData.append('signature', signature);
     formData.append('folder', folder);
     formData.append('public_id', publicId);
+    formData.append('overwrite', 'false');
 
     const res = await fetch(urlUpload, {
       method: 'POST',

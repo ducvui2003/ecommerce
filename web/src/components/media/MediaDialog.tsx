@@ -17,17 +17,27 @@ import {
 } from '@/components/ui/file-upload';
 import { Input } from '@/components/ui/input';
 import { useGetPagingMediaQuery } from '@/features/media/media.api';
-import { uuid } from '@/lib/utils';
+import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
 import { Paging, RequestPaging } from '@/types/api.type';
 import { Media, MediaUploading } from '@/types/media.type';
 import { ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
+
 type MediaDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   children?: ReactNode;
 };
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const url =
   'https://plus.unsplash.com/premium_photo-1673803529478-c155a34d8b45?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dmVydGljYWwlMjB3YWxscGFwZXJ8ZW58MHx8MHx8fDA%3D';
@@ -40,17 +50,19 @@ const data: Media[] = Array(5)
   }));
 
 const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
-  const [files, setFiles] = useState<(Media | MediaUploading)[]>(data);
+  const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
+
   const [paging, setPaging] = useState<RequestPaging>({
     page: 1,
     size: 3,
   });
-  // const { isFetching, data } = useGetPagingMediaQuery({
-  //   page: paging.page,
-  //   size: paging.size,
-  // });
 
-  const onUpload = useCallback(
+  const { isFetching, data } = useGetPagingMediaQuery({
+    page: paging.page,
+    size: paging.size,
+  });
+
+  const handleUpload = useCallback(
     async (
       files: File[],
       {
@@ -67,7 +79,7 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
         const signaturePromises = await mediaService.sign(
           files.map((file) => ({
             folder: 'test',
-            publicId: file.name,
+            publicId: file.name.split('.')[0] + nanoId(8),
           })),
         );
 
@@ -91,13 +103,12 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
               const progress = (uploadedChunks / totalChunks) * 100;
               onProgress(file, progress);
             }
-
             const result = await mediaService.uploadFileToCloudinary(file, {
               apiKey: signaturePromises.apiKey,
               folder: signaturePromises.properties[index].folder,
               signature: signaturePromises.properties[index].signature,
               timestamp: signaturePromises.timestamp,
-              publicId: file.name,
+              publicId: signaturePromises.properties[index].publicId,
             });
             const response = await mediaService.createMedia({
               format: result.format,
@@ -106,13 +117,13 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
             });
 
             if (response) {
-              setFiles((prev) => [
+              setFilesUploading((prev) => [
                 {
                   id: response.id.toString(),
                   name: response.publicId,
                   url: result.url,
                 },
-                ...prev.filter((item) => !('file' in item)),
+                ...prev.filter((item) => !item.file),
               ]);
             }
             toast.success(`Upload Success`, {
@@ -120,7 +131,7 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
             });
             onSuccess(file);
           } catch (error) {
-            toast.success(`Upload Failed`);
+            toast.error(`Upload Failed`);
             onError(
               file,
               error instanceof Error ? error : new Error('Upload failed'),
@@ -137,6 +148,17 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
     },
     [],
   );
+
+  const handleFileChange = useCallback((files: File[]) => {
+    setFilesUploading((prev) => [
+      ...prev,
+      ...files.map((file) => ({
+        id: uuid(),
+        name: file.name,
+        file: file,
+      })),
+    ]);
+  }, []);
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -155,26 +177,49 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
           </div>
         </div>
         <MediaFileUpload
-          onUpload={onUpload}
-          onValueChange={() => {
-            setFiles((prev) => [
-              {
-                id: '123123',
-                name: files[0].name,
-                file: files[0],
-              },
-              ...prev,
-            ]);
-          }}
+          onUpload={handleUpload}
+          onValueChange={handleFileChange}
         >
           <ListView<Media | MediaUploading>
             display="grid"
             className="grid-cols-5 gap-4"
-            data={data}
+            loading={isFetching}
+            data={[
+              ...filesUploading,
+              ...(data?.items.map((item) => ({
+                id: item.id.toString(),
+                name: item.publicId,
+                url: item.url,
+              })) ?? []),
+            ]}
             render={(item, _) => {
               return <MediaViewerCard {...item} />;
             }}
           />
+          <div className="ml-auto flex gap-2">
+            <Button
+              disabled={paging.page == 1}
+              onClick={() => {
+                setPaging((prev) => ({
+                  ...prev,
+                  page: prev.page - 1,
+                }));
+              }}
+            >
+              Previous
+            </Button>
+            <Button
+              disabled={paging.page == data?.pagination.totalPages}
+              onClick={() => {
+                setPaging((prev) => ({
+                  ...prev,
+                  page: prev.page + 1,
+                }));
+              }}
+            >
+              Next
+            </Button>
+          </div>
         </MediaFileUpload>
       </DialogContent>
     </Dialog>

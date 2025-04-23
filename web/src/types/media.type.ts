@@ -4,8 +4,8 @@ type Media = {
   name: string;
 };
 
-type MediaUploading = Media & {
-  file: File;
+type MediaUploading = Omit<Media, 'url'> & {
+  file?: File;
 };
 
 type UploadSignature = {
@@ -19,8 +19,7 @@ type UploadSignatureResult = {
   apiKey: string;
 };
 
-type SignatureProperties = {
-  folder: string;
+type SignatureProperties = UploadSignature & {
   signature: string;
 };
 
@@ -45,7 +44,9 @@ type CreatedMediaResType = {
   id: number;
 };
 
-type PagingMediaType = CreatedMediaResType;
+type PagingMediaType = CreatedMediaResType & {
+  url: string;
+};
 
 export type {
   Media,

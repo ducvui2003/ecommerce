@@ -26,8 +26,7 @@ type UploadSignatureResult = {
   apiKey: string;
 };
 
-type SignatureProperties = {
-  folder: string;
+type SignatureProperties = UploadSignature & {
   signature: string;
 };
 

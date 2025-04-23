@@ -12,8 +12,8 @@ import path from 'path';
 @Injectable()
 export class CloudinaryService implements FileService {
   private folderRoot = 'ecommerce';
-  getUrl(publicId: string, options?: any): string {
-    return cloudinaryInstance.url(publicId, options);
+  getUrl(publicId: string, options: any = {}): string {
+    return cloudinaryInstance.url(publicId, { ...options, analytics: false });
   }
 
   sign(upload: UploadSignature | UploadSignature[]): UploadSignatureResult {
@@ -26,6 +26,7 @@ export class CloudinaryService implements FileService {
           public_id: upload[i].publicId,
           folder: folderUpload,
           timestamp: timestamp,
+          overwrite: false,
         };
         const signature = cloudinaryInstance.utils.api_sign_request(
           paramsToSign,
@@ -34,6 +35,7 @@ export class CloudinaryService implements FileService {
         signatures.push({
           folder: folderUpload,
           signature,
+          publicId: upload[i].publicId,
         });
       }
     } else {
@@ -50,6 +52,7 @@ export class CloudinaryService implements FileService {
       signatures.push({
         folder: folderUpload,
         signature,
+        publicId: upload.publicId,
       });
     }
 
