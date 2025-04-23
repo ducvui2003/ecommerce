@@ -9,7 +9,7 @@ type CustomOptions = RequestInit & {
 export class HttpError extends Error {
   status: number;
   payload: {
-    message: string;
+    error: string;
     [key: string]: any;
   };
   constructor({ status, payload }: { status: number; payload?: any }) {
@@ -20,8 +20,8 @@ export class HttpError extends Error {
 }
 
 type EntityErrorPayload = {
-  message: string;
-  error: { field: string; error: string }[];
+  error: string;
+  message: { field: string; error: string }[];
 };
 
 export class EntityError extends HttpError {
@@ -82,43 +82,33 @@ const request = async <Response>(
     ? `${baseUrl}${url} `
     : `${baseUrl}/${url}`;
 
-  let res;
-  if (typeof window !== 'undefined')
-    res = await logging(fullUrl, {
-      ...options,
-      headers: {
-        ...baseHeaders,
-        ...options?.headers,
-      },
-      body,
-      method,
-    });
-  else
-    res = await fetch(fullUrl, {
-      ...options,
-      headers: {
-        ...baseHeaders,
-        ...options?.headers,
-      },
-      body,
-      method,
-    });
+  const res = await fetch(fullUrl, {
+    ...options,
+    headers: {
+      ...baseHeaders,
+      ...options?.headers,
+    },
+    body,
+    method,
+  });
 
   const payload: Response = await res.json();
-  const data = {
+  let data = {
     status: res.status,
     payload,
   };
 
   if (!res.ok) {
-    if (res.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE)
-      throw new EntityError(
-        data as {
-          status: 422;
-          payload: EntityErrorPayload;
+    if (res.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
+      const payloadCasting = data.payload as EntityErrorPayload;
+      throw new EntityError({
+        status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
+        payload: {
+          message: payloadCasting.message,
+          error: payloadCasting.error,
         },
-      );
-    else {
+      });
+    } else {
       throw new HttpError(data);
     }
   }

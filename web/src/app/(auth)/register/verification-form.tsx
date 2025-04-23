@@ -1,4 +1,5 @@
 'use client';
+import ClientIcon from '@/components/ClientIcon';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -8,20 +9,41 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
+import {
+  RegisterFormType,
+  VerifyFormSchema,
+  VerifyFormType,
+} from '@/types/schema/auth.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
 type VerificationFormProps = {
-  formOuter: UseFormReturn<any>;
+  registerInfo: RegisterFormType;
 };
 
-const VerificationForm = ({ formOuter }: VerificationFormProps) => {
-  const { toast } = useToast();
+const VerificationForm = ({ registerInfo }: VerificationFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
+  const router = useRouter();
+  const form = useForm<VerifyFormType>({
+    resolver: zodResolver(VerifyFormSchema),
+    defaultValues: {
+      otp: '',
+    },
+  });
 
   useEffect(() => {
     if (countdown > 0) {
@@ -40,75 +62,78 @@ const VerificationForm = ({ formOuter }: VerificationFormProps) => {
     }
   }, [loading]);
 
-  async function onSubmit(email: string) {
-    const emailValid = await formOuter.trigger('email');
-    if (!emailValid) {
-      return;
-    }
-    formOuter.clearErrors('email');
-    setLoading(true);
-    authService
-      .sendOTPVerify({
-        email: email,
-      })
-      .catch((error) => {
-        handleErrorApi({
-          error: error,
-          setError: formOuter.setError,
-        });
-      })
-      .finally(() => {
-        setCountdown(5);
-        toast({
-          title: 'Gửi email xác thực thành công',
-          description: 'Vui lòng kiểm tra email ',
-        });
+  async function onSubmit(values: VerifyFormType) {
+    try {
+      const res = await authService.register({
+        name: registerInfo.name,
+        email: registerInfo.email,
+        password: registerInfo.password,
+        otp: values.otp,
       });
+      if (res.status === HTTP_STATUS_CODE.SUCCESS) {
+        toast.success('Đăng ký thành công', {
+          description: 'You have logged in successfully.',
+          action: {
+            label: 'Login',
+            onClick: () => router.push('/login'),
+          },
+        });
+      }
+    } catch (err) {
+      handleErrorApi({
+        error: err,
+        setError: form.setError,
+      });
+    }
   }
 
   return (
-    <Form {...formOuter}>
-      <FormField
-        control={formOuter.control}
-        name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <Input placeholder="Vui lòng không để trống" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormLabel>Mã xác nhận</FormLabel>
-      <div className="flex gap-1 !mt-2">
-        <div className="flex-1">
+    <div>
+      <span className="bg-secondary mx-auto flex size-[80px] items-center justify-center rounded-full">
+        <ClientIcon icon={'tabler:lock'} size={40} />
+      </span>
+      <h1 className="mt-8 text-center text-3xl font-bold">Nhập Mã OTP</h1>
+      <p className="foreground text-foreground mt-2 text-center text-sm">
+        Vui lòng kiểm tra email để nhập mã OTP
+      </p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10">
           <FormField
-            control={formOuter.control}
+            control={form.control}
             name="otp"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="gap-8">
                 <FormControl>
-                  <Input placeholder="Vui lòng không để trống" {...field} />
+                  <InputOTP
+                    maxLength={6}
+                    {...field}
+                    pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                  >
+                    <InputOTPGroup className="gap-5">
+                      <InputOTPSlot index={0} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={1} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={2} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={3} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={4} className="size-12 !rounded-xl" />
+                      <InputOTPSlot index={5} className="size-12 !rounded-xl" />
+                    </InputOTPGroup>
+                  </InputOTP>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-center" />
               </FormItem>
             )}
           />
-        </div>
-        <div>
+
           <Button
             loading={loading}
-            type="button"
-            className=""
-            onClick={() => onSubmit(formOuter.getValues().email)}
+            type="submit"
+            className="mx-auto mt-8! flex gap-1"
           >
             Gửi mã OTP
           </Button>
-        </div>
-      </div>
-    </Form>
+        </form>
+      </Form>
+    </div>
   );
 };
 

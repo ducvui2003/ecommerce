@@ -16,7 +16,7 @@ import {
   ADDRESS_VERSION,
   CARRIER_URL,
   SHIPPING_FEE_URL,
-} from '@shared/constants/api.constraint';
+} from '@shared/constants/api.constant';
 import { isNotFoundError } from '@shared/helper.shared';
 import { CacheService } from '@shared/services/cache/cache.service';
 import {

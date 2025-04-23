@@ -6,6 +6,7 @@ import {
   LoginReqDTO,
   RegisterReqDTO,
   SendOTPBodyDTO,
+  VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthRepository } from '@route/auth/auth.repository';
 import {
@@ -30,7 +31,10 @@ import {
 } from '@shared/helper.shared';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
-import { keyRefreshToken } from '@shared/services/cache/cache.util';
+import {
+  keyRefreshToken,
+  keyVerificationCode,
+} from '@shared/services/cache/cache.util';
 import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
 import { TokenService } from '@shared/services/token.service';
@@ -50,77 +54,73 @@ export class AuthService {
   ) {}
 
   async register(req: RegisterReqDTO) {
-    try {
-      // 1. Kiểm tra OTP có tồn tại chưa?
-      const verificationCode =
-        await this.authRepository.findUniqueVerificationCode({
-          code: req.otp,
-          email: req.email,
-          type: VerificationType.REGISTER,
-        });
-      if (!verificationCode) {
-        throw OTPInvalidException;
-      }
-
-      // 2. Kiểm tra OTP đã hết hạn chưa?
-      if (verificationCode.expiredAt < new Date()) {
-        throw OTPExpiredException;
-      }
-
-      // 3. Tạo user
-      const hashing = await this.hashingService.hash(req.password);
-      const clientRoleId = await this.roleService.getClientRoleId();
-      const userCreated = await this.authRepository.createUser({
-        email: req.email,
-        name: req.name,
-        password: hashing,
-        roleId: clientRoleId,
-      });
-
-      // 4. Xóa OTP
-      await this.authRepository.deleteVerificationCode({
-        email: req.email,
+    return this.verifyOTPAndDelete(
+      // 1. Kiểm tra otp, nếu otp có thì xóa otp và thực hiện callback
+      // 2. Nếu otp không có thì ném ra exception
+      {
         code: req.otp,
-        type: VerificationType.REGISTER,
-      });
-
-      return userCreated;
-    } catch (error) {
-      if (isUniqueConstraintError(error)) {
-        throw EmailExistException;
-      }
-      throw error;
-    }
+        email: req.email,
+        type: 'REGISTER',
+      },
+      async () => {
+        // 2. Tạo user
+        const hashing = await this.hashingService.hash(req.password);
+        const clientRoleId = await this.roleService.getClientRoleId();
+        const userCreated = await this.authRepository.createUser({
+          email: req.email,
+          name: req.name,
+          password: hashing,
+          roleId: clientRoleId,
+        });
+        return userCreated;
+      },
+    );
   }
 
-  async sendOTP(data: SendOTPBodyDTO, strictEmail: boolean = false) {
-    if (strictEmail) {
-      // 1. Kiểm tra email có tồn tại chưa?
-      const userExist = await this.userRepository.findUnique({
-        email: data.email,
-      });
-      if (!userExist) {
-        throw EmailNotExistException;
+  async sendOTP(
+    data: SendOTPBodyDTO,
+    strictEmail: 'exist' | 'not-exist' | 'none' = 'none',
+  ) {
+    switch (strictEmail) {
+      case 'exist': {
+        // 1. Kiểm tra email có tồn tại chưa?
+        const userExist = await this.userRepository.findUnique({
+          email: data.email,
+        });
+        if (!userExist) {
+          throw EmailNotExistException;
+        }
+        break;
+      }
+      case 'not-exist': {
+        // 1. Kiểm tra email có ko tồn tại chưa?
+        const userExist = await this.userRepository.findUnique({
+          email: data.email,
+        });
+        if (userExist) {
+          throw EmailExistException;
+        }
+        break;
       }
     }
 
     // 2. Tạo OTP
     const otp = generateOTP();
-    const verificationCode = await this.authRepository.createVerificationCode({
-      email: data.email,
-      type: data.type,
-      code: otp,
-      expiredAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRY)),
-    });
 
-    // 3. Gửi email
+    // 3. Lưu OTP
+    const key = keyVerificationCode(data.email, data.type);
+    const ttl = ms(envConfig.OTP_EXPIRY);
+    const expiredAt = addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRY));
+    this.cacheService.set<string>(key, otp, ttl);
+
+    // 4. Gửi email
     this.mailFactory.getEmailService(data.type).send({
       to: data.email,
       name: data.email,
       validationCode: otp,
     });
 
-    return { ...data, expiredAt: verificationCode.expiredAt };
+    return { ...data, expiredAt: expiredAt };
   }
 
   async login(req: LoginReqDTO) {
@@ -204,55 +204,67 @@ export class AuthService {
     }
   }
 
-  async forgotPassword(req: ForgetPasswordBodyDTO): Promise<void> {
-    const { email, otp, password } = req;
-    // 1. Kiểm tra email có tồn tại trong database
-    const isEmailExist = await this.authRepository.existEmail(email);
+  async verifyOTP(req: VerifyOTPBodyDTO): Promise<void> {
+    // 1. Tạo key
+    const key = keyVerificationCode(req.email, req.type);
 
-    if (!isEmailExist) throw EmailNotExistException;
+    // 2. Kiểm tra key có tồn tại không?
+    const code = await this.cacheService.get(key);
+    if (!code) {
+      throw OTPExpiredException;
+    }
 
-    // 2. Kiểm tra otp có hợp lệ hay không?
-    await this.validationCode({
-      email,
-      code: otp,
-      type: 'FORGOT_PASSWORD',
-    });
-
-    const hashing = await this.hashingService.hash(password);
-    await this.authRepository.updatePassword(email, hashing);
-
-    // 3. Xóa OTP
-    await this.authRepository.deleteVerificationCode({
-      email: req.email,
-      code: req.otp,
-      type: VerificationType.FORGOT_PASSWORD,
-    });
+    // 3. Kiẻm tra value trong redis == code không?
+    if (code !== req.code) {
+      throw OTPInvalidException;
+    }
   }
 
-  private async validationCode({
-    email,
-    code,
-    type,
-  }: {
-    email: string;
-    code: string;
-    type: TypeOfVerificationType;
-  }) {
-    // 1. Kiểm tra OTP có tồn tại chưa?
-    const verificationCode =
-      await this.authRepository.findUniqueVerificationCode({
-        code: code,
-        email: email,
-        type: type,
-      });
-    if (!verificationCode) {
+  async forgotPassword(req: ForgetPasswordBodyDTO): Promise<void> {
+    const { email, otp, password } = req;
+
+    await this.verifyOTPAndDelete(
+      {
+        email,
+        code: otp,
+        type: 'FORGOT_PASSWORD',
+      },
+      async () => {
+        const hashing = await this.hashingService.hash(password);
+        await this.authRepository.updatePassword(email, hashing);
+      },
+    );
+  }
+
+  /**
+   * Kiểm tra otp có hợp lệ không?
+   * Nếu hợp lệ thì thưc hiện callback và tiến hành xóa
+   *  Nếu trong quá trình thực hiện callback xảy ra lỗi, otp sẽ không được xóa
+   * Nếu không thì ném exception
+   */
+  private async verifyOTPAndDelete(
+    req: VerifyOTPBodyDTO,
+    callback: () => Promise<unknown>,
+  ) {
+    // 1. Tạo key
+    const key = keyVerificationCode(req.email, req.type);
+
+    // 2. Kiểm tra key có tồn tại không?
+    const code = await this.cacheService.get(key);
+    if (!code) {
+      throw OTPExpiredException;
+    }
+
+    // 3. Kiẻm tra value trong redis == code không?
+    if (code !== req.code) {
       throw OTPInvalidException;
     }
 
-    // 2. Kiểm tra OTP đã hết hạn chưa?
-    if (verificationCode.expiredAt < new Date()) {
-      throw OTPExpiredException;
-    }
+    const response = await callback();
+
+    this.cacheService.del(key);
+
+    return response;
   }
 
   /**

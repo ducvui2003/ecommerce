@@ -5,15 +5,15 @@ import { HOME_PAGE } from '@/constraint/variable';
 
 type Mode = 'redirect' | 'forbidden' | 'hide';
 
-interface ProtectedServerProps {
+interface RequiredAuthServerProps {
   children: ReactNode;
   mode?: Mode;
 }
 
-export default async function ProtectedServer({
+export default async function RequiredAuthServer({
   children,
   mode = 'redirect',
-}: ProtectedServerProps) {
+}: RequiredAuthServerProps) {
   const session = await getAccessToken();
 
   if (!session) {
@@ -22,7 +22,7 @@ export default async function ProtectedServer({
         redirect(HOME_PAGE); // Redirect to login page
         return null;
       case 'forbidden':
-        return <h1 className="text-red-500 text-center">403 - Forbidden</h1>;
+        return <h1 className="text-center text-red-500">403 - Forbidden</h1>;
       case 'hide':
         return null;
     }

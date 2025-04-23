@@ -1,24 +1,18 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 
-export class AppException extends Error {
-  private statusCode: number;
-  private bodyCode: number;
-  constructor(
-    message: string,
-    statusCode: HttpStatus,
-    bodyCode: number = statusCode,
-  ) {
-    super(message);
-    this.name = 'App Exception';
-    this.statusCode = statusCode;
+export class AppException extends HttpException {
+  private readonly bodyCode: number;
+
+  constructor(message: string, httpStatus: number, bodyCode: number) {
+    super(message, httpStatus);
     this.bodyCode = bodyCode;
   }
 
-  getStatusCode() {
-    return this.statusCode;
+  getStatusCode(): number {
+    return this.getStatus();
   }
 
-  getBodyCode() {
+  getBodyCode(): number {
     return this.bodyCode;
   }
 }

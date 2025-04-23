@@ -5,7 +5,7 @@ import {
   HttpStatus,
   UseGuards,
   Post,
-  Body,
+  Body, Param, ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Auth } from 'src/shared/decorators/auth.decorator';
@@ -14,6 +14,7 @@ import { AuthenticationGuard } from 'src/shared/guards/authentication.guard';
 import { UserInfoBodyReq } from '@route/user/user.dto';
 import { InfoAllow } from '@route/user/user.type';
 import { ActiveUser } from '@shared/decorators/active-user.decorator';
+import {UserType} from "@shared/models/user.model";
 
 @Controller('/api/v1/user')
 export class UserController {
