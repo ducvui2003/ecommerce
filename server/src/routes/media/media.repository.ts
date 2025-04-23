@@ -51,8 +51,8 @@ export class PrismaMediaRepository implements MediaRepository {
     };
   }
 
-  createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>) {
-    return this.prismaService.resource.create({
+  async createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>) {
+    return await this.prismaService.resource.create({
       data: {
         publicId: data.publicId,
         format: data.format,
@@ -61,8 +61,8 @@ export class PrismaMediaRepository implements MediaRepository {
     });
   }
 
-  changeVisibility(data: Pick<MediaType, 'id' | 'isDeleted'>) {
-    this.prismaService.resource.update({
+  async changeVisibility(data: Pick<MediaType, 'id' | 'isDeleted'>) {
+    await this.prismaService.resource.update({
       data: {
         isDeleted: data.isDeleted,
         deletedAt: getCurrentDatetime(),
