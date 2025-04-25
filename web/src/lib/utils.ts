@@ -4,6 +4,7 @@ import { UseFormSetError } from 'react-hook-form';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,6 +45,10 @@ export const normalizePath = (path: string) => {
 
 export const uuid = (): string => {
   return uuidv4();
+};
+
+export const nanoId = (length: number) => {
+  return nanoid(length);
 };
 
 const VietNamDong = new Intl.NumberFormat('vi-VN', {

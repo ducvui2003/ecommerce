@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetDistrictsQuery } from '@/features/address/address.slice';
+import { useGetDistrictsQuery } from '@/features/address/address.api';
 import { uuid } from '@/lib/utils';
 
 type SelectDistrictProps = {
@@ -37,14 +37,14 @@ const SelectDistrict = ({ setValue, provinceId }: SelectDistrictProps) => {
         <SelectValue placeholder="Chọn quận/huyện" />
       </SelectTrigger>
       <SelectContent>
-        {!provinceId && <Skeleton className="w-full h-[20px] rounded-full" />}
+        {!provinceId && <Skeleton className="h-[20px] w-full rounded-full" />}
         {isFetching &&
           Array(5)
             .fill(null)
             .map((_, index) => (
               <Skeleton
                 key={index}
-                className="w-full h-[20px] rounded-full my-2"
+                className="my-2 h-[20px] w-full rounded-full"
               />
             ))}
         {!isFetching &&

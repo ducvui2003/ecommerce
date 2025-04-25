@@ -31,6 +31,10 @@ const envSchema = z.object({
   ADDRESS_ACCESS_TOKEN: z.string(),
   ADDRESS_APP_ID: z.string(),
   ADDRESS_BUSINESS_ID: z.string(),
+
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
 });
 
 const configServer = envSchema.safeParse(process.env);

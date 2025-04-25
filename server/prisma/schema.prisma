@@ -239,13 +239,16 @@ model Category {
 }
 
 model Resource {
-  id  Int    @id @default(autoincrement())
-  url String @map("url")
+  id       Int    @id @default(autoincrement())
+  publicId String @map("public_id")
+  type     String
+  format   String
 
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime?         @updatedAt @map("updated_at")
-  deletedAt       DateTime?         @map("deleted_at")
-  productId       Int?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  isDeleted Boolean   @default(false)
+
   ProductResource ProductResource[]
   OptionResource  OptionResource[]
 

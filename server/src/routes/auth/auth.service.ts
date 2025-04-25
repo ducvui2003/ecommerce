@@ -1,5 +1,5 @@
 import envConfig from '@config/env.config';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 import {
   ForgetPasswordBodyDTO,
@@ -8,7 +8,6 @@ import {
   SendOTPBodyDTO,
   VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
-import { AuthRepository } from '@route/auth/auth.repository';
 import {
   EmailExistException,
   EmailNotExistException,
@@ -19,16 +18,8 @@ import {
   TokenInvalidException,
   TokenRevokedException,
 } from '@route/auth/auth.error';
-import { RoleService } from '@shared/services/role.service';
-import {
-  TypeOfVerificationType,
-  VerificationType,
-} from '@shared/constants/auth.constant';
-import {
-  generateOTP,
-  isNotFoundError,
-  isUniqueConstraintError,
-} from '@shared/helper.shared';
+import { AuthRepository } from '@route/auth/auth.repository';
+import { generateOTP, isNotFoundError } from '@shared/helper.shared';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
 import {
@@ -37,6 +28,7 @@ import {
 } from '@shared/services/cache/cache.util';
 import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
+import { RoleService } from '@shared/services/role.service';
 import { TokenService } from '@shared/services/token.service';
 import { JwtCustomClaims } from '@shared/types/jwt.type';
 import { addMilliseconds } from 'date-fns';
