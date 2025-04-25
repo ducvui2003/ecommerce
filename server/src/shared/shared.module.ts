@@ -9,6 +9,7 @@ import { LoggingMiddleware } from '@shared/middlewares/logging.middleware';
 import { SharedRoleRepository } from '@shared/repositories/shared-role.repository';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
+import { CloudinaryService } from '@shared/services/file/cloudinary/cloudinary.service';
 import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
 import { MailForgotPasswordService } from '@shared/services/mail/mail-forgot-password.service';
@@ -32,6 +33,10 @@ const sharedServices: Provider[] = [
   {
     provide: 'MAIL_FORGOT_PASSWORD',
     useClass: MailForgotPasswordService,
+  },
+  {
+    provide: 'FILE_SERVICE',
+    useClass: CloudinaryService,
   },
   CacheService,
   SharedRoleRepository,

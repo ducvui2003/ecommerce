@@ -42,7 +42,9 @@ export class SerializerInterceptor implements NestInterceptor {
         };
 
         formatResponse.data =
-          Object.keys(dataParser).length == 0 ? undefined : dataParser;
+          dataParser && Object.keys(dataParser)?.length != 0
+            ? dataParser
+            : undefined;
 
         return formatResponse;
       }),

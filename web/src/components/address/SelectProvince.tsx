@@ -6,7 +6,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
-import { useGetProvincesQuery } from '@/features/address/address.slice';
+import { useGetProvincesQuery } from '@/features/address/address.api';
 import { uuid } from '@/lib/utils';
 
 type SelectProvinceProps = {
