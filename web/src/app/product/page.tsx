@@ -1,4 +1,5 @@
 import FilterSlice from '@/app/product/filter-slice';
+import ListView from '@/components/ListView';
 import { CheckboxFilter } from '@/components/product/CheckboxFilter';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -31,7 +32,6 @@ const ProductPage = async ({ searchParams }: ProductPage) => {
   const query = searchParamsAsync || '';
   const currentPage = Number(searchParamsAsync?.page) || 1;
 
-  console.log(query, currentPage);
   return (
     <div className="mt-10 flex gap-4">
       <div className="filter-left basis-[350px]">
@@ -49,11 +49,12 @@ const ProductPage = async ({ searchParams }: ProductPage) => {
             <span className="ml-2">Giá</span>
           </span>
         </div>
-        <div className="product grid flex-1 grid-cols-4 grid-rows-3 gap-5">
-          {data.map((item, index) => (
-            <ProductCard key={index} {...item} />
-          ))}
-        </div>
+        <ListView<ProductCardType>
+          display="grid"
+          data={data}
+          className="product grid-cols-4 grid-rows-3 gap-5"
+          render={(item, index) => <ProductCard key={index} {...item} />}
+        />
       </div>
     </div>
   );

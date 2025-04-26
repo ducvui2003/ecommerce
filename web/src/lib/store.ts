@@ -1,4 +1,5 @@
-import { addressApi } from '@/features/address/address.slice';
+import { addressApi } from '@/features/address/address.api';
+import { mediaApi } from '@/features/media/media.api';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
@@ -6,9 +7,12 @@ export const makeStore = () => {
   const store = configureStore({
     reducer: {
       [addressApi.reducerPath]: addressApi.reducer,
+      [mediaApi.reducerPath]: mediaApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      return getDefaultMiddleware().concat(addressApi.middleware);
+      return getDefaultMiddleware()
+        .concat(addressApi.middleware)
+        .concat(mediaApi.middleware);
     },
   });
 
