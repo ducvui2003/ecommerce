@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { ProductController } from './product.controller';
-import { PrismaUserRepository } from '@route/user/user.repository';
+import { ProductController } from '@route/product/product.controller';
+import { ProductServiceImpl } from '@route/product/product.service';
 import { ProductRepositoryImpl } from '@route/product/product.repository';
 
 @Module({
   controllers: [ProductController],
-  providers: [ProductService,
+  providers: [ProductServiceImpl,
     {
       provide: 'PRODUCT_REPOSITORY',
-      useClass: ProductRepositoryImpl,
+      useClass: ProductRepositoryImpl
+      ,
     },],
 
 })
