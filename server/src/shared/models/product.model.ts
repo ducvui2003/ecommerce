@@ -19,29 +19,3 @@ export const ProductModel = MetadataFields.extend({
 });
 
 export type ProductType = z.infer<typeof ProductModel>;
-
-export class ProductFilterDto {
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  categoryId?: string;
-
-  @IsOptional()
-  @IsString()
-  supplierId?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  minPrice?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  maxPrice?: number;
-}
