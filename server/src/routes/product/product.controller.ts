@@ -2,10 +2,11 @@ import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ProductService } from './interfaces/product-service.interface';
 import { ProductDetailRes, ProductRes } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import {ProductServiceImpl} from "@route/product/product.service";
 
-@Controller('products')
+@Controller('/api/v1/products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductServiceImpl) {}
 
   @Get()
   findAll(

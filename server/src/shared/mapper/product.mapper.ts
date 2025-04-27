@@ -23,8 +23,8 @@ export function mapProductDetailToResponse(product: Product & { category: Catego
     description: product.description,
     categoryId: product.categoryId,
     supplierId: String(product.supplierId),
-    basePrice: -Math.abs(Number(product.basePrice)),
-    salePrice: -Math.abs(Number(product.salePrice)),
+    basePrice: Math.abs(Number(product.basePrice)),
+    salePrice: Math.abs(Number(product.salePrice)),
     category: {
       id: product.category.id,
       name: product.category.name,

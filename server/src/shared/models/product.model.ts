@@ -11,8 +11,8 @@ export const ProductModel = MetadataFields.extend({
   description: z.string(),
   categoryId: z.number(),
   supplierId: z.string(),
-  basePrice: z.number().negative(),
-  salePrice: z.number().negative(),
+  basePrice: z.number().positive(),
+  salePrice: z.number().positive(),
 
   category: CategoryModel,
   supplier: SupplierModel,

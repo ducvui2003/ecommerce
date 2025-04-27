@@ -3,7 +3,7 @@ import { getCurrentDatetime } from '@shared/helper.shared';
 import { MediaType } from '@shared/models/media.model';
 import { PrismaService } from '@shared/services/prisma.service';
 import { Pageable } from '@shared/types/request.type';
-import { Paging } from '@shared/types/response.type';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 
 export interface MediaRepository {
   getMedia<K extends keyof MediaType>(
