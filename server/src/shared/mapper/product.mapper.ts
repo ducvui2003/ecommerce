@@ -16,15 +16,15 @@ export function mapProductToResponse(product: Product & { category: Category }):
   };
 }
 
-export function mapProductDetailToResponse(product: Product & { category: Category; supplier: Supplier }): ProductDetailRes {
+export function  mapProductDetailToResponse(product: Product & { category: Category; supplier: Supplier }): ProductDetailRes {
   return {
     id: product.id,
     name: product.name,
     description: product.description,
     categoryId: product.categoryId,
     supplierId: String(product.supplierId),
-    basePrice: Math.abs(Number(product.basePrice)),
-    salePrice: Math.abs(Number(product.salePrice)),
+    basePrice: Number(product.basePrice),
+    salePrice: Number(product.salePrice),
     category: {
       id: product.category.id,
       name: product.category.name,
