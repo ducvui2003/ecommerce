@@ -42,6 +42,13 @@ const UserDropdown = () => {
         </GuestOnlyClient>
         <RequiredAuthClient mode="hide">
           <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
+            <RequiredAuthClient mode="hide" role={['ADMIN']}>
+              <DropdownMenuItem>
+                <Link href={'/admin/product'} className="flex-1">
+                  Quản lý
+                </Link>
+              </DropdownMenuItem>
+            </RequiredAuthClient>
             <DropdownMenuItem>
               <Link href={'/user/info'} className="flex-1" legacyBehavior>
                 Thông tin cá nhân
