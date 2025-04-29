@@ -6,7 +6,7 @@ import { Role } from '@/types/auth.type';
 export const authMiddleware = (allowedRole?: Role) => {
   return withAuth(
     function middleware(req: NextRequestWithAuth, event: NextFetchEvent) {
-      if (!req.nextauth.token) {
+      if (!req.nextauth?.token) {
         if (!allowedRole)
           return NextResponse.redirect(new URL('/login', req.url));
         const role: Role = req.nextauth.token?.role as Role;
