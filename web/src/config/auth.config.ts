@@ -76,12 +76,12 @@ const nextAuthConfig: NextAuthOptions = {
 
   callbacks: {
     signIn({ user, account, profile, email, credentials }) {
-      console.log('Go to callback');
-      console.log('user', user);
-      console.log('account', account);
-      console.log('profile', profile);
-      console.log('email', email);
-      console.log('credentials', credentials);
+      // console.log('Go to callback');
+      // console.log('user', user);
+      // console.log('account', account);
+      // console.log('profile', profile);
+      // console.log('email', email);
+      // console.log('credentials', credentials);
       if (user) return true;
       throw Error('🔹 SignIn Callback: Error');
     },
@@ -91,10 +91,10 @@ const nextAuthConfig: NextAuthOptions = {
     // token is a obj that is assign value related jwt (AT and RT)
     // return data encrypted and store cookie
     async jwt({ token, user, account }) {
-      console.log('go to jwt');
-      console.log('token', token);
-      console.log('user', user);
-      console.log('account', account);
+      // console.log('go to jwt');
+      // console.log('token', token);
+      // console.log('user', user);
+      // console.log('account', account);
 
       // Identify login = oauth 2
       if (account?.access_token) {
@@ -112,6 +112,7 @@ const nextAuthConfig: NextAuthOptions = {
               token.accessToken = userData.accessToken;
               token.refreshToken = userData.refreshToken;
               token.expiresAt = userData.expiresAt;
+              token.error = 'Valid';
               return token;
             } catch (error) {
               console.error('⚠️ Google login error:', error);
@@ -131,6 +132,7 @@ const nextAuthConfig: NextAuthOptions = {
               token.accessToken = userData.accessToken;
               token.refreshToken = userData.refreshToken;
               token.expiresAt = userData.expiresAt;
+              token.error = 'Valid';
 
               return token;
             } catch (error) {
@@ -150,6 +152,7 @@ const nextAuthConfig: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.expiresAt = user.expiresAt;
+        token.error = 'Valid';
       }
 
       if (Date.now() <= (token.expiresAt as number) * 1000) return token;
@@ -165,6 +168,7 @@ const nextAuthConfig: NextAuthOptions = {
         token.accessToken = newTokens.accessToken;
         token.refreshToken = newTokens.refreshToken;
         token.expiresAt = newTokens.expiresAt;
+        token.error = 'Valid';
       } else {
         // Refresh token expired => login again
         return {
@@ -189,6 +193,7 @@ const nextAuthConfig: NextAuthOptions = {
         role: token.role,
         email: token.email,
       };
+      session.error = token.error;
       return session;
     },
   },

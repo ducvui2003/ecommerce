@@ -21,7 +21,11 @@ const RequiredAuthClient = ({
   role = ['USER'],
 }: RequiredAuthClient) => {
   const { data: session, status } = useSession();
-  if (status !== 'authenticated' || role.includes(session.user.role as Role)) {
+  if (
+    status !== 'authenticated' ||
+    (session && session.error !== 'Valid') ||
+    role.includes(session.user.role as Role)
+  ) {
     switch (mode) {
       case 'hide':
         return null; // Completely remove element

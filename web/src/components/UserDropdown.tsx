@@ -6,7 +6,6 @@ import GuestOnlyClient from '@/components/protected/GuestOnlyClient';
 import RequiredAuthClient from '@/components/protected/RequiredAuthClient';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -29,13 +28,13 @@ const UserDropdown = () => {
         <GuestOnlyClient>
           <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
             <DropdownMenuItem>
-              <Link href={'/login'} className="w-full">
+              <Link href={'/login'} className="flex-1">
                 Đăng nhập
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={'/register'} className="w-full">
+              <Link href={'/register'} className="flex-1">
                 Đăng ký
               </Link>
             </DropdownMenuItem>
@@ -43,8 +42,13 @@ const UserDropdown = () => {
         </GuestOnlyClient>
         <RequiredAuthClient mode="hide">
           <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
+            <DropdownMenuItem>
+              <Link href={'/user/info'} className="flex-1" legacyBehavior>
+                Thông tin cá nhân
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem
-              className="bg-red-500 text-white hover:bg-red-700"
+              className="flex-1 bg-red-500 text-white hover:bg-red-700"
               onClick={() => setOpen(true)}
             >
               Đăng xuất
