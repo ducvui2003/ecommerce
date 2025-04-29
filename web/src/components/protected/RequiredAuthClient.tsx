@@ -1,7 +1,7 @@
 'use client';
 import { Role } from '@/types/auth.type';
 import { useSession } from 'next-auth/react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 type Mode = 'hide' | 'disable' | 'blur-sm' | 'none';
 
@@ -18,14 +18,19 @@ type RequiredAuthClient = {
 const RequiredAuthClient = ({
   children,
   mode = 'none',
-  role = ['USER'],
+  role,
 }: RequiredAuthClient) => {
   const { data: session, status } = useSession();
-  if (
-    status !== 'authenticated' ||
-    (session && session.error !== 'Valid') ||
-    role.includes(session.user.role as Role)
-  ) {
+
+  const shouldRestrict = useMemo(() => {
+    if (status === 'loading') return true;
+    if (status !== 'authenticated') return true;
+    if (session?.error && session.error !== 'Valid') return true;
+    if (!role) return false;
+    return !role?.includes(session?.user.role as Role);
+  }, [session, status, role]);
+
+  if (shouldRestrict) {
     switch (mode) {
       case 'hide':
         return null; // Completely remove element
