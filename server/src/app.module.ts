@@ -17,6 +17,7 @@ import { UnprocessableEntityExceptionFilter } from '@shared/filters/unprocessabl
 import { HttpExceptionFilter } from '@shared/filters/http.exception.filter';
 import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
 import { MediaModule } from './routes/media/media.module';
+import { ProductModule } from './routes/product/product.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MediaModule } from './routes/media/media.module';
     OauthModule,
     AddressModule,
     MediaModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [

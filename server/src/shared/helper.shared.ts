@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { Paging } from '@shared/types/response.type';
 import { randomInt } from 'crypto';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 
 export function isUniqueConstraintError(
   error: any,
