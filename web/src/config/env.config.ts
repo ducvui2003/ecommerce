@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const configSchema = z.object({
+  NEXT_PUBLIC_SERVER_INTERNAL: z.string(),
   NEXT_PUBLIC_SERVER_URL: z.string(),
   NEXT_PUBLIC_AUTH_SECRET: z.string(),
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string(),
@@ -12,6 +13,7 @@ const configSchema = z.object({
 });
 
 const configProject = configSchema.safeParse({
+  NEXT_PUBLIC_SERVER_INTERNAL: process.env.NEXT_PUBLIC_SERVER_INTERNAL,
   NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
   NEXT_PUBLIC_AUTH_SECRET: process.env.NEXT_PUBLIC_AUTH_SECRET,
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,

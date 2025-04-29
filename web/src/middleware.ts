@@ -20,28 +20,28 @@ export default async function middleware(
   req: NextRequestWithAuth,
   event: NextFetchEvent,
 ) {
-  const url = req.nextUrl;
+  // const url = req.nextUrl;
 
-  if (
-    routesNeedAuth.find((item) => url.pathname.startsWith(item)) !== undefined
-  ) {
-    logger.info('Auth Middleware Executed');
-    const authResponse: NextMiddlewareResult = await authMiddleware(
-      req as NextRequestWithAuth,
-      event,
-    );
-    if (authResponse && authResponse.status !== 200)
-      return NextResponse.redirect(new URL(LOGIN_PAGE, req.url));
-  }
+  // if (
+  //   routesNeedAuth.find((item) => url.pathname.startsWith(item)) !== undefined
+  // ) {
+  //   logger.info('Auth Middleware Executed');
+  //   const authResponse: NextMiddlewareResult = await authMiddleware(
+  //     req as NextRequestWithAuth,
+  //     event,
+  //   );
+  //   if (authResponse && authResponse.status !== 200)
+  //     return NextResponse.redirect(new URL(LOGIN_PAGE, req.url));
+  // }
 
-  if (
-    routesPreventAfterAuth.find((item) => url.pathname.startsWith(item)) !==
-    undefined
-  ) {
-    logger.info('Prevent Login Executed');
-    const response = await middlewarePreventLogin(req);
-    if (!response.ok) return NextResponse.redirect(new URL(HOME_PAGE, req.url));
-  }
+  // if (
+  //   routesPreventAfterAuth.find((item) => url.pathname.startsWith(item)) !==
+  //   undefined
+  // ) {
+  //   logger.info('Prevent Login Executed');
+  //   const response = await middlewarePreventLogin(req);
+  //   if (!response.ok) return NextResponse.redirect(new URL(HOME_PAGE, req.url));
+  // }
 
   return NextResponse.next();
 }

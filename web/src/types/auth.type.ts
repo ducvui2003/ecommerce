@@ -48,6 +48,8 @@ enum TypeOTP {
   'FORGOT_PASSWORD',
 }
 
+type Role = 'ADMIN' | 'SELLER' | 'USER';
+
 export type {
   RefreshTokenResType,
   RegisterReqType,
@@ -57,4 +59,5 @@ export type {
   OTPResType,
   VerifyOTPReqType,
   ResetPasswordReqType,
+  Role,
 };

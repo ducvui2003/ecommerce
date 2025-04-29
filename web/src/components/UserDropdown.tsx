@@ -4,7 +4,6 @@ import Link from '@/components/Link';
 import LogoutFrame from '@/components/LogoutFrame';
 import GuestOnlyClient from '@/components/protected/GuestOnlyClient';
 import RequiredAuthClient from '@/components/protected/RequiredAuthClient';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -15,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import React, { useState } from 'react';
 
-const UserButton = () => {
+const UserDropdown = () => {
   const [open, setOpen] = useState<boolean>(false);
   return (
     <>
@@ -58,4 +57,4 @@ const UserButton = () => {
   );
 };
 
-export default UserButton;
+export default UserDropdown;

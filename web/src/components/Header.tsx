@@ -2,7 +2,7 @@ import CartButton from '@/components/CartButton';
 import ClientIcon from '@/components/ClientIcon';
 import Logo from '@/components/Logo';
 import SearchBar from '@/components/SearchBar';
-import UserButton from '@/components/UserButton';
+import UserDropdown from '@/components/UserDropdown';
 
 const Header = async () => {
   return (
@@ -13,7 +13,7 @@ const Header = async () => {
         <div className="flex gap-16">
           <CartButton />
           <ClientIcon icon={'lucide:heart'} size={24} />
-          <UserButton />
+          <UserDropdown />
         </div>
       </div>
     </header>

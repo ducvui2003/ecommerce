@@ -21,7 +21,7 @@ import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
 import { Paging, RequestPaging } from '@/types/api.type';
 import { Media, MediaUploading } from '@/types/media.type';
-import { ReactNode, useCallback, useState } from 'react';
+import { memo, ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 type MediaDialogProps = {
@@ -29,15 +29,6 @@ type MediaDialogProps = {
   onOpenChange?: (open: boolean) => void;
   children?: ReactNode;
 };
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
 
 const url =
   'https://plus.unsplash.com/premium_photo-1673803529478-c155a34d8b45?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dmVydGljYWwlMjB3YWxscGFwZXJ8ZW58MHx8MHx8fDA%3D';
@@ -258,4 +249,4 @@ const MediaViewerCard = ({
   );
 };
 
-export default MediaDialog;
+export default memo(MediaDialog);
