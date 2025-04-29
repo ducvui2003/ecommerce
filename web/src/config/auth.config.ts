@@ -14,7 +14,7 @@ const nextAuthConfig: NextAuthOptions = {
   debug: false,
   providers: [
     CredentialsProvider<Record<string, CredentialInput>>({
-      name: 'Credentials',
+      name: 'credentials',
       credentials: {
         email: {
           label: 'Email',
@@ -43,14 +43,8 @@ const nextAuthConfig: NextAuthOptions = {
 
           return res;
         } catch (error: any) {
-          if (error.status === HTTP_STATUS_CODE.UNAUTHORIZED) {
-            throw Error(HTTP_STATUS_CODE.UNAUTHORIZED.toString());
-          }
-          if (error.status === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE) {
-            // 422 = email hoặc password không đúng
-            throw Error(HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString());
-          }
-          throw new Error('Error but not cast in next auth');
+          console.info('auth.config.ts', 'error in authorize', error);
+          return null;
         }
       },
     }),
@@ -82,6 +76,12 @@ const nextAuthConfig: NextAuthOptions = {
 
   callbacks: {
     signIn({ user, account, profile, email, credentials }) {
+      // console.log('Go to callback');
+      // console.log('user', user);
+      // console.log('account', account);
+      // console.log('profile', profile);
+      // console.log('email', email);
+      // console.log('credentials', credentials);
       if (user) return true;
       throw Error('🔹 SignIn Callback: Error');
     },
@@ -91,79 +91,109 @@ const nextAuthConfig: NextAuthOptions = {
     // token is a obj that is assign value related jwt (AT and RT)
     // return data encrypted and store cookie
     async jwt({ token, user, account }) {
-      // console.log('jwt trigger', trigger);
+      // console.log('go to jwt');
+      // console.log('token', token);
+      // console.log('user', user);
+      // console.log('account', account);
+
+      // Identify login = oauth 2
       if (account?.access_token) {
-        console.log('Call to nest');
-        if (account?.provider === 'google') {
-          try {
-            const userData: User = await oauth2Api.login(
-              account.access_token,
-              'google',
-            );
-            token.id = userData.id;
-            token.name = userData.name;
-            token.email = userData.email;
-            token.role = userData.role;
-            token.accessToken = userData.accessToken;
-            token.refreshToken = userData.refreshToken;
-            token.expiresAt = userData.expiresAt;
-            console.log('token', token);
-            return token;
-          } catch (error) {
-            console.error('⚠️ Google login error:', error);
+        switch (account.provider) {
+          case 'google': {
+            try {
+              const userData: User = await oauth2Api.login(
+                account.access_token,
+                'google',
+              );
+              token.id = userData.id;
+              token.name = userData.name;
+              token.email = userData.email;
+              token.role = userData.role;
+              token.accessToken = userData.accessToken;
+              token.refreshToken = userData.refreshToken;
+              token.expiresAt = userData.expiresAt;
+              token.error = 'Valid';
+              return token;
+            } catch (error) {
+              console.error('⚠️ Google login error:', error);
+              break;
+            }
           }
-        }
-        if (account?.provider === 'facebook') {
-          try {
-            const userData: User = await oauth2Api.login(
-              account.access_token,
-              'facebook',
-            );
-            token.id = userData.id;
-            token.name = userData.name;
-            token.email = userData.email;
-            token.role = userData.role;
-            token.accessToken = userData.accessToken;
-            token.refreshToken = userData.refreshToken;
-            token.expiresAt = userData.expiresAt;
-            console.log('token', token);
-            return token;
-          } catch (error) {
-            console.error('⚠️ Facebook login error:', error);
+          case 'facebook': {
+            try {
+              const userData: User = await oauth2Api.login(
+                account.access_token,
+                'facebook',
+              );
+              token.id = userData.id;
+              token.name = userData.name;
+              token.email = userData.email;
+              token.role = userData.role;
+              token.accessToken = userData.accessToken;
+              token.refreshToken = userData.refreshToken;
+              token.expiresAt = userData.expiresAt;
+              token.error = 'Valid';
+
+              return token;
+            } catch (error) {
+              console.error('⚠️ Facebook login error:', error);
+              break;
+            }
           }
         }
       }
 
+      // Login = credential
       if (user) {
+        token.id = user.id as number;
         token.name = user.name;
+        token.email = user.email;
+        token.role = user.role;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.expiresAt = user.expiresAt;
+        token.error = 'Valid';
       }
+
+      if (Date.now() <= (token.expiresAt as number) * 1000) return token;
 
       // Refresh access token if expired
-      if (Date.now() > (token.expiresAt as number) * 1000) {
-        const newTokens = await authService.renewToken(
-          token.refreshToken as string,
-        );
-        if (newTokens) {
-          token.email = newTokens.email;
-          token.id = newTokens.id;
-          token.name = newTokens.name;
-          token.picture = newTokens.image;
-          token.accessToken = newTokens.accessToken;
-          token.refreshToken = newTokens.refreshToken;
-          token.expiresAt = newTokens.expiresAt;
-        }
+      console.info('Token expired');
+      const newTokens = await authService.renewToken(token.refreshToken);
+      if (newTokens) {
+        token.email = newTokens.email;
+        token.id = newTokens.id;
+        token.name = newTokens.name;
+        token.picture = newTokens.image;
+        token.accessToken = newTokens.accessToken;
+        token.refreshToken = newTokens.refreshToken;
+        token.expiresAt = newTokens.expiresAt;
+        token.error = 'Valid';
+      } else {
+        // Refresh token expired => login again
+        return {
+          ...token,
+          error: 'RefreshAccessTokenError',
+        };
       }
 
-      // console.log('🔹 JWT Callback:', token);
       return token;
     },
 
     // Customize session return if use useSession or getSession func
     session({ session, token, user }) {
-      session.accessToken = token.accessToken as string;
+      // console.log('session');
+      // console.log('session', session);
+      // console.log('token', token);
+      // console.log('user', user);
+      session.user = {
+        id: token.id,
+        name: token.name,
+        accessToken: token.accessToken,
+        role: token.role,
+        email: token.email,
+      };
+      session.error = token.error;
       return session;
     },
   },

@@ -15,7 +15,7 @@ import { EntityError } from '@/lib/http';
 import { handleErrorApi } from '@/lib/utils';
 import { LoginFormSchema, LoginFormType } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
+import { signIn, SignInResponse } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
@@ -39,26 +39,8 @@ const LoginForm = () => {
       password: values.password,
       redirect: false,
     })
-      .then((response) => {
-        if (
-          response?.error ===
-          HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
-        ) {
-          // Đóng gói error để trả error trên form thay vì toast message error
-          throw new EntityError({
-            status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
-            payload: {
-              error: '',
-              message: [
-                {
-                  field: 'password',
-                  error: 'Email hoặc mật khẩu không đúng',
-                },
-              ],
-            },
-          });
-        }
-        if (response?.error === HTTP_STATUS_CODE.UNAUTHORIZED.toString()) {
+      .then((response: SignInResponse | undefined) => {
+        if (response?.status === HTTP_STATUS_CODE.UNAUTHORIZED) {
           // Đóng gói error để trả error trên form thay vì toast message error
           throw new EntityError({
             status: HTTP_STATUS_CODE.UNAUTHORIZED,
@@ -67,8 +49,7 @@ const LoginForm = () => {
               message: [
                 {
                   field: 'email',
-                  error:
-                    'Tài khoản với email này chưa tồn tại, vui lòng thực hiện đăng ký',
+                  error: 'Tài khoản với email này chưa tồn tại',
                 },
               ],
             },
@@ -95,7 +76,9 @@ const LoginForm = () => {
               <FormControl>
                 <Input placeholder="Vui lòng không để trống" {...field} />
               </FormControl>
-              <FormMessage />
+              <span className="h-[25px]">
+                <FormMessage />
+              </span>
             </FormItem>
           )}
         />

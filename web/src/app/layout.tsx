@@ -12,12 +12,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'An Nhien',
   description: 'Oil',
-  icons: {
-    icon: '/favicon/favicon.ico',
-    apple: '/favicon/apple-touch-icon.png',
-    shortcut: '/favicon/favicon-32x32.png',
-  },
-  manifest: '/favicon/site.webmanifest',
 };
 
 export default async function RootLayout({
@@ -26,8 +20,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
-      <body>
+    <html lang="en">
+      <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -1,7 +1,6 @@
 import envConfig from '@/config/env.config';
 import logger from '@/lib/logger';
 import { getToken } from 'next-auth/jwt';
-import { NextRequestWithAuth } from 'next-auth/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
 const middlewarePreventLogin = async (req: NextRequest) => {
@@ -11,10 +10,7 @@ const middlewarePreventLogin = async (req: NextRequest) => {
   });
 
   if (token) {
-    return new Response('', {
-      status: 400,
-      statusText: 'Login success, forward to home page',
-    });
+    return null;
   }
 
   return NextResponse.next();
