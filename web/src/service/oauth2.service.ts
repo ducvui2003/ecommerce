@@ -9,24 +9,20 @@ const oauth2Api = {
     accessToken: string,
     provider: 'google' | 'facebook',
   ): Promise<User> => {
-    try {
-      const res = await http.post<ResponseApi<LoginResType>>('/api/oauth2', {
-        accessToken,
-        provider,
-      });
-      const body = res.payload.data;
+    const res = await http.post<ResponseApi<LoginResType>>('/api/oauth2', {
+      accessToken,
+      provider,
+    });
+    const body = res.payload.data;
 
-      const userInfo = await userService.getInfo(body.accessToken);
-      return {
-        ...userInfo,
-        image: userInfo.avatar,
-        accessToken: body.accessToken,
-        refreshToken: body.refreshToken,
-        expiresAt: body.exp,
-      };
-    } catch (e) {
-      throw e;
-    }
+    const userInfo = await userService.getInfo(body.accessToken);
+    return {
+      ...userInfo,
+      image: userInfo.avatar,
+      accessToken: body.accessToken,
+      refreshToken: body.refreshToken,
+      expiresAt: body.exp,
+    };
   },
 };
 

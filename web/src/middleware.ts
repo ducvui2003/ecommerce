@@ -1,12 +1,15 @@
-import { HOME_PAGE, LOGIN_PAGE } from '@/constraint/variable';
-import logger from '@/lib/logger';
 import authMiddleware from '@/middlewares/auth.middleware';
 import middlewarePreventLogin from '@/middlewares/prevent-login.middleware';
 import { NextRequestWithAuth } from 'next-auth/middleware';
-import { NextMiddlewareResult } from 'next/dist/server/web/types';
 import { NextFetchEvent, NextResponse } from 'next/server';
 
-const routesNeedAuth: string[] = [];
+const routesNeedAuth: string[] = ['/user/info'];
+
+const routesForUser: string[] = [];
+
+const routesForSeller: string[] = [];
+
+const routesForAdmin: string[] = [];
 
 const routesPreventAfterAuth: string[] = [
   '/login',
@@ -14,37 +17,39 @@ const routesPreventAfterAuth: string[] = [
   '/forgot-password',
 ];
 
-const routes = [...routesNeedAuth, ...routesPreventAfterAuth];
-
 export default async function middleware(
   req: NextRequestWithAuth,
   event: NextFetchEvent,
 ) {
-  const url = req.nextUrl;
+  const path = req.nextUrl.pathname;
 
-  if (
-    routesNeedAuth.find((item) => url.pathname.startsWith(item)) !== undefined
-  ) {
-    logger.info('Auth Middleware Executed');
-    const authResponse: NextMiddlewareResult = await authMiddleware(
-      req as NextRequestWithAuth,
-      event,
-    );
-    if (authResponse && authResponse.status !== 200)
-      return NextResponse.redirect(new URL(LOGIN_PAGE, req.url));
+  if (routesPreventAfterAuth.includes(path)) {
+    const result = middlewarePreventLogin(req);
+    if (!result) return result;
   }
 
-  if (
-    routesPreventAfterAuth.find((item) => url.pathname.startsWith(item)) !==
-    undefined
-  ) {
-    logger.info('Prevent Login Executed');
-    const response = await middlewarePreventLogin(req);
-    if (!response.ok) return NextResponse.redirect(new URL(HOME_PAGE, req.url));
+  if (routesNeedAuth.includes(path)) {
+    const result = authMiddleware()(req, event);
+    if (!result) return result;
+  }
+
+  if (routesForUser.includes(path)) {
+    const result = authMiddleware('USER')(req, event);
+    if (!result) return result;
+  }
+
+  if (routesForSeller.includes(path)) {
+    const result = authMiddleware('SELLER')(req, event);
+    if (!result) return result;
+  }
+
+  if (routesForAdmin.includes(path)) {
+    const result = authMiddleware('ADMIN')(req, event);
+    if (!result) return result;
   }
 
   return NextResponse.next();
 }
 export const config = {
-  matcher: ['/login', '/register', '/forgot-password'],
+  matcher: ['/', '/login', '/register', '/forgot-password', '/user/info'],
 };
