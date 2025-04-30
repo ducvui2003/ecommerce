@@ -23,24 +23,25 @@ import { User } from 'next-auth';
 
 const authService = {
   login: async (data: LoginReqType): Promise<User> => {
-    try {
-      const res = await http.post<ResponseApi<LoginResType>>(
-        '/api/v1/auth/login',
-        data,
-      );
-      const body = res.payload.data;
+    const res = await http.post<ResponseApi<LoginResType>>(
+      '/api/v1/auth/login',
+      data,
+      undefined,
+      false,
+    );
+    const body = res.payload.data;
 
-      const userInfo = await userService.getInfo(body.accessToken);
-      return {
-        ...userInfo,
-        image: userInfo.avatar,
-        accessToken: body.accessToken,
-        refreshToken: body.refreshToken,
-        expiresAt: body.exp,
-      };
-    } catch (error) {
-      throw error;
-    }
+    const userInfo = await userService.getInfo(body.accessToken);
+    return {
+      id: userInfo.id,
+      email: userInfo.email,
+      name: userInfo.name,
+      role: userInfo.role,
+      image: userInfo.avatar,
+      accessToken: body.accessToken,
+      refreshToken: body.refreshToken,
+      expiresAt: body.exp,
+    };
   },
 
   register: (data: RegisterReqType) => {
@@ -76,34 +77,37 @@ const authService = {
     }
   },
 
-  renewToken: async (refreshToken: string): Promise<User> => {
-    try {
-      const body = {
-        refreshToken: refreshToken,
-      };
-      const res = await fetch(
-        `${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/refresh-token`,
-        {
-          method: 'POST',
-          body: JSON.stringify(body),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
-      const data: ResponseApi<RefreshTokenResType> = await res.json();
+  renewToken: async (refreshToken: string): Promise<User | null> => {
+    const body = {
+      refreshToken: refreshToken,
+    };
+    const res = await fetch(
+      `${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/refresh-token`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
 
-      const userInfo = await userService.getInfo(data.data.accessToken);
-
-      return {
-        ...userInfo,
-        image: userInfo.avatar,
-        accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken,
-        expiresAt: data.data.exp,
-      };
-    } catch (error) {
-      console.error('Renew token failed');
-      throw error;
+    if (!res.ok) {
+      return null;
     }
+
+    const data: ResponseApi<RefreshTokenResType> = await res.json();
+
+    const userInfo = await userService.getInfo(data.data.accessToken);
+
+    return {
+      id: userInfo.id,
+      email: userInfo.email,
+      name: userInfo.name,
+      role: userInfo.role,
+      image: userInfo.avatar,
+      accessToken: data.data.accessToken,
+      refreshToken: data.data.refreshToken,
+      expiresAt: data.data.exp,
+    };
   },
 
   logout: async (accessToken: string, refreshToken: string): Promise<void> => {

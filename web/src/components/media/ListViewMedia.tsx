@@ -1,6 +1,5 @@
 'use client';
 import { ReactNode } from 'react';
-import image from 'public/images/banner.png';
 import MediaCard from '@/components/media/MediaCard';
 import { DndContext } from '@dnd-kit/core';
 
