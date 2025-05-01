@@ -18,6 +18,7 @@ import { HttpExceptionFilter } from '@shared/filters/http.exception.filter';
 import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
 import { MediaModule } from './routes/media/media.module';
 import { ProductModule } from './routes/product/product.module';
+import { PaymentModule } from './routes/payment/payment.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ProductModule } from './routes/product/product.module';
     AddressModule,
     MediaModule,
     ProductModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [
