@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "email:dev": "email dev --port 5555 --dir emails"
+    "email:dev": "email dev --port 5555 --dir emails",
+    "database:backup": "npx ts-node scripts/backup.ts"
   },
   "dependencies": {
     "@keyv/redis": "^4.3.2",
