@@ -175,8 +175,8 @@ model Product {
   id          Int    @id @default(autoincrement())
   name        String
   description String
-  basePrice   BigInt
-  salePrice   BigInt
+  basePrice   BigInt @map("base_price")
+  salePrice   BigInt @map("sale_price")
 
   categoryId Int      @map("category_id")
   category   Category @relation(fields: [categoryId], references: [id])

@@ -35,7 +35,7 @@ npx prisma db push
 Prisma look up different between current database and file `prisma/schema.prisma` to export file migration (file is empty if prisma can not see different)
 
 ```bash
-npx prisma migration dev --create-only
+npx prisma migrate dev --create-only
 ```
 
 ### 3.3 Append some change into file migration
@@ -47,7 +47,7 @@ You will add some native query depend on your database
 Prisma create a table `_prisma_migrations` to manage migrations
 
 ```bash
-npx prisma migration dev
+npx prisma migrate dev
 ```
 
 ## 4. Rollback migration when failed and redeploy
@@ -57,7 +57,7 @@ npx prisma migration dev
 - Change row in database manager migration to prisma know has a migration failed
 
 ```bash
-  npx prisma migration resolved --rollback <migration_name>
+  npx prisma migrate resolved --rollback <migration_name>
 ```
 
 | migration_name is a name directory that contain migration file failed
@@ -69,7 +69,7 @@ Edit SQL in this file migration failed
 ### 4.3 Re deploy
 
 ```bash
-  npx prisma migration deploy
+  npx prisma migrate deploy
 ```
 
 ## Note
