@@ -12,9 +12,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   setupExceptionHandling(app);
   setupCors(app);
-  setUpPipe(app)
-  // Serializer Response
-  // app.useGlobalInterceptors(new SerializerInterceptor());
   setupSwagger(app);
   await app.listen(envConfig.PORT);
 }

@@ -1,6 +1,4 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
-import { GlobalExceptionFilter } from '@shared/filters/global-exception.filter';
 
 export default function setUpPipe(
   app: INestApplication<any>,
