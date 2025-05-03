@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "nestjs-paginate": "^12.3.0"
+  }
+}

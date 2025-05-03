@@ -2,8 +2,6 @@ import { MetadataFields } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { z } from 'zod';
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export const ProductModel = MetadataFields.extend({
   id: z.number(),
