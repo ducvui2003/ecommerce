@@ -1,5 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ProductDetailRes, ProductRes } from '@route/product/product.dto';
+import {
+  ProductDetailRes,
+  ProductRes,
+  SearchProductDto,
+} from '@route/product/product.dto';
 import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
 import { ProductService } from '@route/product/interfaces/product-service.interface';
 import { Paging } from '@shared/common/interfaces/paging.interface';
@@ -22,5 +26,9 @@ export class ProductServiceImpl implements ProductService {
       throw new ProductNotFoundException();
     }
     return product;
+  }
+
+  searchProducts(dto: SearchProductDto): Promise<Paging<ProductRes>> {
+    return this.productRepository.searchProducts(dto);
   }
 }
