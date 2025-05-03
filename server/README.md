@@ -1,6 +1,6 @@
 # Database Migration
 
-## 1. You haven't a database
+## 1. You don't have a database
 
 ```bash
 npx prisma db push
