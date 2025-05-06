@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import Image, { StaticImageData } from 'next/image';
 import React from "react";
 import tinhdaucam from "public/images/tinh-dau-cam.jpeg";
 import tinhdauque from 'public/images/tinh-dau-que.jpg'
@@ -7,7 +7,7 @@ import tinhdauque from 'public/images/tinh-dau-que.jpg'
 type CoreValue = {
   title: string;
   content: string;
-  image: any;
+  image: StaticImageData;
   reverse?: boolean;
 };
 
