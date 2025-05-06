@@ -23,6 +23,8 @@ export const UserStatus = {
   BLOCKED: 'BLOCKED',
 } as const;
 
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]; // 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
+
 export const VerificationType = {
   REGISTER: 'REGISTER',
   FORGOT_PASSWORD: 'FORGOT_PASSWORD',
