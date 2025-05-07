@@ -26,7 +26,20 @@ type GetUserResType = {
   status: UserStatus;
   avatar?: string;
   createdAt: Date;
-  roleName: string;
+  role: string;
+};
+
+type GetAddressDetailResType = {
+  id: string;
+  province: string;
+  district: string;
+  ward: string;
+  detail: string;
+  createdAt: Date;
+};
+
+type GetUserDetailResType = GetUserResType & {
+  addresses: GetAddressDetailResType[];
 };
 
 export type {
@@ -34,4 +47,5 @@ export type {
   UserStatus,
   GetUserQueryReqType,
   GetUserResType,
+  GetUserDetailResType,
 };

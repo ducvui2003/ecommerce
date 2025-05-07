@@ -68,7 +68,7 @@ export const getAccessToken = async (): Promise<string> => {
     `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/auth/session`,
   );
   const body: Session = await response.json();
-  console.info('data', body);
+  if (!body?.user?.accessToken) return '';
 
   return body.user.accessToken;
 };

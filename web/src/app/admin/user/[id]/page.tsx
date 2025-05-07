@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import userManagerService from '@/service/manager/user.service';
 
 type UserDetailAdminPageProps = {
   params: Promise<{ id: string }>;
@@ -9,5 +9,7 @@ export default async function UserDetailAdminPage({
 }: UserDetailAdminPageProps) {
   const { id } = await params;
 
-  return <p>User: {id}</p>;
+  const data = await userManagerService.getDetail(parseInt(id));
+
+  return <p>User: {data.name}</p>;
 }

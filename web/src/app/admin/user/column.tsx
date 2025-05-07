@@ -45,10 +45,10 @@ const userColumns: ColumnDef<GetUserResType>[] = [
     },
   },
   {
-    accessorKey: 'roleName',
+    accessorKey: 'role',
     header: 'Role',
     cell: ({ row }) => {
-      const value: Role = row.getValue('roleName');
+      const value: Role = row.getValue('role');
 
       if (value === 'ADMIN')
         return <Badge className="bg-red-500 font-medium">{value}</Badge>;
@@ -90,7 +90,9 @@ const userColumns: ColumnDef<GetUserResType>[] = [
               Copy ID
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href={`/admin/user/${id}`}>Chỉnh sửa khách hàng</Link>
+              <Link href={`/admin/user/${id}`} className="flex-1">
+                Chỉnh sửa khách hàng
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

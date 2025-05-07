@@ -122,7 +122,7 @@ export class PrismaUserRepository implements UserRepository {
       const { role, ...rest } = user;
       return {
         ...rest,
-        roleName: role?.name ?? null,
+        role: role?.name ?? null,
       };
     });
 

@@ -28,7 +28,7 @@ type GetUserResType = Partial<
     | 'avatar'
     | 'createdAt'
   > & {
-    roleName: string;
+    role: string;
   }
 >;
 
