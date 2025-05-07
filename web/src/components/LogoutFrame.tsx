@@ -1,4 +1,5 @@
 'use client';
+import signOut from '@/components/auth/signOut';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,9 +11,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { LOCAL_STORAGE } from '@/constraint/variable';
-import { signOut } from 'next-auth/react';
+import { HOME_PAGE, LOCAL_STORAGE } from '@/constraint/variable';
+import { useRouter } from 'next/navigation';
 
 type LogoutButtonProps = {
   open: boolean;
@@ -20,6 +20,7 @@ type LogoutButtonProps = {
 };
 
 const LogoutFrame = ({ open, setOpen }: LogoutButtonProps) => {
+  const router = useRouter();
   return (
     <AlertDialog open={open} onOpenChange={() => setOpen(!open)}>
       <AlertDialogTrigger asChild></AlertDialogTrigger>
@@ -38,7 +39,9 @@ const LogoutFrame = ({ open, setOpen }: LogoutButtonProps) => {
           <AlertDialogAction
             onClick={() => {
               localStorage.setItem(LOCAL_STORAGE.LOGOUT, 'true');
-              signOut({ callbackUrl: '/' });
+              signOut().then(() => {
+                router.replace(HOME_PAGE);
+              });
             }}
           >
             Tiếp tục

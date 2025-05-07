@@ -1,6 +1,7 @@
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { Session } from 'next-auth';
+import { match } from 'path-to-regexp';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -162,3 +163,10 @@ const http = {
 };
 
 export default http;
+
+const matchPath = (path: string, routePatterns: string[]): boolean => {
+  return routePatterns.some((pattern) =>
+    match(pattern, { decode: decodeURIComponent })(path),
+  );
+};
+export { matchPath };

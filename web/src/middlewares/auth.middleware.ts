@@ -1,31 +1,67 @@
-import { NextFetchEvent, NextResponse } from 'next/server';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import { NextRequestWithAuth, withAuth } from 'next-auth/middleware';
 import envConfig from '@/config/env.config';
 import { Role } from '@/types/auth.type';
+import { Middleware } from '@/types/middleware.type';
+import { matchPath } from '@/lib/http';
+import { LOGIN_PAGE } from '@/constraint/variable';
 
-export const authMiddleware = (allowedRole?: Role) => {
-  return withAuth(
-    function middleware(req: NextRequestWithAuth, event: NextFetchEvent) {
-      if (!req.nextauth?.token) {
+// const routesNeedAuth: string[] = ['/user/info'];
+
+// export const authMiddleware = (allowedRole?: Role) => {
+//   return withAuth(function middleware(
+//     req: NextRequestWithAuth,
+//     event: NextFetchEvent,
+//   ) {
+//     if (!req.nextauth?.token) {
+//       if (!allowedRole)
+//         return NextResponse.redirect(new URL('/login', req.url));
+//       const role: Role = req.nextauth.token?.role as Role;
+//       if (allowedRole || role || role !== allowedRole)
+//         return NextResponse.redirect(new URL('/403', req.url));
+//     }
+//     return null;
+//   });
+// };
+const authMiddlewareWithRole = (
+  routes: string[] = [],
+  allowedRole?: Role,
+): Middleware => {
+  return async (req: NextRequest, _, session) => {
+    const path = req.nextUrl.pathname;
+    if (!allowedRole) return undefined;
+
+    if (matchPath(path, routes)) {
+      if (!session) {
         if (!allowedRole)
-          return NextResponse.redirect(new URL('/login', req.url));
-        const role: Role = req.nextauth.token?.role as Role;
+          return NextResponse.redirect(new URL(LOGIN_PAGE, req.url));
+        const role: Role = allowedRole as Role;
         if (allowedRole || role || role !== allowedRole)
           return NextResponse.redirect(new URL('/403', req.url));
       }
-      return null;
-    },
-    {
-      secret: envConfig.NEXT_PUBLIC_AUTH_SECRET,
-      pages: {
-        signIn: '/login',
-      },
-      callbacks: {
-        authorized({ token }) {
-          return !!token;
-        },
-      },
-    },
-  );
+    }
+
+    return NextResponse.next();
+  };
 };
-export default authMiddleware;
+
+const routesForUser: string[] = ['/user/*splat'];
+const authMiddlewareWithUser = authMiddlewareWithRole(routesForUser, 'USER');
+
+const routesForSeller: string[] = ['/seller/*splat'];
+
+const authMiddlewareWithSeller = authMiddlewareWithRole(
+  routesForSeller,
+  'SELLER',
+);
+
+const routesForAdmin: string[] = ['/admin/*splat'];
+const authMiddlewareWithAdmin = authMiddlewareWithRole(routesForAdmin, 'ADMIN');
+
+const middleWareAuth = {
+  authMiddlewareWithUser,
+  authMiddlewareWithSeller,
+  authMiddlewareWithAdmin,
+};
+
+export default middleWareAuth;
