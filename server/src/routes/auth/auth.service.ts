@@ -19,6 +19,7 @@ import {
   TokenRevokedException,
 } from '@route/auth/auth.error';
 import { AuthRepository } from '@route/auth/auth.repository';
+import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
 import { generateOTP, isNotFoundError } from '@shared/helper.shared';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
@@ -37,6 +38,7 @@ import ms from 'ms';
 export class AuthService {
   constructor(
     @Inject('AuthRepository') private readonly authRepository: AuthRepository,
+    @Inject(SHARED_USER_REPOSITORY)
     private readonly userRepository: SharedUserRepository,
     private readonly hashingService: HashingService,
     private readonly jwtService: TokenService,

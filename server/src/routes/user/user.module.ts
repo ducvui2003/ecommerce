@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { PrismaUserRepository } from '@route/user/user.repository';
 import { UserManagerController } from '@route/user/user-manager.controller';
 import { UserManagerService } from '@route/user/user-manger.service';
+import { USER_REPOSITORY } from '@route/user/user.const';
 
 @Module({
   controllers: [UserController, UserManagerController],
@@ -11,7 +12,7 @@ import { UserManagerService } from '@route/user/user-manger.service';
     UserService,
     UserManagerService,
     {
-      provide: 'USER_REPOSITORY',
+      provide: USER_REPOSITORY,
       useClass: PrismaUserRepository,
     },
   ],

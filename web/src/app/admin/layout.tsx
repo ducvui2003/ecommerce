@@ -11,7 +11,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     'border-accent rounded-md border bg-white p-4 block text-md';
   return (
     <main>
-      <div className="grid grid-cols-12 gap-1">
+      <div className="grid grid-cols-12 gap-4">
         <aside className="bg-secondary col-span-3 my-2 ml-2 h-[calc(100vh-16px)] rounded-md px-4 py-2 shadow">
           <article
             className={
@@ -19,7 +19,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
               'bg-primary flex items-center gap-2 rounded-[inherit] px-4 py-2')
             }
           >
-            <Image src={avatar} className="size-[80px] rounded-full" alt="" />
+            <Image src={avatar} className="size-[40px] rounded-full" alt="" />
             <div>
               <h1>Xin chào, {session?.user.name ?? ''}</h1>
               <span className="pt-2">{session?.user.role ?? ''}</span>
@@ -48,7 +48,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
             </li>
           </ul>
         </aside>
-        <section className="col-span-9 container mt-2">{children}</section>
+        <section className="col-span-9 mt-2 mr-2">{children}</section>
       </div>
     </main>
   );

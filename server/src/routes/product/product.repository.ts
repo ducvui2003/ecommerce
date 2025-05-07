@@ -69,19 +69,20 @@ export class ProductRepositoryImpl implements ProductRepository {
 
     const whereClause: Prisma.ProductWhereInput = {
       name: name ? { contains: name, mode: 'insensitive' } : undefined,
-      categoryId: categoryId && categoryId.length > 0
-        ? { in: categoryId.map(Number) }
-        : undefined,
-      supplierId: supplierId && supplierId.length > 0
-        ? { in: supplierId.map(Number) }
-        : undefined,
+      categoryId:
+        categoryId && categoryId.length > 0
+          ? { in: categoryId.map(Number) }
+          : undefined,
+      supplierId:
+        supplierId && supplierId.length > 0
+          ? { in: supplierId.map(Number) }
+          : undefined,
       salePrice: {
         gte: minPrice ? BigInt(minPrice) : undefined,
         lte: maxPrice ? BigInt(maxPrice) : undefined,
       },
       deletedAt: null,
     };
-
 
     const pageNum = Number(page);
     const limitNum = Number(limit);
@@ -93,7 +94,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         include: {
           category: true,
           supplier: true,
-          ProductResource: true,
+          productResource: true,
         },
         orderBy: {
           createdAt: 'desc',

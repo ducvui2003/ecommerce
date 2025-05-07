@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
+import { format } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,4 +59,46 @@ const VietNamDong = new Intl.NumberFormat('vi-VN', {
 
 export const currency = (currency: number): string => {
   return VietNamDong.format(currency);
+};
+
+export const appendIfExist = (
+  params: URLSearchParams,
+  key: string,
+  value: string,
+) => {
+  let alreadyExists = false;
+
+  params.getAll(key).forEach((v) => {
+    if (v === value) alreadyExists = true;
+  });
+
+  if (!alreadyExists) {
+    params.append(key, value);
+  }
+};
+
+type AnyObject = { [key: string]: any };
+
+export const toQueryString = (obj: AnyObject) => {
+  return Object.entries(obj)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
+    )
+    .join('&');
+};
+
+export const formatDate = (
+  date: Date,
+  pattern: 'SHORT' | 'LONG' | string = 'SHORT',
+) => {
+  const patterns: Record<'SHORT' | 'LONG', string> = {
+    SHORT: 'dd/MM/yyyy',
+    LONG: 'HH:mm dd/MM/yyyy',
+  };
+
+  const resolvedPattern =
+    pattern === 'SHORT' || pattern === 'LONG' ? patterns[pattern] : pattern;
+
+  return format(date, resolvedPattern);
 };

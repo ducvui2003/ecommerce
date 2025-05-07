@@ -1,5 +1,7 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { UserStatus } from '@shared/constants/auth.constant';
+import { AddressType } from '@shared/models/address.model';
+import { RoleType } from '@shared/models/role.model';
 import { UserModel, UserType } from '@shared/models/user.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
@@ -58,5 +60,24 @@ const GetUserQuerySchema = PageableSchema.extend({
 });
 type GetUserQueryType = z.infer<typeof GetUserQuerySchema>;
 
+type UserInformationAllowed = Omit<UserType, 'password' | 'role'> & {
+  role: string;
+};
+type InfoUpdate = Partial<Pick<UserType, 'name' | 'phone' | 'dob'>>;
+
+type GetUserDetailResType = Omit<
+  UserType,
+  'password' | 'roleId' | 'role' | 'Addresses'
+> & {
+  addresses?: AddressType[];
+  role: RoleType['name'];
+};
+
 export { UserInfoBodySchema, GetUserQuerySchema };
-export type { GetUserQueryType, GetUserResType };
+export type {
+  GetUserQueryType,
+  GetUserResType,
+  GetUserDetailResType,
+  UserInformationAllowed,
+  InfoUpdate,
+};

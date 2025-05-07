@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserManagerService } from '@route/user/user-manger.service';
 import { GetUserQueryDTO } from '@route/user/user.dto';
 import { AuthType } from '@shared/constants/auth.constant';
@@ -18,7 +26,9 @@ export class UserManagerController {
   @Get('/:id')
   @UseGuards(AuthenticationGuard)
   @Auth([AuthType.Bearer])
-  getDetailUser(@Param('id') userId: number) {}
+  getDetailUser(@Param('id', ParseIntPipe) userId: number) {
+    return this.userService.getDetail(userId);
+  }
 
   @UseGuards(AuthenticationGuard)
   @Auth([AuthType.Bearer])

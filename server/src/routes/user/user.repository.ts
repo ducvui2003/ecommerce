@@ -1,15 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { GetUserQueryType, GetUserResType } from '@route/user/user.schema';
-import { InfoAllow, InfoUpdate } from '@route/user/user.type';
+import {
+  GetUserQueryType,
+  GetUserResType,
+  UserInformationAllowed,
+  InfoUpdate,
+} from '@route/user/user.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { UserType } from '@shared/models/user.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface UserRepository {
-  getInfo(id: number): Promise<InfoAllow>;
+  getInfo(id: number): Promise<UserInformationAllowed>;
 
-  updateInfo(id: number, info: InfoUpdate): Promise<InfoAllow>;
+  updateInfo(id: number, info: InfoUpdate): Promise<UserInformationAllowed>;
 
   getList(pageable: GetUserQueryType): Promise<Paging<GetUserResType>>;
 }
@@ -18,23 +22,26 @@ export interface UserRepository {
 export class PrismaUserRepository implements UserRepository {
   constructor(@Inject() private readonly prismaService: PrismaService) {}
 
-  async getInfo(id: number): Promise<InfoAllow> {
+  async getInfo(id: number): Promise<UserInformationAllowed> {
     const entity = await this.prismaService.user.findFirstOrThrow({
       where: {
         id: id,
       },
-      include: { Role: true },
+      include: { role: true },
     });
 
-    const { password, Role, ...safeEntity } = entity;
+    const { password, role, ...safeEntity } = entity;
 
     return {
       ...safeEntity,
-      role: Role.name,
+      role: role.name,
     };
   }
 
-  async updateInfo(id: number, info: InfoUpdate): Promise<InfoAllow> {
+  async updateInfo(
+    id: number,
+    info: InfoUpdate,
+  ): Promise<UserInformationAllowed> {
     const entity = await this.prismaService.user.update({
       where: {
         id: id,
@@ -42,14 +49,14 @@ export class PrismaUserRepository implements UserRepository {
       data: {
         ...info,
       },
-      include: { Role: true },
+      include: { role: true },
     });
 
-    const { password, Role, ...safeEntity } = entity;
+    const { password, role, ...safeEntity } = entity;
 
     return {
       ...safeEntity,
-      role: Role.name,
+      role: role.name,
     };
   }
 
@@ -96,7 +103,7 @@ export class PrismaUserRepository implements UserRepository {
           status: true,
           avatar: true,
           createdAt: true,
-          Role: {
+          role: {
             select: {
               name: true,
             },
@@ -112,10 +119,10 @@ export class PrismaUserRepository implements UserRepository {
     ]);
 
     const items: GetUserResType[] = database.map((user) => {
-      const { Role, ...rest } = user;
+      const { role, ...rest } = user;
       return {
         ...rest,
-        roleName: Role?.name ?? null,
+        roleName: role?.name ?? null,
       };
     });
 

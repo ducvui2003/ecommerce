@@ -1,4 +1,4 @@
-import { columns, Payment } from '@/app/admin/user/column';
+import userColumns from '@/app/admin/user/column';
 import { DataTable } from '@/app/admin/user/data-table';
 import { Metadata } from 'next';
 
@@ -7,25 +7,13 @@ export const metadata: Metadata = {
   description: 'Oil',
 };
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: '728ed52f',
-      amount: 100,
-      status: 'pending',
-      email: 'm@example.com',
-    },
-    // ...
-  ];
-}
-
 const UserAdminPage = async () => {
-  const data = await getData();
   return (
     <div>
-      Quan ly nguoi dung
-      <DataTable columns={columns} data={data} />
+      <div className="bg-secondary mb-4 rounded-xl px-4 py-2">
+        <h2>Quản lý người dùng</h2>
+      </div>
+      <DataTable />
     </div>
   );
 };
