@@ -1,4 +1,5 @@
 import { addressApi } from '@/features/address/address.api';
+import { cartApi } from '@/features/cart/cart.api';
 import { mediaApi } from '@/features/media/media.api';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
@@ -8,11 +9,13 @@ export const makeStore = () => {
     reducer: {
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
+      [cartApi.reducerPath]:cartApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
         .concat(addressApi.middleware)
-        .concat(mediaApi.middleware);
+        .concat(mediaApi.middleware)
+        .concat(cartApi.middleware);
     },
   });
 

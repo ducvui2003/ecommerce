@@ -1,4 +1,4 @@
-import CartButton from '@/components/CartButton';
+import CartButton from '@/components/button/CartButton';
 import ClientIcon from '@/components/ClientIcon';
 import Logo from '@/components/Logo';
 import SearchBar from '@/components/SearchBar';

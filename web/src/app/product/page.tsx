@@ -1,4 +1,4 @@
-import FilterSlice from '@/app/product/filter-slice';
+import FilterSlice from '@/app/product/FilterSlice';
 import ListView from '@/components/ListView';
 import { CheckboxFilter } from '@/components/product/CheckboxFilter';
 import ProductCard from '@/components/ProductCard';
@@ -17,7 +17,8 @@ const data: ProductCardType[] = Array(8).fill({
 });
 
 type SearchParams = {
-  price: string;
+  minPrice: number;
+  maxPrice: number;
   volume: string;
   origin: string;
   fragrance: string;

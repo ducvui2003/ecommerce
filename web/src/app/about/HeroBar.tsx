@@ -1,6 +1,6 @@
 import product2 from "public/images/tinh-dau-1.png";
 import Image from "next/image";
-import { HeroButton } from '@/components/HeroButton';
+import { HeroButton } from '@/components/button/HeroButton';
 
 const heroContent = {
   heading: "Về chúng tôi",
@@ -25,13 +25,13 @@ function HeroBar() {
         <div className="flex flex-wrap justify-between items-center">
           <div className="lg:w-5/12 w-full mb-8 lg:mb-0">
             <div className="intro-excerpt">
-              <h1 className="text-4xl font-bold text-[#FFAB66]">{heroContent.heading}</h1>
-              <p className="mb-4 text-[#FFAB66]">{heroContent.description}</p>
+              <h1 className="text-4xl font-bold text-[#FFAB66D1]">{heroContent.heading}</h1>
+              <p className="mb-4 text-[#FFAB66D1]">{heroContent.description}</p>
               <p>
-                <HeroButton href="#" className="bg-black text-[#FFAB66] mr-4 hover:bg-[#FFAB66] hover:text-black rounded">
+                <HeroButton href="#" className="bg-black text-[#FFAB66D1] mr-4 hover:bg-[#FFAB66D1] hover:text-black rounded">
                   Xem ngay
                 </HeroButton>
-                <HeroButton href="#" className="bg-[#FFAB66] text-black mr-4 hover:bg-black hover:text-[#FFAB66] rounded">
+                <HeroButton href="#" className="bg-[#FFAB66D1] text-black mr-4 hover:bg-black hover:text-[#FFAB66D1] rounded">
                   Khám phá
                 </HeroButton>
               </p>

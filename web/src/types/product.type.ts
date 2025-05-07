@@ -1,4 +1,5 @@
 type ProductCardType = {
+  id: number;
   thumbnail: string;
   name: string;
   basePrice: number;
