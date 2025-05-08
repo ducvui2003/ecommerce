@@ -12,7 +12,7 @@ const FacebookButton = () => {
       size={40}
       onClick={() =>
         signInFacebook({
-          redirectUrl: HOME_PAGE,
+          redirectUrl: '/home',
         })
       }
     />

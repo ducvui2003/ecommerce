@@ -15,21 +15,22 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
   const facebookStatus = searchParams.get('facebook');
 
   useEffect(() => {
-    if (googleStatus == 'true') {
-      toast.success('Đăng nhập với Google thành công', {
-        description: 'Chào mừng đến An Nhiên',
-      });
-    } else {
-      toast.error('Đăng nhập với Google thất bại');
-    }
-
-    if (facebookStatus == 'true') {
-      toast.success('Đăng nhập với Facebook thành công', {
-        description: 'Chào mừng đến An Nhiên',
-      });
-    } else {
-      toast.error('Đăng nhập với Facebook thất bại');
-    }
+    if (googleStatus)
+      if (googleStatus == 'true') {
+        toast.success('Đăng nhập với Google thành công', {
+          description: 'Chào mừng đến An Nhiên',
+        });
+      } else {
+        toast.error('Đăng nhập với Google thất bại');
+      }
+    if (facebookStatus)
+      if (facebookStatus.startsWith('true')) {
+        toast.success('Đăng nhập với Facebook thành công', {
+          description: 'Chào mừng đến An Nhiên',
+        });
+      } else {
+        toast.error('Đăng nhập với Facebook thất bại');
+      }
   }, [googleStatus, facebookStatus]);
 
   return children;
