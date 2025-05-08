@@ -35,7 +35,6 @@ const POST = async () => {
         refreshToken: refreshToken,
         expiresAt: expiresAt,
         user: props,
-        expires: calculateExpiredDate(expiresAt),
       };
 
       return NextResponse.json(JSON.stringify(newSession), { status: 200 });

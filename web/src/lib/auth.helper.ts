@@ -17,7 +17,6 @@ const setSession = (session: Session, cookieStore: ReadonlyRequestCookies) => {
   cookieStore.set(AUTH_SESSION_COOKIE, JSON.stringify(session), {
     httpOnly: true,
     path: '/',
-    secure: true,
     maxAge: 60 * 60 * 24 * 30,
   });
 };
@@ -28,8 +27,29 @@ const getSession = (cookieStore: ReadonlyRequestCookies): Session | null => {
   const currentSession: Session = JSON.parse(cookieValue);
   return {
     ...currentSession,
-    expires: new Date(currentSession.expires),
   };
 };
 
-export { calculateRemainTime, setSession, getSession, calculateExpiredDate };
+const getCurrentUnix = (): number => {
+  return Date.now() / 1000;
+};
+/**
+ * Check session is expired?
+ * @param currentSession
+ * @returns if session is expired, return true, otherwise return false
+ */
+const isSessionExpired = (currentSession: Session) => {
+  // Convert both the session expiration time and current time to UTC
+  const expiresUTC = currentSession.expiresAt; // Get expiration time in milliseconds (UTC)
+  const currentUTC = Math.floor(Date.now() / 1000); // Get current time in milliseconds (UTC)
+  return expiresUTC < currentUTC;
+};
+
+export {
+  calculateRemainTime,
+  setSession,
+  getSession,
+  calculateExpiredDate,
+  getCurrentUnix,
+  isSessionExpired,
+};

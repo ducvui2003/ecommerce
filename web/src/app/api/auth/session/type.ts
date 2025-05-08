@@ -3,6 +3,5 @@ type Session = {
   accessToken: string;
   refreshToken: string;
   expiresAt: number;
-  expires: Date;
 };
 export type { Session };

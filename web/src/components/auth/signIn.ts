@@ -1,4 +1,5 @@
 import { Session } from '@/app/api/auth/session/type';
+import { AuthState } from '@/features/auth/auth.slice';
 import { calculateExpiredDate } from '@/lib/auth.helper';
 import authService from '@/service/auth.service';
 
@@ -13,11 +14,7 @@ type Credentials = {
  * if error, throw error
  * @param credentials
  */
-const signIn = async (
-  credentials: Credentials,
-): Promise<{
-  accessToken: string;
-}> => {
+const signIn = async (credentials: Credentials): Promise<AuthState> => {
   const response = await authService.login(credentials);
   if (response) {
     const { accessToken, refreshToken, expiresAt, ...props } = response;
@@ -26,7 +23,6 @@ const signIn = async (
       refreshToken: refreshToken,
       expiresAt: expiresAt,
       user: props,
-      expires: calculateExpiredDate(expiresAt),
     };
     await fetch(`/api/auth/session`, {
       method: 'POST',
@@ -34,6 +30,14 @@ const signIn = async (
     });
     return {
       accessToken: accessToken,
+      expiresAt: expiresAt,
+      user: {
+        id: props.id,
+        email: props.email,
+        name: props.name,
+        image: props.image,
+        role: props.role,
+      },
     };
   } else {
     throw new Error('Login Failed');

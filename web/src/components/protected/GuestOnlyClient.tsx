@@ -1,6 +1,6 @@
 'use client';
+import useSession from '@/components/auth/useSession';
 import { HOME_PAGE } from '@/constraint/variable';
-import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
@@ -13,9 +13,9 @@ type GuestOnlyProps = {
 // Work in clint component
 // Component will hide if user authenticated
 const GuestOnlyClient = ({ children }: GuestOnlyProps) => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
-  if (status === 'authenticated') {
+  if (status === 'authentication') {
     return null;
   }
 

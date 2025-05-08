@@ -1,6 +1,6 @@
 import { AUTH_SESSION_COOKIE } from '@/app/api/auth/session/const';
 import { Session } from '@/app/api/auth/session/type';
-import { setSession } from '@/lib/auth.helper';
+import { getSession, setSession } from '@/lib/auth.helper';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -30,7 +30,7 @@ const GET = async () => {
   const cookieStore = await cookies();
 
   // session
-  const cookieValue = cookieStore.get(AUTH_SESSION_COOKIE)?.value;
+  const cookieValue = getSession(cookieStore);
 
   if (cookieValue) return NextResponse.json(cookieValue, { status: 200 });
   return NextResponse.json(null, { status: 400 });

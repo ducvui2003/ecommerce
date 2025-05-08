@@ -3,6 +3,7 @@ import { Session } from '@/app/api/auth/session/type';
 import {
   calculateExpiredDate,
   getSession,
+  isSessionExpired,
   setSession,
 } from '@/lib/auth.helper';
 import authService from '@/service/auth.service';
@@ -15,7 +16,8 @@ const getServerSession = async (): Promise<Session | null> => {
   // Session not exist
   if (!currentSession) return null;
   // access token not expired
-  if (currentSession.expires.getTime() < Date.now()) return currentSession;
+
+  if (!isSessionExpired(currentSession)) return currentSession;
 
   // access token expired => refresh token
   const responseFromServer = await authService.renewToken(
@@ -24,6 +26,7 @@ const getServerSession = async (): Promise<Session | null> => {
 
   // refresh token failed => delete token in cookie
   if (!responseFromServer) {
+    console.log('delete');
     cookieStore.delete(AUTH_SESSION_COOKIE);
     return null;
   }
@@ -36,7 +39,6 @@ const getServerSession = async (): Promise<Session | null> => {
     refreshToken: refreshToken,
     expiresAt: expiresAt,
     user: props,
-    expires: calculateExpiredDate(expiresAt),
   };
 
   setSession(newSession, cookieStore);

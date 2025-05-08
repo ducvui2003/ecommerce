@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { HOME_PAGE, HTTP_STATUS_CODE } from '@/constraint/variable';
-import { setAccessToken } from '@/features/auth/auth.slice';
+import { setAuthState } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-store';
 import { EntityError } from '@/lib/http';
 import { handleErrorApi } from '@/lib/utils';
@@ -29,6 +29,7 @@ const LoginForm = () => {
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       email: '',
+      password: '',
     },
   });
 
@@ -40,12 +41,17 @@ const LoginForm = () => {
       email: values.email,
       password: values.password,
     })
-      .then(({ accessToken }) => {
-        dispatch(setAccessToken(accessToken));
+      .then(({ accessToken, expiresAt, user }) => {
+        dispatch(
+          setAuthState({
+            accessToken,
+            expiresAt,
+            user,
+          }),
+        );
         router.push(HOME_PAGE);
       })
       .catch((error) => {
-        console.error(error);
         throw new EntityError({
           status: HTTP_STATUS_CODE.UNAUTHORIZED,
           payload: {

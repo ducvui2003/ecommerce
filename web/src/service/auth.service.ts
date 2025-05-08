@@ -11,6 +11,7 @@ import {
   RefreshTokenResType,
   RegisterReqType,
   ResetPasswordReqType,
+  Role,
   VerifyOTPReqType,
 } from '@/types/auth.type';
 import {
@@ -19,7 +20,7 @@ import {
   RegisterFormType,
   SendOTPFormType,
 } from '@/types/schema/auth.schema';
-import { User } from 'next-auth';
+import { User } from '@/types/user.type';
 
 const authService = {
   login: async (data: LoginReqType): Promise<User> => {
@@ -36,7 +37,7 @@ const authService = {
       id: userInfo.id,
       email: userInfo.email,
       name: userInfo.name,
-      role: userInfo.role,
+      role: userInfo.role as Role,
       image: userInfo.avatar,
       accessToken: body.accessToken,
       refreshToken: body.refreshToken,
@@ -102,7 +103,7 @@ const authService = {
       id: userInfo.id,
       email: userInfo.email,
       name: userInfo.name,
-      role: userInfo.role,
+      role: userInfo.role as Role,
       image: userInfo.avatar,
       accessToken: data.data.accessToken,
       refreshToken: data.data.refreshToken,

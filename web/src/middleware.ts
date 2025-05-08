@@ -2,7 +2,6 @@ import { Session } from '@/app/api/auth/session/type';
 import getServerSession from '@/components/auth/getServerSession';
 import middlewares from '@/middlewares';
 import { Middleware } from '@/types/middleware.type';
-import { NextRequestWithAuth } from 'next-auth/middleware';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
 // Define route patterns for different roles
@@ -36,7 +35,7 @@ const middlewareChain = async (
 };
 
 export default async function middleware(
-  req: NextRequestWithAuth,
+  req: NextRequest,
   event: NextFetchEvent,
 ) {
   const session = await getServerSession();
