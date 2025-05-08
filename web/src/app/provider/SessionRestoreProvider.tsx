@@ -8,15 +8,6 @@ type SessionRestoreProviderProps = {
 };
 
 const SessionRestoreProvider = ({ children }: SessionRestoreProviderProps) => {
-  const { session, error, status } = useSession();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (session) {
-      console.log('handle save session to store');
-      dispatch(setAuthState(session));
-    }
-  }, [dispatch, session]);
   return <>{children}</>;
 };
 

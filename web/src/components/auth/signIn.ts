@@ -14,7 +14,9 @@ type Credentials = {
  * if error, throw error
  * @param credentials
  */
-const signIn = async (credentials: Credentials): Promise<AuthState> => {
+const signIn = async (
+  credentials: Credentials,
+): Promise<Omit<AuthState, 'status'>> => {
   const response = await authService.login(credentials);
   if (response) {
     const { accessToken, refreshToken, expiresAt, ...props } = response;

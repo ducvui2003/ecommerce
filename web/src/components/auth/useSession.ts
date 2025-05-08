@@ -1,10 +1,10 @@
 'use client';
 
 import { Session } from '@/app/api/auth/session/type';
-import { AuthState } from '@/features/auth/auth.slice';
-import { useAppSelector } from '@/hooks/use-store';
+import { AuthState, setAuthState, setStatus } from '@/features/auth/auth.slice';
+import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { getCurrentUnix, isSessionExpired } from '@/lib/auth.helper';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 type SessionState = {
   status: 'authentication' | 'un-authentication';
@@ -19,96 +19,109 @@ type SessionState = {
  */
 
 const useSession = () => {
-  const [session, setSession] = useState<SessionState>({
-    error: null,
-    session: null,
-    status: 'un-authentication',
-  });
-  const { accessToken, user, expiresAt } = useAppSelector(
+  const { accessToken, user, expiresAt, status } = useAppSelector(
     (state) => state.authSlice,
   );
 
+  const dispatch = useAppDispatch();
+
   const fetchSession = async (abort: AbortController) => {
-    const response = await fetch('/api/auth/session', {
-      method: 'GET',
-      signal: abort.signal,
-    });
-
-    // session exist => refresh token not expired
-    if (response.ok) {
-      const currentSession: Session = await response.json();
-      if (!isSessionExpired(currentSession))
-        // access token not expired
-        setSession({
-          error: null,
-          session: currentSession,
-          status: 'authentication',
-        });
-      else {
-        // access token expired => refresh new token
-        const responseFromRefresh = await fetch('/api/auth/refresh', {
-          method: 'POST',
-          signal: abort.signal,
-        });
-
-        if (responseFromRefresh.status !== 200) {
-          // refresh token failed
-          // logout in server to clear session
-          await fetch('/api/auth/logout', {
-            method: 'DELETE',
-          });
-          setSession({
-            error: 'Refresh token failed',
-            session: null,
-            status: 'un-authentication',
-          });
+    try {
+      dispatch(setStatus('loading'));
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        signal: abort.signal,
+      });
+      if (abort.signal.aborted) return;
+      // session exist => refresh token not expired
+      if (response.ok) {
+        const currentSession: Session = await response.json();
+        if (!isSessionExpired(currentSession)) {
+          // access token not expired
+          dispatch(
+            setAuthState({
+              accessToken: currentSession.accessToken,
+              expiresAt: currentSession.expiresAt,
+              status: 'authenticated',
+              user: currentSession.user,
+            }),
+          );
         } else {
-          // refresh token success
-          // save session
-          const bodyFromRefresh: Session = await responseFromRefresh.json();
-          await fetch('/api/auth/session', {
+          // access token expired => refresh new token
+          const responseFromRefresh = await fetch('/api/auth/refresh', {
             method: 'POST',
-            body: JSON.stringify(bodyFromRefresh),
             signal: abort.signal,
           });
-          setSession({
-            error: null,
-            session: bodyFromRefresh,
-            status: 'authentication',
-          });
+
+          if (responseFromRefresh.status !== 200) {
+            // refresh token failed
+            // logout in server to clear session
+            await fetch('/api/auth/logout', {
+              method: 'DELETE',
+            });
+            dispatch(
+              setAuthState({
+                accessToken: null,
+                expiresAt: null,
+                status: 'un-authenticated',
+                user: null,
+              }),
+            );
+          } else {
+            // refresh token success
+            // save session
+            const bodyFromRefresh: Session = await responseFromRefresh.json();
+            await fetch('/api/auth/session', {
+              method: 'POST',
+              body: JSON.stringify(bodyFromRefresh),
+              signal: abort.signal,
+            });
+            dispatch(
+              setAuthState({
+                accessToken: bodyFromRefresh.accessToken,
+                expiresAt: bodyFromRefresh.expiresAt,
+                status: 'authenticated',
+                user: bodyFromRefresh.user,
+              }),
+            );
+          }
         }
+      } else {
+        // session not exist => refresh token expired
+        dispatch(
+          setAuthState({
+            accessToken: null,
+            expiresAt: null,
+            status: 'un-authenticated',
+            user: null,
+          }),
+        );
       }
-    } else {
-      // session not exist => refresh token expired
-      setSession({
-        error: 'Session not exist',
-        session: null,
-        status: 'un-authentication',
-      });
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        console.error('Unexpected error:', error);
+      }
     }
   };
 
   useEffect(() => {
-    if (accessToken && expiresAt && expiresAt > getCurrentUnix()) {
-      setSession({
-        error: null,
-        session: {
-          user: user,
-          accessToken: accessToken,
-          expiresAt: expiresAt,
-        },
-        status: 'authentication',
-      });
-      return;
-    }
+    const isTokenValid =
+      status === 'authenticated' && expiresAt && expiresAt > getCurrentUnix();
+
+    if (isTokenValid) return;
+
     const controller = new AbortController();
-    fetchSession(controller);
-    () => {
+    fetchSession(controller).catch((err) => {
+      if (err.name !== 'AbortError') {
+        console.error('Session fetch failed:', err);
+      }
+    });
+    return () => {
       controller.abort();
     };
-  }, []);
+  }, [status, expiresAt]);
 
-  return session;
+  return { accessToken, user, status };
 };
 
 export default useSession;

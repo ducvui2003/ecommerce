@@ -274,7 +274,11 @@ export class AuthService {
     const { exp, iat, jti } =
       await this.jwtService.verifyRefreshToken(refreshToken);
     const ttl = exp - iat;
-    this.cacheService.set(keyRefreshToken(payload.id, jti), refreshToken, ttl);
+    this.cacheService.set(
+      keyRefreshToken(payload.id, jti),
+      refreshToken,
+      ttl * 1000,
+    );
 
     return {
       accessToken,

@@ -55,7 +55,7 @@ const UserDropdown = () => {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="flex-1 bg-red-500 text-white hover:bg-red-700"
+              className="flex-1 bg-red-500 text-white hover:cursor-pointer hover:bg-red-700"
               onClick={() => setOpen(true)}
             >
               Đăng xuất

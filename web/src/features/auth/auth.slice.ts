@@ -1,7 +1,10 @@
 import { Role } from '@/types/auth.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+type AuthStatus = 'authenticated' | 'un-authenticated' | 'loading';
+
 type AuthState = {
+  status: AuthStatus;
   accessToken: string | null;
   user: {
     id: number;
@@ -14,6 +17,7 @@ type AuthState = {
 };
 
 const initialState: AuthState = {
+  status: 'un-authenticated',
   accessToken: null,
   user: null,
   expiresAt: null,
@@ -23,17 +27,20 @@ const authSlice = createSlice({
   name: 'authSlice',
   initialState: initialState,
   reducers: {
+    setStatus(state: AuthState, action: PayloadAction<AuthStatus>) {
+      state.status = action.payload;
+    },
     setAuthState(state: AuthState, action: PayloadAction<AuthState>) {
-      console.log('set auth state');
       state.accessToken = action.payload.accessToken;
-      state.user = action.payload.user;
       state.expiresAt = action.payload.expiresAt;
+      state.status = action.payload.status;
+      state.user = action.payload.user;
     },
   },
 });
 
 const authReducer = authSlice.reducer;
-export const { setAuthState } = authSlice.actions;
+export const { setAuthState, setStatus } = authSlice.actions;
 
 export default authReducer;
 export type { AuthState };

@@ -44,7 +44,7 @@ const getSession = (cookieStore: ReadonlyRequestCookies): Session | null => {
 };
 
 const getCurrentUnix = (): number => {
-  return Date.now() / 1000;
+  return Math.floor(Date.now() / 1000);
 };
 /**
  * Check session is expired?

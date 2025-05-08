@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { HOME_PAGE, HTTP_STATUS_CODE } from '@/constraint/variable';
-import { setAuthState } from '@/features/auth/auth.slice';
+import { setAuthState, setStatus } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-store';
 import { EntityError } from '@/lib/http';
 import { handleErrorApi } from '@/lib/utils';
@@ -44,6 +44,7 @@ const LoginForm = () => {
       .then(({ accessToken, expiresAt, user }) => {
         dispatch(
           setAuthState({
+            status: 'authenticated',
             accessToken,
             expiresAt,
             user,
@@ -51,7 +52,7 @@ const LoginForm = () => {
         );
         router.push(HOME_PAGE);
       })
-      .catch((error) => {
+      .catch((_) => {
         throw new EntityError({
           status: HTTP_STATUS_CODE.UNAUTHORIZED,
           payload: {
@@ -66,6 +67,7 @@ const LoginForm = () => {
         });
       })
       .catch((error) => {
+        dispatch(setStatus('un-authenticated'));
         handleErrorApi({
           error: error,
           setError: form.setError,
