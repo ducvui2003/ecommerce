@@ -21,6 +21,7 @@ type GoogleUser = {
 const GET = async (request: NextRequest) => {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
+  const state = decodeURIComponent(searchParams.get('state') || HOME_PAGE);
   if (!code) return;
   const accessTokenUrl = 'https://oauth2.googleapis.com/token';
 
@@ -57,7 +58,7 @@ const GET = async (request: NextRequest) => {
     };
 
     const response = NextResponse.redirect(
-      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${HOME_PAGE}?google=true`,
+      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${state}?google=true`,
     );
 
     setSession(session, response);
@@ -65,7 +66,7 @@ const GET = async (request: NextRequest) => {
     return response;
   } else {
     return NextResponse.redirect(
-      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${HOME_PAGE}?failed=failed`,
+      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${state}?failed=failed`,
     );
   }
 };

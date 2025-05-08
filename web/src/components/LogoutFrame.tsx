@@ -12,6 +12,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { HOME_PAGE, LOCAL_STORAGE } from '@/constraint/variable';
+import { setAuthState } from '@/features/auth/auth.slice';
+import { useAppDispatch } from '@/hooks/use-store';
 import { useRouter } from 'next/navigation';
 
 type LogoutButtonProps = {
@@ -21,6 +23,7 @@ type LogoutButtonProps = {
 
 const LogoutFrame = ({ open, setOpen }: LogoutButtonProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   return (
     <AlertDialog open={open} onOpenChange={() => setOpen(!open)}>
       <AlertDialogTrigger asChild></AlertDialogTrigger>
@@ -40,6 +43,13 @@ const LogoutFrame = ({ open, setOpen }: LogoutButtonProps) => {
             onClick={() => {
               localStorage.setItem(LOCAL_STORAGE.LOGOUT, 'true');
               signOut().then(() => {
+                dispatch(
+                  setAuthState({
+                    accessToken: null,
+                    expiresAt: null,
+                    user: null,
+                  }),
+                );
                 router.replace(HOME_PAGE);
               });
             }}
