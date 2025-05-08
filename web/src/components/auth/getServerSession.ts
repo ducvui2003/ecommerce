@@ -26,7 +26,6 @@ const getServerSession = async (): Promise<Session | null> => {
 
   // refresh token failed => delete token in cookie
   if (!responseFromServer) {
-    console.log('delete');
     cookieStore.delete(AUTH_SESSION_COOKIE);
     return null;
   }
@@ -41,7 +40,7 @@ const getServerSession = async (): Promise<Session | null> => {
     user: props,
   };
 
-  setSession(newSession, cookieStore);
+  setSession(newSession, undefined, cookieStore);
 
   return newSession;
 };

@@ -1,12 +1,12 @@
+import getServerSession from '@/components/auth/getServerSession';
 import Link from '@/components/Link';
 import nextAuthConfig from '@/config/auth.config';
 import { cn } from '@/lib/utils';
-import { getServerSession } from 'next-auth';
 import Image from 'next/image';
 import avatar from 'public/images/logo-transparent.png';
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await getServerSession(nextAuthConfig);
+  const session = await getServerSession();
   const classLink =
     'border-accent rounded-md border bg-white p-4 block text-md';
   return (

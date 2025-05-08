@@ -1,10 +1,5 @@
-import { AUTH_SESSION_COOKIE } from '@/app/api/auth/session/const';
 import { Session } from '@/app/api/auth/session/type';
-import {
-  calculateExpiredDate,
-  getSession,
-  setSession,
-} from '@/lib/auth.helper';
+import { getSession } from '@/lib/auth.helper';
 import authService from '@/service/auth.service';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';

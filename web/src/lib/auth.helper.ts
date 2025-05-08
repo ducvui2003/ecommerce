@@ -1,6 +1,7 @@
 import { AUTH_SESSION_COOKIE } from '@/app/api/auth/session/const';
 import { Session } from '@/app/api/auth/session/type';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
+import { NextResponse } from 'next/server';
 
 const calculateRemainTime = (unix: number): number => {
   const expiresAt = unix * 1000;
@@ -13,12 +14,24 @@ const calculateExpiredDate = (unix: number): Date => {
   return new Date(unix * 1000);
 };
 
-const setSession = (session: Session, cookieStore: ReadonlyRequestCookies) => {
-  cookieStore.set(AUTH_SESSION_COOKIE, JSON.stringify(session), {
-    httpOnly: true,
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30,
-  });
+const setSession = (
+  session: Session,
+  response?: NextResponse,
+  cookieStore?: ReadonlyRequestCookies,
+) => {
+  if (response)
+    response.cookies.set(AUTH_SESSION_COOKIE, JSON.stringify(session), {
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  if (cookieStore) {
+    cookieStore.set(AUTH_SESSION_COOKIE, JSON.stringify(session), {
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  }
 };
 
 const getSession = (cookieStore: ReadonlyRequestCookies): Session | null => {

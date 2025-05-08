@@ -28,9 +28,10 @@ const useSession = () => {
     (state) => state.authSlice,
   );
 
-  const fetchSession = async () => {
+  const fetchSession = async (abort: AbortController) => {
     const response = await fetch('/api/auth/session', {
       method: 'GET',
+      signal: abort.signal,
     });
 
     // session exist => refresh token not expired
@@ -47,6 +48,7 @@ const useSession = () => {
         // access token expired => refresh new token
         const responseFromRefresh = await fetch('/api/auth/refresh', {
           method: 'POST',
+          signal: abort.signal,
         });
 
         if (responseFromRefresh.status !== 200) {
@@ -67,6 +69,7 @@ const useSession = () => {
           await fetch('/api/auth/session', {
             method: 'POST',
             body: JSON.stringify(bodyFromRefresh),
+            signal: abort.signal,
           });
           setSession({
             error: null,
@@ -96,9 +99,13 @@ const useSession = () => {
         },
         status: 'authentication',
       });
-    } else {
-      fetchSession();
+      return;
     }
+    const controller = new AbortController();
+    fetchSession(controller);
+    () => {
+      controller.abort();
+    };
   }, []);
 
   return session;

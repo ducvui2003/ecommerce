@@ -20,14 +20,13 @@ const RequiredAuthClient = ({
   mode = 'none',
   role,
 }: RequiredAuthClient) => {
-  const { status, session, error } = useSession();
+  const { status, session } = useSession();
 
   const shouldRestrict = useMemo(() => {
-    // if (status === 'loading') return true;
     if (status !== 'authentication') return true;
-    if (!error) return true;
-    if (!role) return false;
-    return !role?.includes(session?.user.role as Role);
+    if (!session?.user) return true;
+    if (role && !role.includes(session.user.role)) return true;
+    return false;
   }, [session, status, role]);
 
   if (shouldRestrict) {

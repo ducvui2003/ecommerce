@@ -1,9 +1,6 @@
 'use client';
 import useSession from '@/components/auth/useSession';
-import { HOME_PAGE } from '@/constraint/variable';
-import { redirect } from 'next/navigation';
 import React from 'react';
-import { toast } from 'sonner';
 
 type GuestOnlyProps = {
   children?: React.ReactNode;
