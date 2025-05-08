@@ -30,7 +30,10 @@ const GET = async (request: NextRequest) => {
   body.append('client_secret', envConfig.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET);
   body.append('code', code);
   body.append('grant_type', 'authorization_code');
-  body.append('redirect_uri', 'http://localhost:3000/api/auth/callback/google');
+  body.append(
+    'redirect_uri',
+    `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/auth/callback/google`,
+  );
   const response = await fetch(accessTokenUrl, {
     method: 'POST',
     headers: {
@@ -66,7 +69,7 @@ const GET = async (request: NextRequest) => {
     return response;
   } else {
     return NextResponse.redirect(
-      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${state}?failed=failed`,
+      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${state}?google=false`,
     );
   }
 };

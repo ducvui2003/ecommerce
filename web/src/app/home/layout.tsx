@@ -12,17 +12,25 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
   const searchParams = useSearchParams();
 
   const googleStatus = searchParams.get('google');
+  const facebookStatus = searchParams.get('facebook');
 
   useEffect(() => {
-    console.log(googleStatus);
     if (googleStatus == 'true') {
-      toast.success('Đăng nhập với google thành công', {
+      toast.success('Đăng nhập với Google thành công', {
         description: 'Chào mừng đến An Nhiên',
       });
     } else {
-      toast.error('Đăng nhập với google thất bại');
+      toast.error('Đăng nhập với Google thất bại');
     }
-  }, [googleStatus]);
+
+    if (facebookStatus == 'true') {
+      toast.success('Đăng nhập với Facebook thành công', {
+        description: 'Chào mừng đến An Nhiên',
+      });
+    } else {
+      toast.error('Đăng nhập với Facebook thất bại');
+    }
+  }, [googleStatus, facebookStatus]);
 
   return children;
 };
