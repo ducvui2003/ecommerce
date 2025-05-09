@@ -1,4 +1,4 @@
-import http from '@/lib/http';
+import http from '@/lib/http.client';
 import { toQueryString } from '@/lib/utils';
 import { Paging, ResponseApi, ResponseApiPaging } from '@/types/api.type';
 import {

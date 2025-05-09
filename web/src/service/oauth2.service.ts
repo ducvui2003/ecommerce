@@ -1,4 +1,4 @@
-import http from '@/lib/http';
+import http from '@/lib/http.client';
 import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
 import { LoginResType, Role } from '@/types/auth.type';

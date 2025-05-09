@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { HOME_PAGE, HTTP_STATUS_CODE } from '@/constraint/variable';
 import { setAuthState, setStatus } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-store';
-import { EntityError } from '@/lib/http';
+import { EntityError } from '@/lib/http.client';
 import { handleErrorApi } from '@/lib/utils';
 import { LoginFormSchema, LoginFormType } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';

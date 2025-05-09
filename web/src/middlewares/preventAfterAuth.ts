@@ -1,6 +1,6 @@
 import getServerSession from '@/components/auth/getServerSession';
 import { HOME_PAGE } from '@/constraint/variable';
-import { matchPath } from '@/lib/http';
+import { matchPath } from '@/lib/utils';
 import { Middleware } from '@/types/middleware.type';
 import { NextRequest, NextResponse } from 'next/server';
 

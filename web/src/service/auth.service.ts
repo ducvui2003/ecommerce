@@ -1,6 +1,6 @@
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import http, { EntityError } from '@/lib/http';
+import http, { EntityError } from '@/lib/http.client';
 import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
 import {

@@ -1,3 +1,6 @@
+'use client';
+
+import UserForm from '@/app/admin/user/[id]/user-form';
 import userManagerService from '@/service/manager/user.service';
 
 type UserDetailAdminPageProps = {
@@ -9,7 +12,8 @@ export default async function UserDetailAdminPage({
 }: UserDetailAdminPageProps) {
   const { id } = await params;
 
-  const data = await userManagerService.getDetail(parseInt(id));
-
-  return <p>User: {data.name}</p>;
+  if (!id) {
+    return null;
+  }
+  return <UserForm id={parseInt(id)} />;
 }

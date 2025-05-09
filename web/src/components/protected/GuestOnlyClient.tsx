@@ -12,7 +12,7 @@ type GuestOnlyProps = {
 const GuestOnlyClient = ({ children }: GuestOnlyProps) => {
   const { status } = useSession();
 
-  if (status === 'authentication') {
+  if (status !== 'un-authenticated') {
     return null;
   }
 

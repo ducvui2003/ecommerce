@@ -1,4 +1,4 @@
-import { getAccessToken } from '@/lib/http';
+import { getAccessToken } from '@/lib/http.client';
 import React, { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { HOME_PAGE } from '@/constraint/variable';

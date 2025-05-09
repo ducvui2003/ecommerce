@@ -1,10 +1,8 @@
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
-import { NextRequestWithAuth, withAuth } from 'next-auth/middleware';
-import envConfig from '@/config/env.config';
 import { Role } from '@/types/auth.type';
 import { Middleware } from '@/types/middleware.type';
-import { matchPath } from '@/lib/http';
 import { LOGIN_PAGE } from '@/constraint/variable';
+import { matchPath } from '@/lib/utils';
 
 // const routesNeedAuth: string[] = ['/user/info'];
 
