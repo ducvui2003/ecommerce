@@ -1,13 +1,13 @@
 'use client';
+import useSession from '@/components/auth/useSession';
 import { Role } from '@/types/auth.type';
-import { useSession } from 'next-auth/react';
 import React, { useMemo } from 'react';
 
 type Mode = 'hide' | 'disable' | 'blur-sm' | 'none';
 
-// Prevent guest use component for user authenticated
-// Work in server component
-// Component will hide if user authenticated
+// Prevent unauthenticated users from accessing this component
+// Works in client component
+// Component will restrict access if user is not authenticated or doesn't have the required rol
 
 type RequiredAuthClient = {
   children?: React.ReactNode;
@@ -20,15 +20,14 @@ const RequiredAuthClient = ({
   mode = 'none',
   role,
 }: RequiredAuthClient) => {
-  const { data: session, status } = useSession();
+  const { status, user } = useSession();
 
   const shouldRestrict = useMemo(() => {
-    if (status === 'loading') return true;
     if (status !== 'authenticated') return true;
-    if (session?.error && session.error !== 'Valid') return true;
-    if (!role) return false;
-    return !role?.includes(session?.user.role as Role);
-  }, [session, status, role]);
+    if (!user) return true;
+    if (role?.length && !role.includes(user.role)) return true;
+    return false;
+  }, [status, role, user]);
 
   if (shouldRestrict) {
     switch (mode) {

@@ -40,28 +40,28 @@ const UserDropdown = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </GuestOnlyClient>
-        <RequiredAuthClient mode="hide">
-          <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
-            <RequiredAuthClient mode="hide" role={['ADMIN']}>
-              <DropdownMenuItem>
-                <Link href={'/admin/product'} className="flex-1">
-                  Quản lý
-                </Link>
-              </DropdownMenuItem>
-            </RequiredAuthClient>
+        {/* <RequiredAuthClient mode="hide"> */}
+        <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
+          <RequiredAuthClient mode="hide" role={['ADMIN']}>
             <DropdownMenuItem>
-              <Link href={'/user/info'} className="flex-1" legacyBehavior>
-                Thông tin cá nhân
+              <Link href={'/admin/product'} className="flex-1">
+                Quản lý
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="flex-1 bg-red-500 text-white hover:bg-red-700"
-              onClick={() => setOpen(true)}
-            >
-              Đăng xuất
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </RequiredAuthClient>
+          </RequiredAuthClient>
+          <DropdownMenuItem>
+            <Link href={'/user/info'} className="flex-1" legacyBehavior>
+              Thông tin cá nhân
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="flex-1 bg-red-500 text-white hover:cursor-pointer hover:bg-red-700"
+            onClick={() => setOpen(true)}
+          >
+            Đăng xuất
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+        {/* </RequiredAuthClient> */}
       </DropdownMenu>
       <LogoutFrame open={open} setOpen={setOpen} />
     </>

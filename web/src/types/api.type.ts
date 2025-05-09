@@ -36,7 +36,7 @@ type Metadata = {
   deletedBy?: string;
 };
 
-type RequestPaging = {
+type PageReq = {
   page: number;
   size: number;
   sorts?: Sort[];
@@ -47,4 +47,4 @@ type Sort = {
   sort: 'asc' | 'desc';
 };
 
-export type { ResponseApi, ResponseApiPaging, Paging, RequestPaging };
+export type { ResponseApi, ResponseApiPaging, Paging, PageReq };

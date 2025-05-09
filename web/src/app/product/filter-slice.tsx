@@ -1,6 +1,6 @@
 'use client';
 import { CheckboxFilter } from '@/components/product/CheckboxFilter';
-import { currency } from '@/lib/utils';
+import { appendIfExist, currency } from '@/lib/utils';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { string } from 'zod';
@@ -61,22 +61,6 @@ const FilterSlice = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-
-  const appendIfExist = (
-    params: URLSearchParams,
-    key: string,
-    value: string,
-  ) => {
-    let alreadyExists = false;
-
-    params.getAll(key).forEach((v) => {
-      if (v === value) alreadyExists = true;
-    });
-
-    if (!alreadyExists) {
-      params.append(key, value);
-    }
-  };
 
   const hasKeyValueString = (key: KeySearching, value: string) => {
     const params = new URLSearchParams(searchParams);

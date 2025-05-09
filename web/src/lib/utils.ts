@@ -1,16 +1,18 @@
-import { EntityError } from '@/lib/http';
+import { EntityError } from '@/lib/http.client';
 import { clsx, type ClassValue } from 'clsx';
 import { UseFormSetError } from 'react-hook-form';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
+import { format } from 'date-fns';
+import { match } from 'path-to-regexp';
 
-export function cn(...inputs: ClassValue[]) {
+function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function handleErrorApi({
+function handleErrorApi({
   error,
   setError,
   duration = 5000,
@@ -39,15 +41,15 @@ export function handleErrorApi({
   }
 }
 
-export const normalizePath = (path: string) => {
+const normalizePath = (path: string) => {
   return path.startsWith('/') ? path.slice(1) : path;
 };
 
-export const uuid = (): string => {
+const uuid = (): string => {
   return uuidv4();
 };
 
-export const nanoId = (length: number) => {
+const nanoId = (length: number) => {
   return nanoid(length);
 };
 
@@ -56,6 +58,63 @@ const VietNamDong = new Intl.NumberFormat('vi-VN', {
   currency: 'VND',
 });
 
-export const currency = (currency: number): string => {
+const currency = (currency: number): string => {
   return VietNamDong.format(currency);
+};
+
+const appendIfExist = (params: URLSearchParams, key: string, value: string) => {
+  let alreadyExists = false;
+
+  params.getAll(key).forEach((v) => {
+    if (v === value) alreadyExists = true;
+  });
+
+  if (!alreadyExists) {
+    params.append(key, value);
+  }
+};
+
+type AnyObject = { [key: string]: any };
+
+const toQueryString = (obj: AnyObject) => {
+  return Object.entries(obj)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
+    )
+    .join('&');
+};
+
+const formatDate = (
+  date: Date,
+  pattern: 'SHORT' | 'LONG' | string = 'SHORT',
+) => {
+  const patterns: Record<'SHORT' | 'LONG', string> = {
+    SHORT: 'dd/MM/yyyy',
+    LONG: 'HH:mm dd/MM/yyyy',
+  };
+
+  const resolvedPattern =
+    pattern === 'SHORT' || pattern === 'LONG' ? patterns[pattern] : pattern;
+
+  return format(date, resolvedPattern);
+};
+
+const matchPath = (path: string, routePatterns: string[]): boolean => {
+  return routePatterns.some((pattern) =>
+    match(pattern, { decode: decodeURIComponent })(path),
+  );
+};
+
+export {
+  matchPath,
+  handleErrorApi,
+  cn,
+  toQueryString,
+  formatDate,
+  appendIfExist,
+  currency,
+  nanoId,
+  normalizePath,
+  uuid,
 };
