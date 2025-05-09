@@ -335,7 +335,7 @@ model Order {
 
   createdAt DateTime @default(now()) @map("created_at")
   payment   Payment?
-  paymentId Int
+  paymentId Int?
 
   @@map("orders")
 }

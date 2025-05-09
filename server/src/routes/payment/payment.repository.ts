@@ -16,9 +16,9 @@ export class PrismaPaymentRepository implements PaymentRepository {
     let amountOut = 0;
 
     if (body.transferType === 'out') {
-      amountIn = Number(body.transferAmount);
-    } else {
       amountOut = Number(body.transferAmount);
+    } else {
+      amountIn = Number(body.transferAmount);
     }
     await this.prismaService.paymentTransaction.create({
       data: {
