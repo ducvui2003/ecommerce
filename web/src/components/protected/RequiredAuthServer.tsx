@@ -1,7 +1,7 @@
-import { getAccessToken } from '@/lib/http.client';
 import React, { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { HOME_PAGE } from '@/constraint/variable';
+import { getAccessToken } from '@/lib/http.server';
 
 type Mode = 'redirect' | 'forbidden' | 'hide';
 

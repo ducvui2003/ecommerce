@@ -48,6 +48,7 @@ const LogoutFrame = ({ open, setOpen }: LogoutButtonProps) => {
                     accessToken: null,
                     expiresAt: null,
                     user: null,
+                    status: 'un-authenticated',
                   }),
                 );
                 router.replace(HOME_PAGE);

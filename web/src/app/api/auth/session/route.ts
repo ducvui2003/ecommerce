@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server';
  * @returns 200
  */
 
-const POST = async (req: Request, response: NextResponse) => {
+const POST = async (req: Request) => {
   const data: Session = await req.json();
   const cookieStore = await cookies();
 
