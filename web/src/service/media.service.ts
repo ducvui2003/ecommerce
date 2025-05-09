@@ -1,9 +1,9 @@
-import http from '@/lib/http';
+import http from '@/lib/http.client';
 import {
   ResponseApi,
   ResponseApiPaging,
   Paging,
-  RequestPaging,
+  PageReq,
 } from '@/types/api.type';
 import {
   CloudinaryUploadResult,
@@ -72,7 +72,7 @@ const mediaService = {
     return res.payload.data;
   },
 
-  getMedia: async (req: RequestPaging): Promise<Paging<PagingMediaType>> => {
+  getMedia: async (req: PageReq): Promise<Paging<PagingMediaType>> => {
     const query = new URLSearchParams({
       size: req.size.toString(),
       page: req.page.toString(),

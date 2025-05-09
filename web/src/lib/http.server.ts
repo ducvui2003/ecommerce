@@ -1,6 +1,6 @@
+import getServerSession from '@/components/auth/getServerSession';
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import { Session } from 'next-auth';
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -41,36 +41,8 @@ export class EntityError extends HttpError {
 }
 
 export const getAccessToken = async (): Promise<string> => {
-  // try {
-  //   const response = await fetch(
-  //     `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/auth/session`,
-  //   );
-  //   console.log('data', await response.json());
-  //   if (typeof window !== 'undefined') {
-  //     // Client
-  //     // const session = await getSession();
-  //     // return session?.accessToken || '';
-  //     const res = await fetch('/api/auth/session');
-  //     const session: Session = await res.json();
-  //     return session?.user.accessToken || '';
-  //   } else {
-  //     // Server
-  //     const { getServerSession } = await import('next-auth');
-  //     const { default: authOptions } = await import('@/config/auth.config');
-  //     const session = await getServerSession(authOptions);
-  //     return session?.user.accessToken || '';
-  //   }
-  // } catch (e) {
-  //   console.error('Get access token failed', e);
-  //   return '';
-  // }
-  const response = await fetch(
-    `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/auth/session`,
-  );
-  const body: Session = await response.json();
-  console.info('data', body);
-
-  return body.user.accessToken;
+  const session = await getServerSession();
+  return session?.accessToken ?? '';
 };
 
 const request = async <Response>(
@@ -84,6 +56,7 @@ const request = async <Response>(
     'Content-Type': 'application/json',
     Authorization: auth ? `Bearer ${await getAccessToken()}` : '',
   };
+  console.log('Authorization', baseHeaders.Authorization);
   const baseUrl =
     options?.baseUrl === undefined
       ? envConfig.NEXT_PUBLIC_SERVER_URL
@@ -160,5 +133,5 @@ const http = {
     return request<Response>('DELETE', url, { ...options, body }, auth);
   },
 };
-
-export default http;
+const httpServer = http;
+export default httpServer;

@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { useGetPagingMediaQuery } from '@/features/media/media.api';
 import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
-import { Paging, RequestPaging } from '@/types/api.type';
+import { PageReq } from '@/types/api.type';
 import { Media, MediaUploading } from '@/types/media.type';
 import { memo, ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -43,7 +43,7 @@ const data: Media[] = Array(5)
 const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
 
-  const [paging, setPaging] = useState<RequestPaging>({
+  const [paging, setPaging] = useState<PageReq>({
     page: 1,
     size: 3,
   });

@@ -1,8 +1,8 @@
-import http from '@/lib/http';
+import http from '@/lib/http.client';
 import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
-import { LoginResType } from '@/types/auth.type';
-import { User } from 'next-auth';
+import { LoginResType, Role } from '@/types/auth.type';
+import { User } from '@/types/user.type';
 
 const oauth2Api = {
   login: async (
@@ -18,6 +18,7 @@ const oauth2Api = {
     const userInfo = await userService.getInfo(body.accessToken);
     return {
       ...userInfo,
+      role: userInfo.role as Role,
       image: userInfo.avatar,
       accessToken: body.accessToken,
       refreshToken: body.refreshToken,

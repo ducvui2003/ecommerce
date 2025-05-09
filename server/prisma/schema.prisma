@@ -103,14 +103,14 @@ model User {
   dob      DateTime?  @db.Date
 
   roleId Int  @map("role_id")
-  Role   Role @relation(fields: [roleId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
 
-  Addresses Address[]
-  Cart      Cart?
-  Order     Order[]
-  Review    Review[]
-  Wishlist  Wishlist[]
-  Comment   Comment[]
+  addresses Address[]
+  cart      Cart?
+  order     Order[]
+  review    Review[]
+  wishlist  Wishlist[]
+  comment   Comment[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -159,7 +159,7 @@ model Supplier {
   website String
   status  AvailableStatus @default(INACTIVE)
 
-  Product Product[]
+  product Product[]
 
   addressId Int     @unique @map("address_id")
   address   Address @relation(fields: [addressId], references: [id])
@@ -183,17 +183,17 @@ model Product {
   supplierId Int      @map("supplier_id")
   supplier   Supplier @relation(fields: [supplierId], references: [id])
 
-  CartItem  CartItem[]
-  OrderItem OrderItem[]
-  Review    Review[]
-  Wishlist  Wishlist[]
-  Comment   Comment[]
+  cartItem  CartItem[]
+  orderItem OrderItem[]
+  review    Review[]
+  wishlist  Wishlist[]
+  comment   Comment[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  ProductResource ProductResource[]
+  productResource ProductResource[]
 
   @@map("products")
 }
@@ -218,10 +218,10 @@ model Option {
   name String
 
   volumeId       Int
-  Volume         Volume           @relation(fields: [volumeId], references: [id])
+  volume         Volume           @relation(fields: [volumeId], references: [id])
   price          BigInt
   stock          Int?             @default(0)
-  OptionResource OptionResource[]
+  optionResource OptionResource[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -255,8 +255,8 @@ model Resource {
   deletedAt DateTime? @map("deleted_at")
   isDeleted Boolean   @default(false)
 
-  ProductResource ProductResource[]
-  OptionResource  OptionResource[]
+  productResource ProductResource[]
+  optionResource  OptionResource[]
 
   @@map("resources")
 }
@@ -320,7 +320,6 @@ model Order {
   totalAmount Decimal     @map("total_amount")
   feeShipping Decimal     @map("fee_shipping")
   status      OrderStatus @default(PENDING)
-  payment     String
 
   // Address
   detail   String
@@ -331,12 +330,12 @@ model Order {
   userId Int  @map("user_id")
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  OrderItem      OrderItem[]
-  PromotionOrder PromotionOrder[]
+  orderItem      OrderItem[]
+  promotionOrder PromotionOrder[]
 
   createdAt DateTime @default(now()) @map("created_at")
-  Payment   Payment?
-  paymentId Int
+  payment   Payment?
+  paymentId Int?
 
   @@map("orders")
 }
@@ -347,12 +346,12 @@ model OrderItem {
   price    Decimal
 
   orderId   Int     @map("order_id")
-  Order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
   productId Int     @map("product_id")
-  Product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
   createdAt          DateTime             @default(now()) @map("created_at")
-  PromotionOrderItem PromotionOrderItem[]
+  promotionOrderItem PromotionOrderItem[]
 
   @@map("order_items")
 }
@@ -397,8 +396,8 @@ model Promotion {
   usageLimit  Int             @map("usage_limit")
   status      AvailableStatus @default(ACTIVE)
 
-  PromotionOrder     PromotionOrder[]
-  PromotionOrderItem PromotionOrderItem[]
+  promotionOrder     PromotionOrder[]
+  promotionOrderItem PromotionOrderItem[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -424,9 +423,9 @@ model PromotionOrderItem {
   id Int @id @default(autoincrement())
 
   promotionId Int       @map("promotion_id")
-  Promotion   Promotion @relation(fields: [promotionId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
   orderItemId Int       @map("order_item_id")
-  OrderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
 
   createdAt DateTime @default(now()) @map("created_at")
 

@@ -1,4 +1,11 @@
-import { UserInfoBodySchema } from '@route/user/user.schema';
+import {
+  GetUserQuerySchema,
+  UserInfoBodySchema,
+} from '@route/user/user.schema';
 import { createZodDto } from 'nestjs-zod';
 
-export class UserInfoBodyReq extends createZodDto(UserInfoBodySchema) {}
+class UserInfoBodyReq extends createZodDto(UserInfoBodySchema) {}
+
+class GetUserQueryDTO extends createZodDto(GetUserQuerySchema) {}
+
+export { UserInfoBodyReq, GetUserQueryDTO };
