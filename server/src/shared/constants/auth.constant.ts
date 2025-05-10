@@ -1,5 +1,5 @@
 export const REQUEST_USER_KEY = 'user';
-export const X_API_KEY = 'x-api-key';
+export const API_KEY = 'apikey';
 export const AUTH_TYPE_KEY = 'authType';
 
 export const AuthType = {
@@ -22,6 +22,8 @@ export const UserStatus = {
   INACTIVE: 'INACTIVE',
   BLOCKED: 'BLOCKED',
 } as const;
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]; // 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
 
 export const VerificationType = {
   REGISTER: 'REGISTER',

@@ -26,3 +26,14 @@ export const OTPErrorMessage = {
     OTP_INVALID: 'Invalid OTP',
     OTP_RESEND_LIMIT_REACHED: 'Resend limit reached',
 };
+
+export const ProductErrorMessage = {
+    PRODUCT_NOT_FOUND: 'Product not found',
+    PRODUCT_ALREADY_EXISTS: 'Product already exists',
+    PRODUCT_OUT_OF_STOCK: 'Product is out of stock',
+    PRODUCT_PRICE_INVALID: 'Invalid product price',
+    PRODUCT_CATEGORY_INVALID: 'Invalid product category',
+    PRODUCT_IMAGE_INVALID: 'Invalid product image format',
+    PRODUCT_DESCRIPTION_TOO_LONG: 'Product description is too long',
+    PRODUCT_NAME_TOO_SHORT: 'Product name is too short',
+};

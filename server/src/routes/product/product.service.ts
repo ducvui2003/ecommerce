@@ -1,24 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  ProductDetailRes,
+  ProductRes,
+  SearchProductDto,
+} from '@route/product/product.dto';
+import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
+import { ProductService } from '@route/product/interfaces/product-service.interface';
+import { Paging } from '@shared/common/interfaces/paging.interface';
+import { ProductNotFoundException } from '@shared/exceptions/product.exception';
 
 @Injectable()
-export class ProductService {
-  create(createProductDto) {
-    return 'This action adds a new product';
+export class ProductServiceImpl implements ProductService {
+  constructor(
+    @Inject('PRODUCT_REPOSITORY')
+    private readonly productRepository: ProductRepository,
+  ) {}
+
+  async findAll(page = 1, limit = 10): Promise<Paging<ProductRes>> {
+    return this.productRepository.getProducts(page, limit);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findById(id: number): Promise<ProductDetailRes | null> {
+    const product = await this.productRepository.getProductById(id);
+    if (!product) {
+      throw new ProductNotFoundException();
+    }
+    return product;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
-
-  update(id: number, updateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  searchProducts(dto: SearchProductDto): Promise<Paging<ProductRes>> {
+    return this.productRepository.searchProducts(dto);
   }
 }

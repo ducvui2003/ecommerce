@@ -1,5 +1,5 @@
 import envConfig from '@config/env.config';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 import {
   ForgetPasswordBodyDTO,
@@ -8,7 +8,6 @@ import {
   SendOTPBodyDTO,
   VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
-import { AuthRepository } from '@route/auth/auth.repository';
 import {
   EmailExistException,
   EmailNotExistException,
@@ -19,16 +18,9 @@ import {
   TokenInvalidException,
   TokenRevokedException,
 } from '@route/auth/auth.error';
-import { RoleService } from '@shared/services/role.service';
-import {
-  TypeOfVerificationType,
-  VerificationType,
-} from '@shared/constants/auth.constant';
-import {
-  generateOTP,
-  isNotFoundError,
-  isUniqueConstraintError,
-} from '@shared/helper.shared';
+import { AuthRepository } from '@route/auth/auth.repository';
+import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
+import { generateOTP, isNotFoundError } from '@shared/helper.shared';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
 import {
@@ -37,6 +29,7 @@ import {
 } from '@shared/services/cache/cache.util';
 import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
+import { RoleService } from '@shared/services/role.service';
 import { TokenService } from '@shared/services/token.service';
 import { JwtCustomClaims } from '@shared/types/jwt.type';
 import { addMilliseconds } from 'date-fns';
@@ -45,6 +38,7 @@ import ms from 'ms';
 export class AuthService {
   constructor(
     @Inject('AuthRepository') private readonly authRepository: AuthRepository,
+    @Inject(SHARED_USER_REPOSITORY)
     private readonly userRepository: SharedUserRepository,
     private readonly hashingService: HashingService,
     private readonly jwtService: TokenService,
@@ -280,7 +274,11 @@ export class AuthService {
     const { exp, iat, jti } =
       await this.jwtService.verifyRefreshToken(refreshToken);
     const ttl = exp - iat;
-    this.cacheService.set(keyRefreshToken(payload.id, jti), refreshToken, ttl);
+    this.cacheService.set(
+      keyRefreshToken(payload.id, jti),
+      refreshToken,
+      ttl * 1000,
+    );
 
     return {
       accessToken,

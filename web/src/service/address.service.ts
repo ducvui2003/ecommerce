@@ -1,4 +1,4 @@
-import http from '@/lib/http';
+import http from '@/lib/http.client';
 import { DistrictType, ProvinceType, WardType } from '@/types/address.type';
 import { ResponseApi } from '@/types/api.type';
 

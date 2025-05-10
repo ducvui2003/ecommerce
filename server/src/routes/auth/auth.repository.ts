@@ -21,11 +21,14 @@ export class PrismaAuthRepository implements AuthRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createUser(
-    data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId'>,
+    data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId' | 'role'>,
   ): Promise<any> {
     return await this.prismaService.user.create({
       data: {
-        ...data,
+        email: data.email,
+        name: data.name,
+        password: data.password,
+        roleId: data.roleId,
       },
       omit: {
         password: true,

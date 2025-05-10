@@ -10,10 +10,10 @@ export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
   signAccessToken(customPayload: JwtCustomClaims): Promise<string> {
-    // issue at:  thời gian tạo jwt (unix timestamp)
+    // issue at:  thời gian tạo jwt (unix timestamp == second)
     const iat = Math.floor(Date.now() / 1000);
-    // expires in:  thời gian hết hạn jwt (unix timestamp)
-    const exp = iat + ms(envConfig.ACCESS_TOKEN_EXPIRY);
+    // expires in:  thời gian hết hạn jwt (unix timestamp = second)
+    const exp = iat + Math.floor(ms(envConfig.ACCESS_TOKEN_EXPIRY) / 1000);
     // jwt id
     const jti = uuidv4();
 
@@ -34,7 +34,7 @@ export class TokenService {
     // issue at:  thời gian tạo jwt (unix timestamp)
     const iat = Math.floor(Date.now() / 1000);
     // expires in:  thời gian hết hạn jwt (unix timestamp)
-    const exp = iat + ms(envConfig.REFRESH_TOKEN_EXPIRY);
+    const exp = iat + Math.floor(ms(envConfig.ACCESS_TOKEN_EXPIRY) / 1000);
     // jwt id
     const jti = uuidv4();
 
