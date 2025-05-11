@@ -10,6 +10,11 @@ type Range = {
   to?: number;
 };
 
+type CategoryFilter = {
+  id: number;
+  name: string;
+};
+
 const priceRange: Range[] = [
   {
     from: 50000,
@@ -31,18 +36,18 @@ const priceRange: Range[] = [
 
 const origins: string[] = ['Pháp', 'Nhật', 'Singapore', 'Ấn Độ '];
 
-const volumeRange: Range[] = [
+const category: CategoryFilter[] = [
   {
-    from: 120,
-    to: 200,
+    id: 1,
+    name: 'Tinh dầu',
   },
   {
-    from: 200,
-    to: 300,
+    id: 2,
+    name: 'Máy xông tinh dầu',
   },
   {
-    from: 300,
-    to: 500,
+    id: 3,
+    name: 'Nến thơm tinh dầu',
   },
 ];
 
@@ -55,7 +60,7 @@ const fragrances: string[] = [
 ];
 
 // /items?priceRange=200,400&priceRange=100,200&brand=apple&sort=popular
-type KeySearching = 'price' | 'volume' | 'origin' | 'fragrance';
+type KeySearching = 'price' | 'category' | 'origin' | 'fragrance';
 
 const FilterSlice = () => {
   const searchParams = useSearchParams();
@@ -121,36 +126,38 @@ const FilterSlice = () => {
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
         <span className="text-md font-bold uppercase">Xuất xứ</span>
-        {origins.map((item, index) => (
+        <div className="grid grid-cols-2 grid-rows-2">
+          {origins.map((item, index) => (
+            <CheckboxFilter<string>
+              key={index}
+              name={item}
+              data={item}
+              onChecked={(check, data) => {
+                handleCheckString(check, 'origin', data);
+              }}
+              checked={hasKeyValueString('origin', item)}
+            />
+          ))}
+        </div>
+      </div>
+      <span className="block h-[1px] w-full bg-black"></span>
+      <div className="py-2">
+        <span className="text-md font-bold uppercase">LOẠI</span>
+        {category.map((item, index) => (
           <CheckboxFilter<string>
             key={index}
-            name={item}
-            data={item}
+            name={item.name}
+            data={item.name}
             onChecked={(check, data) => {
-              handleCheckString(check, 'origin', data);
+              handleCheckString(check, 'category', data);
             }}
-            checked={hasKeyValueString('origin', item)}
+            checked={hasKeyValueString('category', item.name)}
           />
         ))}
       </div>
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
-        <span className="text-md font-bold uppercase">DUNG TÍCH</span>
-        {volumeRange.map((item, index) => (
-          <CheckboxFilter<Range>
-            key={index}
-            name={`${item.from}ml - ${item.to}ml`}
-            data={item}
-            onChecked={(check, data) => {
-              handleCheckRange(check, 'volume', data);
-            }}
-            checked={hasKeyValueRange('volume', item)}
-          />
-        ))}
-      </div>
-      <span className="block h-[1px] w-full bg-black"></span>
-      <div className="py-2">
-        <span className="text-md font-bold uppercase">NHÓM MÙI HƯƠNG</span>
+        <span className="text-md font-bold uppercase">MÙI HƯƠNG</span>
         {fragrances.map((item, index) => (
           <CheckboxFilter<string>
             key={index}
