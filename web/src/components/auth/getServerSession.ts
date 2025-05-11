@@ -1,12 +1,6 @@
-import { AUTH_SESSION_COOKIE } from '@/app/api/auth/session/const';
 import { Session } from '@/app/api/auth/session/type';
-import {
-  calculateExpiredDate,
-  getSession,
-  isSessionExpired,
-  setSession,
-} from '@/lib/auth.helper';
-import authService from '@/service/auth.service';
+import { getSession, isSessionExpired } from '@/lib/auth.helper';
+
 import { cookies } from 'next/headers';
 
 const getServerSession = async (): Promise<Session | null> => {
@@ -19,30 +13,31 @@ const getServerSession = async (): Promise<Session | null> => {
 
   if (!isSessionExpired(currentSession)) return currentSession;
 
-  // access token expired => refresh token
-  const responseFromServer = await authService.renewToken(
-    currentSession.refreshToken,
-  );
+  return null;
+  // // access token expired => refresh token
+  // const responseFromServer = await authService.renewToken(
+  //   currentSession.refreshToken,
+  // );
 
-  // refresh token failed => delete token in cookie
-  if (!responseFromServer) {
-    cookieStore.delete(AUTH_SESSION_COOKIE);
-    return null;
-  }
+  // // refresh token failed => delete token in cookie
+  // if (!responseFromServer) {
+  //   cookieStore.delete(AUTH_SESSION_COOKIE);
+  //   return null;
+  // }
 
-  // refresh token success => save token in cookie
-  const { accessToken, refreshToken, expiresAt, ...props } = responseFromServer;
+  // // refresh token success => save token in cookie
+  // const { accessToken, refreshToken, expiresAt, ...props } = responseFromServer;
 
-  const newSession: Session = {
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-    expiresAt: expiresAt,
-    user: props,
-  };
+  // const newSession: Session = {
+  //   accessToken: accessToken,
+  //   refreshToken: refreshToken,
+  //   expiresAt: expiresAt,
+  //   user: props,
+  // };
 
-  setSession(newSession, undefined, cookieStore);
+  // setSession(newSession, undefined, cookieStore);
 
-  return newSession;
+  // return newSession;
 };
 
 export default getServerSession;

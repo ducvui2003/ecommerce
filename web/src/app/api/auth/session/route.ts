@@ -12,11 +12,10 @@ import { NextResponse } from 'next/server';
 
 const POST = async (req: Request) => {
   const data: Session = await req.json();
-  const cookieStore = await cookies();
+  const response = NextResponse.json(null, { status: 200 });
+  setSession(data, response);
 
-  setSession(data, undefined, cookieStore);
-
-  return NextResponse.json(null, { status: 200 });
+  return response;
 };
 
 /**
