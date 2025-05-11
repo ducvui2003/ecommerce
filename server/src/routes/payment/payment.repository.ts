@@ -36,8 +36,8 @@ export class PrismaPaymentRepository implements PaymentRepository {
       },
     });
     const paymentId = body.code
-      ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
-      : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
+        ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
+        : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
     // if (isNaN(paymentId)) {
     //   throw new BadRequestException('Cannot get payment id from content');
     // }

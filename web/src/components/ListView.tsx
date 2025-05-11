@@ -35,7 +35,10 @@ const ListView = <T,>({
         className,
       )}
     >
-      {data && data.map((item, index) => render(item, index))}
+      {/*{data && data.map((item, index) => render(item, index))}*/}
+      {Array.isArray(data) &&
+        data.map((item, index) => render(item, index))}
+
     </div>
   );
 };
