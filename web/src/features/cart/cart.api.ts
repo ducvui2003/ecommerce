@@ -8,12 +8,12 @@ export const cartApi = createApi({
   baseQuery: () => ({ data: {} }),
   endpoints: (builder) => ({
     getCart: builder.query<GetCartResType, void>({
-      async queryFn(){
+      async queryFn() {
         try {
-          const data = await cartService.getCart()
+          const data = await cartService.getCart();
           console.log('DATA:', data);
           return { data };
-        }catch (error: any){
+        } catch (error: any) {
           console.error('API ERROR:', error);
           return {
             error: {
@@ -32,12 +32,9 @@ export const cartApi = createApi({
         method: 'POST',
         body: body,
       }),
-      invalidatesTags: ['Cart']
+      invalidatesTags: ['Cart'],
     }),
   }),
 });
 
-export const {
-  useGetCartQuery,
-  useAddCartItemMutation
-} = cartApi
+export const { useGetCartQuery, useAddCartItemMutation } = cartApi;

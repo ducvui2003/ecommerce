@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { HOME_PAGE, LOCAL_STORAGE } from '@/constraint/variable';
 import { setAuthState } from '@/features/auth/auth.slice';
+import { cartApi } from '@/features/cart/cart.api';
 import { useAppDispatch } from '@/hooks/use-store';
 import { useRouter } from 'next/navigation';
 

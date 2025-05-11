@@ -6,18 +6,19 @@ import { ReactNode, useEffect, useState } from 'react';
 
 type SessionRestoreProviderProps = {
   children?: ReactNode;
+  accessToken?: string;
 };
 
-const SessionRestoreProvider = ({ children }: SessionRestoreProviderProps) => {
-  const { accessToken } = useSession();
+const SessionRestoreProvider = ({
+  accessToken,
+  children,
+}: SessionRestoreProviderProps) => {
   const [isReady, setIsReady] = useState<boolean>(false);
-
   useEffect(() => {
     if (accessToken) {
-      setAccessToken(accessToken)
-      setIsReady(true);
+      setAccessToken(accessToken);
     }
-    // setIsReady(true);
+    setIsReady(true);
   }, [accessToken]);
   if (!isReady) return null;
   return <>{children}</>;

@@ -52,6 +52,7 @@ const request = async <Response>(
   auth: boolean = true,
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
+  console.log(auth, accessToken);
   const baseHeaders = {
     'Content-Type': 'application/json',
     Authorization: auth ? `Bearer ${accessToken}` : '',

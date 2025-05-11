@@ -7,7 +7,12 @@ import { LOCAL_STORAGE } from '@/constraint/variable';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
-const Providers = ({ children }: { children: React.ReactNode }) => {
+type ProvidersProps = {
+  accessToken?: string;
+  children: React.ReactNode;
+};
+
+const Providers = ({ children, accessToken }: ProvidersProps) => {
   useEffect(() => {
     const message = localStorage.getItem(LOCAL_STORAGE.LOGOUT);
     if (message) {
@@ -19,7 +24,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   }, []);
   return (
     <StoreProvider>
-      <SessionRestoreProvider>
+      <SessionRestoreProvider accessToken={accessToken}>
         <main className="relative">
           <Toaster position="bottom-right" richColors />
           {children}
