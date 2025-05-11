@@ -11,21 +11,21 @@ const getDiscountedPrice = (base: number, percent?: number) => {
   return percent ? base - (base * percent) / 100 : base;
 };
 const ProductCard = ({
-                       id,
-                       thumbnail,
-                       name,
-                       basePrice,
-                       percentSale,
-                       star,
-                       numSell,
-                     }: ProductCardProps) => {
+  id,
+  thumbnail,
+  name,
+  basePrice,
+  percentSale,
+  star,
+  numSell,
+}: ProductCardProps) => {
   const price = getDiscountedPrice(basePrice, percentSale);
 
   return (
-    <div className="relative m-4 flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
+    <div className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
       <div className="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
         <Image
-          src={thumbnail}
+          src={thumbnail ?? '/images/product.png'}
           alt={name}
           fill
           className="rounded-xl object-cover"
@@ -38,12 +38,12 @@ const ProductCard = ({
       </div>
 
       <div className="mt-4 px-5 pb-5">
-        <h5 className="text-center text-xl font-semibold tracking-tight text-slate-900">
+        <h5 className="text-md o line-clamp-3 h-[100px] text-center font-semibold tracking-tight text-slate-900">
           {name}
         </h5>
 
         <div className="mt-2 mb-2 flex items-center gap-2">
-          <span className="text-xl font-bold text-red-600">
+          <span className="text-md font-bold text-red-600">
             {currency(price)}
           </span>
           {percentSale && (
@@ -56,10 +56,10 @@ const ProductCard = ({
         <span className="text-gray-600">
           {star} | Đã bán {numSell}
         </span>
-        <div className={'mt-4 flex w-full items-center justify-between'}>
+        {/* <div className={'mt-4 flex w-full items-center justify-between'}>
           <AddToCartButton productId={id} />
-          <ShowDetailButton productId={id}/>
-        </div>
+          <ShowDetailButton productId={id} />
+        </div> */}
       </div>
     </div>
   );

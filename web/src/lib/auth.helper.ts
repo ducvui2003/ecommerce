@@ -3,13 +3,6 @@ import { Session } from '@/app/api/auth/session/type';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { NextResponse } from 'next/server';
 
-const calculateRemainTime = (unix: number): number => {
-  const expiresAt = unix * 1000;
-  const now = Date.now();
-
-  return expiresAt - now;
-};
-
 const calculateExpiredDate = (unix: number): Date => {
   return new Date(unix * 1000);
 };
@@ -59,7 +52,6 @@ const isSessionExpired = (currentSession: Session) => {
 };
 
 export {
-  calculateRemainTime,
   setSession,
   getSession,
   calculateExpiredDate,

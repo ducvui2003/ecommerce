@@ -13,7 +13,7 @@ type Range = {
 type CategoryFilter = {
   id: number;
   name: string;
-}
+};
 
 const priceRange: Range[] = [
   {
@@ -39,15 +39,15 @@ const origins: string[] = ['Pháp', 'Nhật', 'Singapore', 'Ấn Độ '];
 const category: CategoryFilter[] = [
   {
     id: 1,
-    name: "Tinh dầu",
+    name: 'Tinh dầu',
   },
   {
     id: 2,
-    name: "Máy xông tinh dầu",
+    name: 'Máy xông tinh dầu',
   },
   {
     id: 3,
-    name: "Nến thơm tinh dầu",
+    name: 'Nến thơm tinh dầu',
   },
 ];
 
@@ -126,17 +126,19 @@ const FilterSlice = () => {
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
         <span className="text-md font-bold uppercase">Xuất xứ</span>
-        {origins.map((item, index) => (
-          <CheckboxFilter<string>
-            key={index}
-            name={item}
-            data={item}
-            onChecked={(check, data) => {
-              handleCheckString(check, 'origin', data);
-            }}
-            checked={hasKeyValueString('origin', item)}
-          />
-        ))}
+        <div className="grid grid-cols-2 grid-rows-2">
+          {origins.map((item, index) => (
+            <CheckboxFilter<string>
+              key={index}
+              name={item}
+              data={item}
+              onChecked={(check, data) => {
+                handleCheckString(check, 'origin', data);
+              }}
+              checked={hasKeyValueString('origin', item)}
+            />
+          ))}
+        </div>
       </div>
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
