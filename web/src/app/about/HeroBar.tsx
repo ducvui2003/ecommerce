@@ -25,7 +25,7 @@ function HeroBar() {
         <div className="flex flex-wrap justify-between items-center">
           <div className="lg:w-5/12 w-full mb-8 lg:mb-0">
             <div className="intro-excerpt">
-              <h1 className="text-4xl font-bold text-[#FFAB66]">{heroContent.heading}</h1>
+              <h1 className="text-4xl font-bold text-[#FFAB66D1]">{heroContent.heading}</h1>
               <p className="mb-4 text-[#FFAB66]">{heroContent.description}</p>
               <p>
                 <HeroButton href="#" className="bg-black text-[#FFAB66] mr-4 hover:bg-[#FFAB66] hover:text-black rounded">
