@@ -285,8 +285,9 @@ model OptionResource {
 }
 
 model Cart {
-  id       Int @id @default(autoincrement())
-  quantity Int @default(0)
+  id Int @id @default(autoincrement())
+
+  totalItems Int @default(0) @map("total_items")
 
   userId    Int        @unique @map("user_id")
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -294,13 +295,14 @@ model Cart {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
   @@map("carts")
 }
 
 model CartItem {
   id String @id @default(uuid()) // char(36)
+
+  quantity Int
 
   productId Int     @map("product_id")
   product   Product @relation(fields: [productId], references: [id])
@@ -310,7 +312,6 @@ model CartItem {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
   @@map("cart_items")
 }

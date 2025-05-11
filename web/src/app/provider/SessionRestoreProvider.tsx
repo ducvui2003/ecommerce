@@ -14,9 +14,10 @@ const SessionRestoreProvider = ({ children }: SessionRestoreProviderProps) => {
 
   useEffect(() => {
     if (accessToken) {
-      setAccessToken(accessToken);
+      setAccessToken(accessToken)
+      setIsReady(true);
     }
-    setIsReady(true);
+    // setIsReady(true);
   }, [accessToken]);
   if (!isReady) return null;
   return <>{children}</>;
