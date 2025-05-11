@@ -3,13 +3,6 @@ import { Session } from '@/app/api/auth/session/type';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { NextResponse } from 'next/server';
 
-const calculateRemainTime = (unix: number): number => {
-  const expiresAt = unix * 1000;
-  const now = Date.now();
-
-  return expiresAt - now;
-};
-
 const setSession = (session: Session, response: NextResponse) => {
   if (response)
     response.cookies.set(AUTH_SESSION_COOKIE, JSON.stringify(session), {
@@ -47,10 +40,4 @@ const isSessionExpired = (currentSession: Session) => {
   return expiresUTC < currentUTC;
 };
 
-export {
-  calculateRemainTime,
-  setSession,
-  getSession,
-  getCurrentUnix,
-  isSessionExpired,
-};
+export { setSession, getSession, getCurrentUnix, isSessionExpired };

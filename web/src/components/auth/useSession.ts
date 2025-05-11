@@ -102,7 +102,6 @@ const useSession = () => {
   useEffect(() => {
     const isTokenValid =
       status === 'authenticated' && expiresAt && expiresAt > getCurrentUnix();
-    console.log(isTokenValid);
     if (isTokenValid) return;
     fetchSession();
   }, []);

@@ -78,8 +78,8 @@
 @utility container {
   padding-inline: 4rem;
   @media (width >= --theme(--breakpoint-sm)) {
-    max-width: none;
-  }
+  max-width: none;
+}
   @media (width >= 640px) {
     max-width: 640px;
   }
