@@ -1,6 +1,6 @@
-import http from '@/lib/http.client';
 import { ProductResType } from '@/types/product.type';
 import { ResponseApi } from '@/types/api.type';
+import http from "@/lib/http.client";
 
 const productService = {
   getAllProducts: async (): Promise<ProductResType[]> => {
