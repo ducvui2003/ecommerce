@@ -1,6 +1,5 @@
 import { Session } from '@/app/api/auth/session/type';
 import { AuthState } from '@/features/auth/auth.slice';
-import { calculateExpiredDate } from '@/lib/auth.helper';
 import authService from '@/service/auth.service';
 
 type Credentials = {

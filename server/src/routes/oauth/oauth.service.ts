@@ -59,8 +59,8 @@ export abstract class OauthService {
     return {
       id: user.id,
       email: user.email,
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+      accessToken: tokens.accessToken.token,
+      refreshToken: tokens.refreshToken.token,
       exp: tokens.exp,
     };
   }
