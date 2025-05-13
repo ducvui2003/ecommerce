@@ -1,9 +1,9 @@
 'use client';
+import SessionRestoreProvider from '@/app/provider/SessionRestoreProvider';
 import StoreProvider from '@/app/provider/StoreProvinder';
 import { Toaster } from '@/components/ui/sonner';
 
 import { LOCAL_STORAGE } from '@/constraint/variable';
-import { SessionProvider } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -19,12 +19,12 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   }, []);
   return (
     <StoreProvider>
-      <SessionProvider>
+      <SessionRestoreProvider>
         <main className="relative">
           <Toaster position="bottom-right" richColors />
           {children}
         </main>
-      </SessionProvider>
+      </SessionRestoreProvider>
     </StoreProvider>
   );
 };

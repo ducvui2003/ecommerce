@@ -15,9 +15,10 @@ import { AddressModule } from './routes/address/address.module';
 import { SerializerInterceptor } from '@shared/interceptors/serializer.interceptor';
 import { UnprocessableEntityExceptionFilter } from '@shared/filters/unprocessable-entity.exception.filter';
 import { HttpExceptionFilter } from '@shared/filters/http.exception.filter';
-import { AppException } from '@shared/app.error';
 import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
+import { MediaModule } from './routes/media/media.module';
 import { ProductModule } from './routes/product/product.module';
+import { PaymentModule } from './routes/payment/payment.module';
 
 @Module({
   imports: [
@@ -27,7 +28,9 @@ import { ProductModule } from './routes/product/product.module';
     EventEmitterModule.forRoot(),
     OauthModule,
     AddressModule,
+    MediaModule,
     ProductModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [

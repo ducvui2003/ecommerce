@@ -1,14 +1,23 @@
-import { addressApi } from '@/features/address/address.slice';
+import { addressApi } from '@/features/address/address.api';
+import authReducer from '@/features/auth/auth.slice';
+import { userApi } from '@/features/manager/user/user.api';
+import { mediaApi } from '@/features/media/media.api';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
 export const makeStore = () => {
   const store = configureStore({
     reducer: {
+      authSlice: authReducer,
       [addressApi.reducerPath]: addressApi.reducer,
+      [mediaApi.reducerPath]: mediaApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      return getDefaultMiddleware().concat(addressApi.middleware);
+      return getDefaultMiddleware()
+        .concat(addressApi.middleware)
+        .concat(mediaApi.middleware)
+        .concat(userApi.middleware)
     },
   });
 

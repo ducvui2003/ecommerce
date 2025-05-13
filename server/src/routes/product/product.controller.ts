@@ -1,40 +1,34 @@
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { ProductService } from './product.service';
+  ProductDetailRes,
+  ProductRes,
+  SearchProductDto,
+} from '@route/product/product.dto';
+import { Paging } from '@shared/common/interfaces/paging.interface';
+import { ProductServiceImpl } from '@route/product/product.service';
 
-@Controller('product')
+@Controller('/api/v1/products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductServiceImpl) {}
 
-  @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  @Get('/search')
+  searchProducts(@Query() query: SearchProductDto) {
+    console.log(query);
+    return this.productService.searchProducts(query);
   }
 
-  @Get()
-  findAll() {
-    return this.productService.findAll();
+  @Get('/all')
+  findAll(
+    @Query('page', ParseIntPipe) page = 1,
+    @Query('limit', ParseIntPipe) limit = 10,
+  ): Promise<Paging<ProductRes>> {
+    return this.productService.findAll(page, limit);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  @Get('/:id')
+  findById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ProductDetailRes | null> {
+    return this.productService.findById(id);
   }
 }

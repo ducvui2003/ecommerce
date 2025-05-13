@@ -8,7 +8,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-  NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
 import React, { useEffect, useRef } from 'react';

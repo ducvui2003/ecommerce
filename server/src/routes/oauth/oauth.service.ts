@@ -7,6 +7,7 @@ import { AuthService } from '@route/auth/auth.service';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { buildUrl } from '@shared/helper.shared';
 import { RoleService } from '@shared/services/role.service';
+import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
 
 @Injectable()
 export abstract class OauthService {
@@ -16,6 +17,7 @@ export abstract class OauthService {
     private readonly hashingService: HashingService,
     private readonly roleService: RoleService,
     private readonly authService: AuthService,
+    @Inject(SHARED_USER_REPOSITORY)
     private readonly userRepository: SharedUserRepository,
   ) {}
 
@@ -57,8 +59,8 @@ export abstract class OauthService {
     return {
       id: user.id,
       email: user.email,
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+      accessToken: tokens.accessToken.token,
+      refreshToken: tokens.refreshToken.token,
       exp: tokens.exp,
     };
   }

@@ -65,7 +65,7 @@ const RegisterForm = () => {
   return !registerValue ? (
     <>
       <div className="mx-auto">
-        <Logo />
+        <Logo className='size-[125px]'/>
       </div>
       <div className="py-2">
         <Form {...form}>
@@ -75,7 +75,7 @@ const RegisterForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel  className='text-base'>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="Vui lòng không để trống" {...field} />
                   </FormControl>
@@ -88,9 +88,9 @@ const RegisterForm = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Họ và tên</FormLabel>
+                  <FormLabel  className='text-base'>Họ và tên</FormLabel>
                   <FormControl>
-                    <Input placeholder="Vui lòng không để trống" {...field} />
+                    <Input  placeholder="Vui lòng không để trống" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -102,7 +102,7 @@ const RegisterForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mật khẩu</FormLabel>
+                  <FormLabel  className='text-base'>Mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -119,7 +119,7 @@ const RegisterForm = () => {
               name="confirm-password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nhập lại mật khẩu</FormLabel>
+                  <FormLabel  className='text-base'>Nhập lại mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -132,7 +132,7 @@ const RegisterForm = () => {
               )}
             />
             <Button
-              className="w-full"
+              className="w-full text-base"
               disabled={form.formState.isSubmitting}
               type="submit"
             >
