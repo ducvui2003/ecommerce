@@ -1,4 +1,5 @@
 import { PageReq } from '@/types/api.type';
+import { Role } from '@/types/auth.type';
 
 type UserInfoResType = {
   id: number;
@@ -42,10 +43,22 @@ type GetUserDetailResType = GetUserResType & {
   addresses: GetAddressDetailResType[];
 };
 
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  image?: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+  role: Role;
+}
+
 export type {
   UserInfoResType,
   UserStatus,
   GetUserQueryReqType,
   GetUserResType,
   GetUserDetailResType,
+  User,
 };

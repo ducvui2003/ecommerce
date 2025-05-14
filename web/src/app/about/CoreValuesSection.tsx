@@ -1,17 +1,22 @@
 "use client";
-
-import Image from "next/image";
+import Image, { StaticImageData } from 'next/image';
 import React from "react";
 import tinhdaucam from "public/images/tinh-dau-cam.jpeg";
 import tinhdauque from 'public/images/tinh-dau-que.jpg'
 
-const coreValues = [
+type CoreValue = {
+  title: string;
+  content: string;
+  image: StaticImageData;
+  reverse?: boolean;
+};
+
+const coreValues: CoreValue[] = [
   {
     title: "Chất lượng là trên hết",
     content:
       "Mỗi sản phẩm của chúng tôi đều được tạo nên từ sự tâm huyết và tiêu chuẩn chất lượng nghiêm ngặt. Từ khâu lựa chọn nguyên liệu đến quá trình sản xuất, tất cả đều được kiểm soát chặt chẽ để mang đến những giọt tinh dầu nguyên chất, an toàn và hiệu quả nhất cho sức khỏe người dùng.",
     image: tinhdaucam,
-    reverse: false,
   },
   {
     title: "Gắn gũi với thiên nhiên",

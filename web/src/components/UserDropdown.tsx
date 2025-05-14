@@ -25,8 +25,8 @@ const UserDropdown = () => {
             className="transition-opacity hover:cursor-pointer hover:opacity-50"
           />
         </DropdownMenuTrigger>
-        <GuestOnlyClient>
-          <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
+        <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
+          <GuestOnlyClient>
             <DropdownMenuItem>
               <Link href={'/login'} className="flex-1">
                 Đăng nhập
@@ -38,30 +38,28 @@ const UserDropdown = () => {
                 Đăng ký
               </Link>
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </GuestOnlyClient>
-        <RequiredAuthClient mode="hide">
-          <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
-            <RequiredAuthClient mode="hide" role={['ADMIN']}>
-              <DropdownMenuItem>
-                <Link href={'/admin/product'} className="flex-1">
-                  Quản lý
-                </Link>
-              </DropdownMenuItem>
-            </RequiredAuthClient>
+          </GuestOnlyClient>
+          <RequiredAuthClient mode="hide" role={['ADMIN']}>
+            <DropdownMenuItem>
+              <Link href={'/admin/product'} className="flex-1">
+                Quản lý
+              </Link>
+            </DropdownMenuItem>
+          </RequiredAuthClient>
+          <RequiredAuthClient mode="hide">
             <DropdownMenuItem>
               <Link href={'/user/info'} className="flex-1" legacyBehavior>
                 Thông tin cá nhân
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="flex-1 bg-red-500 text-white hover:bg-red-700"
+              className="flex-1 bg-red-500 text-white hover:cursor-pointer hover:bg-red-700"
               onClick={() => setOpen(true)}
             >
               Đăng xuất
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </RequiredAuthClient>
+          </RequiredAuthClient>
+        </DropdownMenuContent>
       </DropdownMenu>
       <LogoutFrame open={open} setOpen={setOpen} />
     </>

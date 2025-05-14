@@ -36,11 +36,11 @@ type Metadata = {
   deletedBy?: string;
 };
 
-type PageReq = {
+type PageReq<T> = {
   page: number;
   size: number;
   sorts?: Sort[];
-};
+} & T;
 
 type Sort = {
   field: string;

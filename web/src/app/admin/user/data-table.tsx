@@ -21,7 +21,7 @@ export function DataTable() {
   return (
     <div>
       <div className="overflow-hidden rounded-md border">
-        <ScrollArea className="relative h-[63vh]">
+        <ScrollArea className="relative h-[70vh]">
           <Table className="mr-2">
             <TableHeader className="bg-secondary sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (

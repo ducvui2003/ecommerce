@@ -1,15 +1,17 @@
-import authMiddleware from '@/middlewares/auth.middleware';
-import middlewarePreventLogin from '@/middlewares/prevent-login.middleware';
-import { NextRequestWithAuth } from 'next-auth/middleware';
-import { NextFetchEvent, NextResponse } from 'next/server';
+import { Session } from '@/app/api/auth/session/type';
+import getServerSession from '@/components/auth/getServerSession';
+import middlewares from '@/middlewares';
+import { Middleware } from '@/types/middleware.type';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
+// Define route patterns for different roles
 const routesNeedAuth: string[] = ['/user/info'];
 
-const routesForUser: string[] = [];
+const routesForUser: string[] = ['/user/*splat'];
 
-const routesForSeller: string[] = [];
+const routesForSeller: string[] = ['/seller/*splat'];
 
-const routesForAdmin: string[] = [];
+const routesForAdmin: string[] = ['/admin/*splat'];
 
 const routesPreventAfterAuth: string[] = [
   '/login',
@@ -17,39 +19,39 @@ const routesPreventAfterAuth: string[] = [
   '/forgot-password',
 ];
 
+const middlewareChain = async (
+  req: NextRequest,
+  event: NextFetchEvent,
+  handlers: Middleware[],
+  session: Session | null,
+) => {
+  for (const handle of handlers) {
+    const res = await handle(req, event, session);
+    if (res && (res.redirected || !res.ok)) {
+      return res;
+    }
+  }
+  return undefined;
+};
+
 export default async function middleware(
-  req: NextRequestWithAuth,
+  req: NextRequest,
   event: NextFetchEvent,
 ) {
-  const path = req.nextUrl.pathname;
-
-  if (routesPreventAfterAuth.includes(path)) {
-    const result = middlewarePreventLogin(req);
-    if (!result) return result;
-  }
-
-  if (routesNeedAuth.includes(path)) {
-    const result = authMiddleware()(req, event);
-    if (!result) return result;
-  }
-
-  if (routesForUser.includes(path)) {
-    const result = authMiddleware('USER')(req, event);
-    if (!result) return result;
-  }
-
-  if (routesForSeller.includes(path)) {
-    const result = authMiddleware('SELLER')(req, event);
-    if (!result) return result;
-  }
-
-  if (routesForAdmin.includes(path)) {
-    const result = authMiddleware('ADMIN')(req, event);
-    if (!result) return result;
-  }
-
+  const session = await getServerSession();
+  const res = await middlewareChain(req, event, middlewares, session);
+  if (res) return res;
   return NextResponse.next();
 }
+
 export const config = {
-  matcher: ['/', '/login', '/register', '/forgot-password', '/user/info'],
+  matcher: [
+    '/',
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/user/info',
+    '/admin/:path*',
+    '/seller/:path*',
+  ],
 };

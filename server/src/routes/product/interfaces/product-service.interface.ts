@@ -1,8 +1,11 @@
-import { ProductDetailRes, ProductRes, SearchProductDto } from '../product.dto';
+import { SearchProductDto } from '@route/product/product.dto';
+import {
+  ProductDetailResType,
+  ProductResType,
+} from '@route/product/product.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 
 export interface ProductService {
-  findAll(page?: number, limit?: number): Promise<Paging<ProductRes>>;
-  findById(id: number): Promise<ProductDetailRes | null>;
-  searchProducts(dto: SearchProductDto): Promise<Paging<ProductRes>>;
+  findById(id: number): Promise<ProductDetailResType>;
+  search(dto: SearchProductDto): Promise<Paging<ProductResType>>;
 }

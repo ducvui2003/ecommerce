@@ -144,8 +144,8 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+      accessToken: tokens.accessToken.token,
+      refreshToken: tokens.refreshToken.token,
       exp: tokens.exp,
     };
   }
@@ -271,10 +271,13 @@ export class AuthService {
     ]);
 
     // Lưu refresh token vào redis
-    const { exp, iat, jti } =
-      await this.jwtService.verifyRefreshToken(refreshToken);
+    const { exp, iat, jti } = accessToken;
     const ttl = exp - iat;
-    this.cacheService.set(keyRefreshToken(payload.id, jti), refreshToken, ttl);
+    this.cacheService.set(
+      keyRefreshToken(payload.id, jti),
+      refreshToken,
+      ttl * 1000,
+    );
 
     return {
       accessToken,

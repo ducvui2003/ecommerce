@@ -1,48 +1,32 @@
 'use client';
 import { CheckboxFilter } from '@/components/product/CheckboxFilter';
-import { appendIfExist, currency } from '@/lib/utils';
+import RadioFilter from '@/components/product/RadioFilter';
+import { appendIfExist } from '@/lib/utils';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect } from 'react';
-import { string } from 'zod';
 
 type Range = {
   from: number;
-  to?: number;
+  to: number;
 };
 
-const priceRange: Range[] = [
-  {
-    from: 50000,
-    to: 200000,
-  },
-  {
-    from: 200000,
-    to: 500000,
-  },
-  {
-    from: 500000,
-    to: 1000000,
-  },
-  {
-    from: 1000000,
-    to: 1500000,
-  },
-];
-
+type CategoryFilter = {
+  id: number;
+  name: string;
+};
 const origins: string[] = ['Pháp', 'Nhật', 'Singapore', 'Ấn Độ '];
 
-const volumeRange: Range[] = [
+const category: CategoryFilter[] = [
   {
-    from: 120,
-    to: 200,
+    id: 1,
+    name: 'Tinh dầu',
   },
   {
-    from: 200,
-    to: 300,
+    id: 2,
+    name: 'Máy xông tinh dầu',
   },
   {
-    from: 300,
-    to: 500,
+    id: 3,
+    name: 'Nến thơm tinh dầu',
   },
 ];
 
@@ -54,8 +38,12 @@ const fragrances: string[] = [
   'Hương sang trọng',
 ];
 
-// /items?priceRange=200,400&priceRange=100,200&brand=apple&sort=popular
-type KeySearching = 'price' | 'volume' | 'origin' | 'fragrance';
+type KeySearching =
+  | 'minPrice'
+  | 'maxPrice'
+  | 'category'
+  | 'origin'
+  | 'fragrance';
 
 const FilterSlice = () => {
   const searchParams = useSearchParams();
@@ -67,10 +55,14 @@ const FilterSlice = () => {
     return params.has(key, value);
   };
 
-  const hasKeyValueRange = (key: KeySearching, value: Range) => {
+  const handleDefaultRadioPrice = (): Range => {
     const params = new URLSearchParams(searchParams);
-    let valueRange = `${value.from}${value.to && ',' + value.to}`;
-    return params.has(key, valueRange);
+    const minPrice = params.get('minPrice') || '0';
+    const maxPrice = params.get('maxPrice') || '0';
+    return {
+      from: parseInt(minPrice),
+      to: parseInt(maxPrice),
+    };
   };
 
   const handleCheckString = (
@@ -87,70 +79,68 @@ const FilterSlice = () => {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleCheckRange = (
-    check: boolean,
-    key: KeySearching,
-    value: Range,
-  ) => {
+  const handleRadioPrice = (value: Range | null) => {
     const params = new URLSearchParams(searchParams);
-    let valueRange = `${value.from}${value.to && ',' + value.to}`;
-    if (check) {
-      appendIfExist(params, key, `${valueRange}`);
-    } else {
-      params.delete(key, valueRange);
+
+    params.delete('minPrice');
+    params.delete('maxPrice');
+
+    if (value) {
+      appendIfExist(params, 'minPrice', `${value.from}`);
+      appendIfExist(params, 'maxPrice', `${value.to}`);
     }
+
     replace(`${pathname}?${params.toString()}`);
   };
 
   return (
     <div className="bg-[#F2F2F2] px-2">
       <div className="py-2">
-        <span className="text-md font-bold uppercase">Giá</span>
-        {priceRange.map((item, index) => (
-          <CheckboxFilter<Range>
-            key={index}
-            name={`Giá từ ${currency(item.from)} ${item.to && `tới ${currency(item.to)}`}`}
-            data={item}
-            onChecked={(check, data) => {
-              handleCheckRange(check, 'price', data);
-            }}
-            checked={hasKeyValueRange('price', item)}
-          />
-        ))}
+        <span className="text-md mb-2 block font-bold uppercase">Giá</span>
+        <RadioFilter
+          defaultValue={handleDefaultRadioPrice()}
+          onChecked={(rangePrice) => {
+            handleRadioPrice(rangePrice);
+          }}
+        />
       </div>
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
-        <span className="text-md font-bold uppercase">Xuất xứ</span>
-        {origins.map((item, index) => (
+        <span className="text-md mb-2 block font-bold uppercase">Xuất xứ</span>
+        <div className="grid grid-cols-2 grid-rows-2">
+          {origins.map((item, index) => (
+            <CheckboxFilter<string>
+              key={index}
+              name={item}
+              data={item}
+              onChecked={(check, data) => {
+                handleCheckString(check, 'origin', data);
+              }}
+              checked={hasKeyValueString('origin', item)}
+            />
+          ))}
+        </div>
+      </div>
+      <span className="block h-[1px] w-full bg-black"></span>
+      <div className="py-2">
+        <span className="text-md mb-2 block font-bold uppercase">LOẠI</span>
+        {category.map((item, index) => (
           <CheckboxFilter<string>
             key={index}
-            name={item}
-            data={item}
+            name={item.name}
+            data={item.name}
             onChecked={(check, data) => {
-              handleCheckString(check, 'origin', data);
+              handleCheckString(check, 'category', data);
             }}
-            checked={hasKeyValueString('origin', item)}
+            checked={hasKeyValueString('category', item.name)}
           />
         ))}
       </div>
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
-        <span className="text-md font-bold uppercase">DUNG TÍCH</span>
-        {volumeRange.map((item, index) => (
-          <CheckboxFilter<Range>
-            key={index}
-            name={`${item.from}ml - ${item.to}ml`}
-            data={item}
-            onChecked={(check, data) => {
-              handleCheckRange(check, 'volume', data);
-            }}
-            checked={hasKeyValueRange('volume', item)}
-          />
-        ))}
-      </div>
-      <span className="block h-[1px] w-full bg-black"></span>
-      <div className="py-2">
-        <span className="text-md font-bold uppercase">NHÓM MÙI HƯƠNG</span>
+        <span className="text-md mb-2 block font-bold uppercase">
+          MÙI HƯƠNG
+        </span>
         {fragrances.map((item, index) => (
           <CheckboxFilter<string>
             key={index}

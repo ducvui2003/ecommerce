@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import envConfig from 'src/configs/env.config';
-import { JwtCustomClaims, JwtPayload } from 'src/shared/types/jwt.type';
+import {
+  JwtCustomClaims,
+  JwtData,
+  JwtPayload,
+} from 'src/shared/types/jwt.type';
 import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,11 +13,11 @@ import { v4 as uuidv4 } from 'uuid';
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
-  signAccessToken(customPayload: JwtCustomClaims): Promise<string> {
-    // issue at:  thời gian tạo jwt (unix timestamp)
+  async signAccessToken(customPayload: JwtCustomClaims): Promise<JwtData> {
+    // issue at:  thời gian tạo jwt (epoch timestamp second)
     const iat = Math.floor(Date.now() / 1000);
-    // expires in:  thời gian hết hạn jwt (unix timestamp)
-    const exp = iat + ms(envConfig.ACCESS_TOKEN_EXPIRY);
+    // expires in:  thời gian hết hạn jwt (epoch timestamp second)
+    const exp = iat + Math.floor(ms(envConfig.ACCESS_TOKEN_EXPIRY) / 1000);
     // jwt id
     const jti = uuidv4();
 
@@ -24,17 +28,24 @@ export class TokenService {
       jti: jti,
     };
 
-    return this.jwtService.signAsync(payload, {
+    const token = await this.jwtService.signAsync(payload, {
       secret: envConfig.ACCESS_TOKEN_SECRET,
       algorithm: 'HS256',
     });
+
+    return {
+      token: token,
+      iat: iat,
+      exp: exp,
+      jti: jti,
+    };
   }
 
-  signRefreshToken(customPayload: JwtCustomClaims): Promise<string> {
-    // issue at:  thời gian tạo jwt (unix timestamp)
+  async signRefreshToken(customPayload: JwtCustomClaims): Promise<JwtData> {
+    // issue at:  thời gian tạo jwt (epoch timestamp second)
     const iat = Math.floor(Date.now() / 1000);
-    // expires in:  thời gian hết hạn jwt (unix timestamp)
-    const exp = iat + ms(envConfig.REFRESH_TOKEN_EXPIRY);
+    // expires in:  thời gian hết hạn jwt (epoch timestamp second)
+    const exp = iat + Math.floor(ms(envConfig.ACCESS_TOKEN_EXPIRY) / 1000);
     // jwt id
     const jti = uuidv4();
 
@@ -45,10 +56,17 @@ export class TokenService {
       jti: jti,
     };
 
-    return this.jwtService.signAsync(payload, {
+    const token = await this.jwtService.signAsync(payload, {
       secret: envConfig.REFRESH_TOKEN_SECRET,
       algorithm: 'HS256',
     });
+
+    return {
+      token: token,
+      iat: iat,
+      exp: exp,
+      jti: jti,
+    };
   }
 
   verifyAccessToken(token: string): Promise<JwtPayload> {

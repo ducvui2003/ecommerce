@@ -29,12 +29,12 @@ export class MediaService {
     });
   }
 
-  changeVisibility(data: ChangeVisibilityType) {
-    this.mediaRepository.changeVisibility({
-      id: data.id,
-      isDeleted: data.visibility,
-    });
-  }
+  // changeVisibility(data: ChangeVisibilityType) {
+  //   this.mediaRepository.changeVisibility({
+  //     id: data.id,
+  //     isDeleted: data.visibility,
+  //   });
+  // }
 
   async getList(pageable: Pageable) {
     const data = await this.mediaRepository.getMedia(pageable, [

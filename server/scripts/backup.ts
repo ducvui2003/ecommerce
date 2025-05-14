@@ -18,7 +18,7 @@ if (!fs.existsSync(PG_DUMP)) {
   exit(1);
 }
 
-// Check if DATABASE_URL is present
+// Validate DATABASE_URL
 if (!process.env.DATABASE_URL) {
   console.error('❌ Missing DATABASE_URL in .env');
   exit(1);
@@ -38,8 +38,10 @@ const DB_HOST = dbUrl.hostname;
 const DB_PORT = dbUrl.port || '5432';
 const DB_NAME = dbUrl.pathname.replace(/^\//, '');
 
-// Create backup directory if needed
-const backupDir = path.resolve(__dirname, '../prisma/data');
+// Backup directory with timestamp
+const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+const backupDir = path.resolve(__dirname, `../prisma/data/backup-${timestamp}`);
+
 try {
   if (!fs.existsSync(backupDir)) {
     fs.mkdirSync(backupDir, { recursive: true });
@@ -49,23 +51,52 @@ try {
   exit(1);
 }
 
-// Format timestamp
-const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-const backupFile = path.join(backupDir, `backup-${timestamp}.sql`);
+// Paths
+const schemaFile = path.join(backupDir, 'schema.sql');
+const dataFile = path.join(backupDir, 'data.sql');
 
-// Set environment for pg_dump
+// PG environment
 const env = {
   ...process.env,
   PGPASSWORD: DB_PASSWORD,
 };
 
-// Build and run the pg_dump command
-const dumpCommand = `${PG_DUMP} -U ${DB_USER} -h ${DB_HOST} -p ${DB_PORT} -d ${DB_NAME} -F p > "${backupFile}"`;
+// Commands
+const dumpSchemaCommand = `"${PG_DUMP}" \
+  --host="${DB_HOST}" \
+  --port="${DB_PORT}" \
+  --username="${DB_USER}" \
+  --dbname="${DB_NAME}" \
+  --schema=public \
+  --no-owner \
+  --clean \
+  --if-exists \
+  --format=p \
+  --schema-only \
+  --file="${schemaFile}"`;
+
+const dumpDataCommand = `"${PG_DUMP}" \
+  --host="${DB_HOST}" \
+  --port="${DB_PORT}" \
+  --username="${DB_USER}" \
+  --dbname="${DB_NAME}" \
+  --schema=public \
+  --data-only \
+  --inserts \
+  --on-conflict-do-nothing \
+  --no-owner \
+  --file="${dataFile}"`;
 
 try {
-  console.log(`📦 Backing up "${DB_NAME}" to ${backupFile}...`);
-  execSync(dumpCommand, { env, stdio: 'inherit' });
-  console.log('✅ Backup complete!');
+  console.log(`📦 Backing up schema of "${DB_NAME}" to ${schemaFile}...`);
+  execSync(dumpSchemaCommand, { env, stdio: 'inherit' });
+
+  console.log(`📦 Backing up data of "${DB_NAME}" to ${dataFile}...`);
+  execSync(dumpDataCommand, { env, stdio: 'inherit' });
+
+  console.log('✅ Backup complete! Files created:');
+  console.log(` - ${schemaFile}`);
+  console.log(` - ${dataFile}`);
 } catch (error) {
   console.error('❌ Backup failed:', error);
 }
