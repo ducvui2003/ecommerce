@@ -1,34 +1,36 @@
-import {
-  ProductDetailRes,
-  ProductResType,
-  SearchProductDto,
-} from '@route/product/product.dto';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@shared/services/prisma.service';
-import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
-import { Paging } from '@shared/common/interfaces/paging.interface';
 import { Prisma } from '@prisma/client';
-import { mapProductDetailToResponse } from '@shared/mapper/product.mapper';
+import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
+import { SearchProductDto } from '@route/product/product.dto';
+import { Paging } from '@shared/common/interfaces/paging.interface';
+import { ProductType } from '@shared/models/product.model';
+import { PrismaService } from '@shared/services/prisma.service';
 
 @Injectable()
 export class ProductRepositoryImpl implements ProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getProductById(id: number): Promise<ProductDetailRes | null> {
-    const product = await this.prisma.product.findUnique({
-      where: { id },
+  async getProductById(id: number): Promise<ProductType> {
+    const product = await this.prisma.product.findFirstOrThrow({
       include: {
-        category: true,
         supplier: true,
+        category: true,
+        productResource: {
+          include: {
+            resource: true,
+          },
+        },
+      },
+      where: {
+        id: id,
+        deletedAt: null,
       },
     });
-    if (!product) {
-      return null;
-    }
-    return mapProductDetailToResponse(product);
+
+    return product;
   }
 
-  async search(dto: SearchProductDto): Promise<Paging<ProductResType>> {
+  async search(dto: SearchProductDto): Promise<Paging<ProductType>> {
     const {
       name,
       categoryId,
@@ -68,21 +70,14 @@ export class ProductRepositoryImpl implements ProductRepository {
       }
     });
 
-    const [totalItems, products] = await this.prisma.$transaction([
+    const [totalItems, items] = await this.prisma.$transaction([
       this.prisma.product.count({ where: whereClause }),
       this.prisma.product.findMany({
-        select: {
-          id: true,
-          name: true,
-          basePrice: true,
-          salePrice: true,
+        include: {
+          category: true,
           productResource: {
-            select: {
-              resource: {
-                select: {
-                  publicId: true,
-                },
-              },
+            include: {
+              resource: true,
             },
           },
         },
@@ -92,16 +87,6 @@ export class ProductRepositoryImpl implements ProductRepository {
         take: size,
       }),
     ]);
-
-    const items: ProductResType[] = products.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-        basePrice: item.basePrice.toNumber(),
-        salePrice: item.salePrice.toNumber(),
-        media: item.productResource.map((i) => i.resource.publicId),
-      };
-    });
 
     return {
       items,

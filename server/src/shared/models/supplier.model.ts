@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 export const SupplierModel = MetadataFields.extend({
   id: z.number(),
-  name: z.string().min(8),
+  name: z.string(),
   email: z.string(),
   phone: z.string(),
   country: z.string(),

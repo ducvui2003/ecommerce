@@ -1,15 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  ProductDetailRes,
-  ProductResType,
-  SearchProductDto,
-} from '@route/product/product.dto';
+import { SearchProductDto } from '@route/product/product.dto';
 import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
 import { ProductService } from '@route/product/interfaces/product-service.interface';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductNotFoundException } from '@shared/exceptions/product.exception';
-import { transformItemsPaging } from '@shared/helper.shared';
+import {
+  isUniqueConstraintError,
+  transformItemsPaging,
+} from '@shared/helper.shared';
 import { FileService } from '@shared/services/file/file.service';
+import {
+  ProductDetailResSchema,
+  ProductDetailResType,
+  ProductResSchema,
+  ProductResType,
+} from '@route/product/product.schema';
+import { ProductType } from '@shared/models/product.model';
 
 @Injectable()
 export class ProductServiceImpl implements ProductService {
@@ -20,26 +26,34 @@ export class ProductServiceImpl implements ProductService {
     private readonly fileService: FileService,
   ) {}
 
-  async findById(id: number): Promise<ProductDetailRes | null> {
-    const product = await this.productRepository.getProductById(id);
-    if (!product) {
-      throw new ProductNotFoundException();
+  async findById(id: number): Promise<ProductDetailResType> {
+    try {
+      const product = await this.productRepository.getProductById(id);
+      return ProductDetailResSchema.parse({
+        ...product,
+        media:
+          product.productResource.map(({ resource }) => {
+            return this.fileService.getUrl(resource.publicId);
+          }) ?? [],
+      });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new ProductNotFoundException();
+      }
+      throw error;
     }
-    return product;
   }
 
   async search(dto: SearchProductDto): Promise<Paging<ProductResType>> {
-    const page = await this.productRepository.search(dto);
-    return transformItemsPaging<ProductResType, ProductResType>(
-      page,
-      (item) => {
-        return {
-          ...item,
-          media: item.media.map((publicId) =>
-            this.fileService.getUrl(publicId),
-          ),
-        };
-      },
-    );
+    const page: Paging<ProductType> = await this.productRepository.search(dto);
+    return transformItemsPaging<ProductResType, ProductType>(page, (item) => {
+      return ProductResSchema.parse({
+        ...item,
+        media:
+          item.productResource.map(({ resource }) => {
+            return this.fileService.getUrl(resource.publicId);
+          }) ?? [],
+      });
+    });
   }
 }
