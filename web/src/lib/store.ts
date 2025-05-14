@@ -17,7 +17,7 @@ export const makeStore = () => {
       return getDefaultMiddleware()
         .concat(addressApi.middleware)
         .concat(mediaApi.middleware)
-        .concat(userApi.middleware)
+        .concat(userApi.middleware);
     },
   });
 
