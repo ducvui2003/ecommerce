@@ -1,6 +1,6 @@
 import {
   ProductDetailRes,
-  ProductRes,
+  ProductResType,
   SearchProductDto,
 } from '@route/product/product.dto';
 import { Injectable } from '@nestjs/common';
@@ -8,39 +8,11 @@ import { PrismaService } from '@shared/services/prisma.service';
 import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { Prisma } from '@prisma/client';
-import {
-  mapProductDetailToResponse,
-  mapProductListToResponse,
-} from '@shared/mapper/product.mapper';
+import { mapProductDetailToResponse } from '@shared/mapper/product.mapper';
 
 @Injectable()
 export class ProductRepositoryImpl implements ProductRepository {
   constructor(private readonly prisma: PrismaService) {}
-
-  async getProducts(page = 1, limit = 10): Promise<Paging<ProductRes>> {
-    const skip = (page - 1) * limit;
-
-    const [totalItems, products] = await this.prisma.$transaction([
-      this.prisma.product.count(),
-      this.prisma.product.findMany({
-        skip,
-        take: limit,
-        include: {
-          category: true,
-        },
-      }),
-    ]);
-
-    return {
-      items: mapProductListToResponse(products),
-      pagination: {
-        totalItems,
-        page,
-        limit,
-        totalPages: Math.ceil(totalItems / limit),
-      },
-    };
-  }
 
   async getProductById(id: number): Promise<ProductDetailRes | null> {
     const product = await this.prisma.product.findUnique({
@@ -56,15 +28,16 @@ export class ProductRepositoryImpl implements ProductRepository {
     return mapProductDetailToResponse(product);
   }
 
-  async searchProducts(dto: SearchProductDto): Promise<Paging<ProductRes>> {
+  async search(dto: SearchProductDto): Promise<Paging<ProductResType>> {
     const {
       name,
       categoryId,
       supplierId,
+      page,
+      size,
       minPrice,
       maxPrice,
-      page = '1',
-      limit = '10',
+      sort,
     } = dto;
 
     const whereClause: Prisma.ProductWhereInput = {
@@ -77,41 +50,65 @@ export class ProductRepositoryImpl implements ProductRepository {
         supplierId && supplierId.length > 0
           ? { in: supplierId.map(Number) }
           : undefined,
-      salePrice: {
-        gte: minPrice ? BigInt(minPrice) : undefined,
-        lte: maxPrice ? BigInt(maxPrice) : undefined,
-      },
       deletedAt: null,
+      basePrice: {
+        gte: minPrice,
+        lte: maxPrice,
+      },
     };
 
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
+    const calculateOrderBy: Prisma.ProductOrderByWithRelationInput = {};
+
+    sort.forEach((item) => {
+      if (item.sortBy === 'createdAt') {
+        calculateOrderBy.createdAt = item.orderBy;
+      }
+      if (item.sortBy === 'price') {
+        calculateOrderBy.basePrice = item.orderBy;
+      }
+    });
 
     const [totalItems, products] = await this.prisma.$transaction([
       this.prisma.product.count({ where: whereClause }),
       this.prisma.product.findMany({
+        select: {
+          id: true,
+          name: true,
+          basePrice: true,
+          salePrice: true,
+          productResource: {
+            select: {
+              resource: {
+                select: {
+                  publicId: true,
+                },
+              },
+            },
+          },
+        },
         where: whereClause,
-        include: {
-          category: true,
-          supplier: true,
-          productResource: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        skip: (pageNum - 1) * limitNum,
-        take: limitNum,
+        orderBy: calculateOrderBy,
+        skip: (page - 1) * size,
+        take: size,
       }),
     ]);
 
-    const items: ProductRes[] = mapProductListToResponse(products);
+    const items: ProductResType[] = products.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        basePrice: item.basePrice.toNumber(),
+        salePrice: item.salePrice.toNumber(),
+        media: item.productResource.map((i) => i.resource.publicId),
+      };
+    });
 
     return {
       items,
       pagination: {
-        page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(totalItems / limitNum),
+        page,
+        limit: size,
+        totalPages: Math.ceil(totalItems / size),
         totalItems,
       },
     };
