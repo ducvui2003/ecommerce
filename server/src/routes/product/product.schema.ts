@@ -1,8 +1,9 @@
 import { OrderBy, SortBy } from '@shared/constants/product.constant';
+import { DecimalToNumberSchema } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
-import { MediaType } from '@shared/models/media.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel, ProductType } from '@shared/models/product.model';
+import { SupplierModel } from '@shared/models/supplier.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
 
@@ -63,4 +64,35 @@ const SearchProductReqSchema = PageableSchema.extend({
     ),
 });
 
-export { SearchProductReqSchema };
+const ProductResSchema = ProductModel.pick({
+  id: true,
+  name: true,
+}).extend({
+  basePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberSchema,
+  media: z.array(z.string()),
+});
+
+const ProductDetailResSchema = ProductModel.pick({
+  id: true,
+  name: true,
+  description: true,
+})
+  .extend({
+    basePrice: DecimalToNumberSchema,
+    salePrice: DecimalToNumberSchema,
+    category: CategoryModel.pick({
+      name: true,
+    }),
+    supplier: SupplierModel.pick({
+      name: true,
+    }),
+    media: z.array(z.string()),
+  })
+  .optional();
+
+type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
+type ProductResType = z.infer<typeof ProductResSchema>;
+
+export { SearchProductReqSchema, ProductDetailResSchema, ProductResSchema };
+export type { ProductDetailResType, ProductResType };

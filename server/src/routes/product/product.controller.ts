@@ -1,5 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { ProductDetailRes, SearchProductDto } from '@route/product/product.dto';
+import { SearchProductDto } from '@route/product/product.dto';
+import { ProductDetailResType } from '@route/product/product.schema';
 import { ProductServiceImpl } from '@route/product/product.service';
 
 @Controller('/api/v1/products')
@@ -15,7 +16,7 @@ export class ProductController {
   @Get('/:id')
   findById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ProductDetailRes | null> {
+  ): Promise<ProductDetailResType> {
     return this.productService.findById(id);
   }
 }
