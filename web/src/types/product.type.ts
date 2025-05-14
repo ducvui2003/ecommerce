@@ -31,6 +31,21 @@ type ProductResType = {
   numSell: number;
 };
 
+type ProductDetailRespType = {
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  salePrice: number;
+  category: {
+    name: string;
+  };
+  supplier: {
+    name: string;
+  };
+  media: string[];
+};
+
 type ProductType = {
   id: number;
   name: string;
@@ -43,4 +58,4 @@ type ProductType = {
   supplier: SupplierType;
 };
 
-export type { ProductCardType, ProductResType, ProductType, SearchParams };
+export type { ProductCardType, ProductResType, ProductType, SearchParams, ProductDetailRespType};

@@ -1,4 +1,4 @@
-import { ProductResType, SearchParams } from '@/types/product.type';
+import { ProductDetailRespType, ProductResType, SearchParams } from '@/types/product.type';
 import {
   PageReq,
   Paging,
@@ -16,6 +16,19 @@ const productService = {
       const params = toQueryString(req);
       const res = await httpServer.get<ResponseApiPaging<ProductResType>>(
         `api/v1/products/search?${params}`,
+        undefined,
+        false,
+      );
+      return res.payload.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getProductById: async (id: number): Promise<ProductDetailRespType> => {
+    try {
+      const res = await httpServer.get<ResponseApi<ProductDetailRespType>>(
+        `api/v1/products/${id}`,
         undefined,
         false,
       );

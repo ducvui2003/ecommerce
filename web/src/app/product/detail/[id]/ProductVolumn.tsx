@@ -1,6 +1,6 @@
 export default function ProductVolumeSelector() {
   return (
-    <form className="mt-10">
+    <form>
       <div>
         <h3 className="text-sm font-medium text-gray-900">Dung tích</h3>
         <fieldset className="mt-4">
