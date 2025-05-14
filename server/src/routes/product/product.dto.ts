@@ -3,13 +3,15 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { SearchProductReqSchema } from '@route/product/product.schema';
 
-type ProductRes = Omit<
+export class SearchProductDto extends createZodDto(SearchProductReqSchema) {}
+
+type ProductResType = Pick<
   ProductType,
-  'supplier' | 'supplierId' | 'category' | 'categoryId'
+  'id' | 'name' | 'basePrice' | 'salePrice'
 > & {
-  category: string;
+  media: string[];
 };
 
-type ProductDetailRes = ProductType;
-export class SearchProductDto extends createZodDto(SearchProductReqSchema) {}
-export type { ProductRes, ProductDetailRes };
+type ProductDetailResType = ProductType;
+
+export type { ProductDetailResType as ProductDetailRes, ProductResType };

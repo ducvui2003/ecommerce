@@ -1,30 +1,17 @@
 import { Product, Category, Supplier } from '@prisma/client';
-import { ProductDetailRes, ProductRes } from '@route/product/product.dto';
+import { ProductDetailRes } from '@route/product/product.dto';
 
-export function mapProductToResponse(product: Product & { category: Category }): ProductRes {
-  return {
-    id: product.id,
-    name: product.name,
-    description: product.description,
-    basePrice: Number(product.basePrice),
-    salePrice: Number(product.salePrice),
-    createdAt: product.createdAt,
-    updatedAt: product.updatedAt,
-    deletedAt: product.deletedAt,
-    isDeleted: !!product.deletedAt,
-    category: product.category?.name ?? '',
-  };
-}
-
-export function  mapProductDetailToResponse(product: Product & { category: Category; supplier: Supplier }): ProductDetailRes {
+export function mapProductDetailToResponse(
+  product: Product & { category: Category; supplier: Supplier },
+): ProductDetailRes {
   return {
     id: product.id,
     name: product.name,
     description: product.description,
     categoryId: product.categoryId,
     supplierId: String(product.supplierId),
-    basePrice: Number(product.basePrice),
-    salePrice: Number(product.salePrice),
+    basePrice: product.basePrice.toNumber(),
+    salePrice: product.salePrice.toNumber(),
     category: {
       id: product.category.id,
       name: product.category.name,
@@ -49,8 +36,6 @@ export function  mapProductDetailToResponse(product: Product & { category: Categ
   };
 }
 
-
-
-export function mapProductListToResponse(products: (Product & { category: Category })[]): ProductRes[] {
-  return products.map(mapProductToResponse);
-}
+// export function mapProductListToResponse(products: (Product & { category: Category })[]): ProductRes[] {
+//   return products.map(mapProductToResponse);
+// }

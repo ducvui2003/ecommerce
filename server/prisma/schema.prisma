@@ -175,8 +175,8 @@ model Product {
   id          Int     @id @default(autoincrement())
   name        String
   description String
-  basePrice   Decimal @map("base_price")
-  salePrice   Decimal @map("sale_price")
+  basePrice   Decimal @map("base_price") @db.Decimal(10, 2)
+  salePrice   Decimal @map("sale_price") @db.Decimal(10, 2)
 
   categoryId Int      @map("category_id")
   category   Category @relation(fields: [categoryId], references: [id])
@@ -317,8 +317,8 @@ model CartItem {
 
 model Order {
   id          Int         @id @default(autoincrement())
-  totalAmount Decimal     @map("total_amount")
-  feeShipping Decimal     @map("fee_shipping")
+  totalAmount Decimal     @map("total_amount") @db.Decimal(10, 2)
+  feeShipping Decimal     @map("fee_shipping") @db.Decimal(10, 2)
   status      OrderStatus @default(PENDING)
 
   // Address
