@@ -87,7 +87,6 @@ const useSession = () => {
       }
     } else {
       // session not exist => refresh token expired
-      console.log('token expired');
       dispatch(
         setAuthState({
           accessToken: null,

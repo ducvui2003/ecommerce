@@ -8,9 +8,7 @@ type ServerProviderProps = {
 const ServerProvider = async ({ children }: ServerProviderProps) => {
   const session = await getServerSession();
   return (
-    <ClientProvider accessToken={session?.accessToken ?? ''}>
-      {children}
-    </ClientProvider>
+    <ClientProvider session={session ?? undefined}>{children}</ClientProvider>
   );
 };
 
