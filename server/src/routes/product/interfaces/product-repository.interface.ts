@@ -1,8 +1,8 @@
-import { ProductDetailRes, ProductRes, SearchProductDto } from '../product.dto';
+import { ProductType } from '@shared/models/product.model';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { SearchProductDto } from '@route/product/product.dto';
 
 export interface ProductRepository {
-  getProducts(page?: number, limit?: number): Promise<Paging<ProductRes>>;
-  getProductById(id: number): Promise<ProductDetailRes | null>;
-  searchProducts(dto: SearchProductDto): Promise<Paging<ProductRes>>;
+  getProductById(id: number): Promise<ProductType>;
+  search(dto: SearchProductDto): Promise<Paging<ProductType>>;
 }
