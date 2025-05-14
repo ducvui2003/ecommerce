@@ -1,7 +1,4 @@
-'use client';
-
 import UserForm from '@/app/admin/user/[id]/user-form';
-import userManagerService from '@/service/manager/user.service';
 
 type UserDetailAdminPageProps = {
   params: Promise<{ id: string }>;

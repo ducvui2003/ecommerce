@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/table';
 import { useUserTable } from '@/hooks/use-user-datatable';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 
 export function DataTable() {
   const { table, columns } = useUserTable();

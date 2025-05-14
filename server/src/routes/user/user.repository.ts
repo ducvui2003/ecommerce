@@ -7,6 +7,7 @@ import {
   InfoUpdate,
 } from '@route/user/user.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { UserStatus } from '@shared/constants/auth.constant';
 import { UserType } from '@shared/models/user.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
@@ -15,7 +16,9 @@ export interface UserRepository {
 
   updateInfo(id: number, info: InfoUpdate): Promise<UserInformationAllowed>;
 
-  getList(pageable: GetUserQueryType): Promise<Paging<GetUserResType>>;
+  getList(pageable: GetUserQueryType): Promise<Paging<UserType>>;
+
+  updateStatus(userId: number, status: UserStatus): Promise<void>;
 }
 
 @Injectable()
@@ -60,7 +63,7 @@ export class PrismaUserRepository implements UserRepository {
     };
   }
 
-  async getList(pageable: GetUserQueryType): Promise<Paging<GetUserResType>> {
+  async getList(pageable: GetUserQueryType): Promise<Paging<UserType>> {
     const { page, size, name, email, id, status } = pageable;
     const where: Prisma.UserWhereInput = {
       deletedAt: null,
@@ -92,22 +95,10 @@ export class PrismaUserRepository implements UserRepository {
       };
     }
 
-    const [database, total] = await this.prismaService.$transaction([
+    const [items, total] = await this.prismaService.$transaction([
       this.prismaService.user.findMany({
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          dob: true,
-          phone: true,
-          status: true,
-          avatar: true,
-          createdAt: true,
-          role: {
-            select: {
-              name: true,
-            },
-          },
+        include: {
+          role: true,
         },
         where: where,
         skip: (page - 1) * size,
@@ -118,16 +109,8 @@ export class PrismaUserRepository implements UserRepository {
       }),
     ]);
 
-    const items: GetUserResType[] = database.map((user) => {
-      const { role, ...rest } = user;
-      return {
-        ...rest,
-        role: role?.name ?? null,
-      };
-    });
-
     return {
-      items: items,
+      items,
       pagination: {
         page: page,
         limit: size,
@@ -135,5 +118,15 @@ export class PrismaUserRepository implements UserRepository {
         totalPages: Math.ceil(total / size),
       },
     };
+  }
+  async updateStatus(userId: number, status: UserStatus): Promise<void> {
+    await this.prismaService.user.update({
+      data: {
+        status: status,
+      },
+      where: {
+        id: userId,
+      },
+    });
   }
 }

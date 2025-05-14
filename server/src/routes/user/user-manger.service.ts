@@ -1,11 +1,18 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { UserStatus } from '@prisma/client';
 import { USER_REPOSITORY } from '@route/user/user.const';
 import { UserRepository } from '@route/user/user.repository';
 import {
+  GetUserDetailResSchema,
   GetUserDetailResType,
   GetUserQueryType,
+  GetUserResSchema,
+  GetUserResType,
 } from '@route/user/user.schema';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
+import { isNotFoundError, transformItemsPaging } from '@shared/helper.shared';
+import { UserType } from '@shared/models/user.model';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 
 @Injectable()
@@ -16,8 +23,14 @@ export class UserManagerService {
     @Inject(SHARED_USER_REPOSITORY)
     private readonly sharedUserRepository: SharedUserRepository,
   ) {}
-  getList(pageable: GetUserQueryType) {
-    return this.userRepository.getList(pageable);
+  async getList(pageable: GetUserQueryType): Promise<Paging<GetUserResType>> {
+    const data: Paging<UserType> = await this.userRepository.getList(pageable);
+    return transformItemsPaging<GetUserResType, UserType>(data, (item) => {
+      return GetUserResSchema.parse({
+        ...item,
+        role: item.role.name,
+      });
+    });
   }
   async getDetail(userId: number): Promise<GetUserDetailResType> {
     const data = await this.sharedUserRepository.findDetailByUnique({
@@ -26,11 +39,28 @@ export class UserManagerService {
     if (data == null) {
       throw new NotFoundException();
     }
-    const { addresses, role, roleId, ...props } = data;
-    return {
-      ...props,
-      role: role?.name ?? '',
-      addresses,
-    };
+
+    return GetUserDetailResSchema.parse({
+      ...data,
+      role: data.role.name,
+      addresses: data.addresses?.map((item) => {
+        return {
+          province: item.province,
+          district: item.district,
+          ward: item.ward,
+          detail: item.detail,
+        };
+      }),
+    });
+  }
+
+  changeStatus(userId: number, status: UserStatus) {
+    try {
+      this.userRepository.updateStatus(userId, status);
+    } catch (e) {
+      if (isNotFoundError(e)) {
+        throw new Error();
+      }
+    }
   }
 }
