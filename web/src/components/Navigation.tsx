@@ -25,26 +25,13 @@ type NavigationType = {
 };
 export const components: NavigationType[] = [
   {
-    title: 'Trang chủ',
-    href: '/login',
+    title: 'Sản phẩm',
+    href: '/product',
   },
-  {
-    title: 'Tinh dầu',
-    href: '/',
-    child: [
-      {
-        title: 'Tinh dầu',
-        href: '/',
-      },
-      {
-        title: 'Tinh dầu',
-        href: '/',
-      },
-    ],
-  },
+
   {
     title: 'Về chúng tôi',
-    href: '/',
+    href: '/about',
   },
   {
     title: 'Tư vấn',
@@ -65,7 +52,7 @@ const Navigation = ({ components }: NavigationProps) => {
   // }, [triggerRef.current, viewPortRef.current]);
   return (
     <NavigationMenu className="mx-auto">
-      <NavigationMenuList>
+      <NavigationMenuList className="gap-10">
         {components.map((component, index) => {
           return (
             <NavigationMenuItem key={uuid()}>
