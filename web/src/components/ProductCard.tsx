@@ -2,9 +2,8 @@ import { currency } from '@/lib/utils';
 import { ProductCardType } from '@/types/product.type';
 import Image from 'next/image';
 import React from 'react';
-import AddToCartButton from './button/AddToCartButton';
 import { StarRating } from '@/components/StartRating';
-import ShowDetailButton from '@/components/button/ShowDetailButton';
+import Link from '@/components/Link';
 
 type ProductCardProps = ProductCardType;
 const getDiscountedPrice = (base: number, percent?: number) => {
@@ -20,7 +19,6 @@ const ProductCard = ({
   numSell,
 }: ProductCardProps) => {
   const price = getDiscountedPrice(basePrice, percentSale);
-
   return (
     <div className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
       <div className="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
@@ -38,9 +36,11 @@ const ProductCard = ({
       </div>
 
       <div className="mt-4 px-5 pb-5">
-        <h5 className="text-md o line-clamp-3 h-[100px] text-center font-semibold tracking-tight text-slate-900">
-          {name}
-        </h5>
+        <Link href={`/product/${id}`} className="hover:underline">
+          <h5 className="text-md o line-clamp-3 h-[80px] text-center font-semibold tracking-tight text-slate-900">
+            {name}
+          </h5>
+        </Link>
 
         <div className="mt-2 mb-2 flex items-center gap-2">
           <span className="text-md font-bold text-red-600">
@@ -56,10 +56,6 @@ const ProductCard = ({
         <span className="text-gray-600">
           {star} | Đã bán {numSell}
         </span>
-        {/* <div className={'mt-4 flex w-full items-center justify-between'}>
-          <AddToCartButton productId={id} />
-          <ShowDetailButton productId={id} />
-        </div> */}
       </div>
     </div>
   );

@@ -2,8 +2,8 @@ import { CategoryType } from './category.type';
 import { SupplierType } from '@/types/supplier.type';
 
 type SearchParams = {
-  minPrice?: string;
-  maxPrice?: string;
+  minPrice?: number;
+  maxPrice?: number;
   volume?: string;
   origin?: string;
   fragrance?: string;
@@ -23,7 +23,7 @@ type ProductResType = {
   id: number;
   name: string;
   description: string;
-  thumbnail: string;
+  media: string[];
   basePrice: number;
   salePrice: number;
   percentSale?: number;

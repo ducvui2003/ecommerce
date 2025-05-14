@@ -38,7 +38,7 @@ type Metadata = {
 
 type PageReq<T> = {
   page: number;
-  limit: number;
+  size: number;
   sorts?: Sort[];
 } & T;
 
