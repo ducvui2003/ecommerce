@@ -43,7 +43,7 @@ const data: Media[] = Array(5)
 const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
 
-  const [paging, setPaging] = useState<PageReq>({
+  const [paging, setPaging] = useState<PageReq<{}>>({
     page: 1,
     size: 3,
   });

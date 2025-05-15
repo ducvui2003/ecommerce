@@ -8,7 +8,7 @@ import { PageReq } from '@/types/api.type';
 import { ProductCardType, SearchParams } from '@/types/product.type';
 
 type ProductPageProps = {
-  searchParams: PageReq<SearchParams>;
+  searchParams: Promise<Partial<PageReq<SearchParams>>>;
 };
 
 const ProductPage = async ({ searchParams }: ProductPageProps) => {
