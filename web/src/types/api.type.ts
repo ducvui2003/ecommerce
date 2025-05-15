@@ -36,7 +36,7 @@ type Metadata = {
   deletedBy?: string;
 };
 
-type PageReq<T = void> = {
+type PageReq<T = {}> = {
   page: number;
   size: number;
   sorts?: Sort[];
