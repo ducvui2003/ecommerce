@@ -15,7 +15,7 @@ type ProductDetailProps = {
 export default function ProductDetail({ product }: ProductDetailProps) {
   if (!product) return <div>Loading...</div>;
 
-  const [isFavorite, setIsFavorite] = useState(false); // ✅ mock trạng thái
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const toggleFavorite = () => {
     setIsFavorite(prev => !prev);
