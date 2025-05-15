@@ -11,7 +11,7 @@ import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
 
 const orderBySchema = z.enum([OrderBy.Asc, OrderBy.Desc]);
-const sortBySchema = z.enum([SortBy.CreatedAt, SortBy.Price]);
+const sortBySchema = z.enum([SortBy.CreatedAt, SortBy.Price, SortBy.Id]);
 
 const sortSchema = z
   .string()
@@ -50,7 +50,7 @@ const SearchProductReqSchema = PageableSchema.extend({
   maxPrice: z.coerce.number().optional(),
   sort: z
     .array(sortSchema)
-    .default([`${SortBy.CreatedAt}_${OrderBy.Desc}`])
+    .default([`${SortBy.Id}_${OrderBy.Asc}`])
     .transform((val) =>
       val.map((sortString) => {
         const { sortBy, orderBy } = sortString;
@@ -66,6 +66,18 @@ const ProductResSchema = ProductModel.pick({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
   media: z.array(z.string()),
+});
+
+const ProductManagerResSchema = ProductModel.pick({
+  id: true,
+  name: true,
+  createdAt: true,
+}).extend({
+  basePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberSchema,
+  category: z.string(),
+  supplier: z.string(),
+  media: z.string(),
 });
 
 const ProductDetailResSchema = ProductModel.pick({
@@ -109,11 +121,17 @@ const CreateProductBodySchema = ProductModel.pick({
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
-
+type ProductManagerResType = z.infer<typeof ProductManagerResSchema>;
 export {
   SearchProductReqSchema,
   ProductDetailResSchema,
   ProductResSchema,
   CreateProductBodySchema,
+  ProductManagerResSchema,
 };
-export type { ProductDetailResType, ProductResType, CreateProductBodyType };
+export type {
+  ProductDetailResType,
+  ProductResType,
+  CreateProductBodyType,
+  ProductManagerResType,
+};

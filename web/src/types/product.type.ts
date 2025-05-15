@@ -1,7 +1,8 @@
+import { z } from 'zod';
 import { CategoryType } from './category.type';
 import { SupplierType } from '@/types/supplier.type';
 
-type SearchParams = {
+type ProductSearchParams = {
   minPrice?: number;
   maxPrice?: number;
   volume?: string;
@@ -43,4 +44,44 @@ type ProductType = {
   supplier: SupplierType;
 };
 
-export type { ProductCardType, ProductResType, ProductType, SearchParams };
+const CreateOptionBodySchema = z.object({
+  name: z.string(),
+  price: z.number(),
+  resourceId: z.number(),
+  stock: z.number(),
+});
+
+const CreateProductBodySchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  categoryId: z.string(),
+  supplierId: z.string(),
+  basePrice: z.number(),
+  salePrice: z.number(),
+  resourceIds: z.array(z.string().min(1)),
+  isDeleted: z.boolean().optional().default(false),
+  options: z.array(CreateOptionBodySchema),
+});
+
+type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
+
+type ProductManagerResType = {
+  id: number;
+  name: string;
+  createdAt: Date;
+  basePrice: number;
+  salePrice: number;
+  category: number;
+  supplier: number;
+  media: string;
+};
+
+export type {
+  ProductCardType,
+  ProductResType,
+  ProductType,
+  ProductSearchParams as SearchParams,
+  CreateProductBodyType,
+  ProductManagerResType,
+};
+export { CreateProductBodySchema };

@@ -64,6 +64,9 @@ export class ProductRepositoryImpl implements ProductRepository {
     const calculateOrderBy: Prisma.ProductOrderByWithRelationInput = {};
 
     sort.forEach((item) => {
+      if (item.sortBy === 'id') {
+        calculateOrderBy.id = item.orderBy;
+      }
       if (item.sortBy === 'createdAt') {
         calculateOrderBy.createdAt = item.orderBy;
       }
@@ -77,6 +80,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       this.prisma.product.findMany({
         include: {
           category: true,
+          supplier: true,
           productResource: {
             include: {
               resource: true,
@@ -112,6 +116,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           description: dto.description,
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
+
           Option: {
             create: dto.options.map((item) => ({
               name: item.name,

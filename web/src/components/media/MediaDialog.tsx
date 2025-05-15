@@ -2,51 +2,53 @@
 import ClientIcon from '@/components/ClientIcon';
 import ListView from '@/components/ListView';
 import { MediaFileUpload } from '@/components/media/MediaUpload';
+import MediaViewerCard from '@/components/media/MediaViewerCard';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  FileUploadItem,
-  FileUploadItemPreview,
-  FileUploadItemProgress,
-} from '@/components/ui/file-upload';
 import { Input } from '@/components/ui/input';
 import { useGetPagingMediaQuery } from '@/features/media/media.api';
+import { setMedia } from '@/features/media/media.slice';
+import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
+import { RootState } from '@/lib/store';
 import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
 import { PageReq } from '@/types/api.type';
-import { Media, MediaUploading } from '@/types/media.type';
+import { MediaType, MediaUploading } from '@/types/media.type';
 import { memo, ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 type MediaDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  expose?: (
+    resources: (
+      | {
+          resourceId: number;
+          url: string;
+        }
+      | undefined
+    )[],
+  ) => void;
   children?: ReactNode;
 };
 
-const url =
-  'https://plus.unsplash.com/premium_photo-1673803529478-c155a34d8b45?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dmVydGljYWwlMjB3YWxscGFwZXJ8ZW58MHx8MHx8fDA%3D';
-const data: Media[] = Array(5)
-  .fill(false)
-  .map(() => ({
-    id: uuid(),
-    url: url,
-    name: '12d.png',
-  }));
-
 const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
-
+  const medias = useAppSelector(
+    (state: RootState) => state.mediaSlice.mediaPicks,
+  );
+  const [mediaState, setMediaState] = useState<MediaType[]>([]);
   const [paging, setPaging] = useState<PageReq<{}>>({
     page: 1,
     size: 3,
   });
+  const dispatch = useAppDispatch();
 
   const { isFetching, data } = useGetPagingMediaQuery({
     page: paging.page,
@@ -121,6 +123,11 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
               description: response.publicId,
             });
             onSuccess(file);
+
+            return {
+              resourceId: response.id,
+              url: result.url,
+            };
           } catch (error) {
             toast.error(`Upload Failed`);
             onError(
@@ -151,12 +158,32 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
     ]);
   }, []);
 
+  const handleSelect = (checked: boolean, media: MediaType) => {
+    if (checked) {
+      setMediaState((prev) => [
+        ...prev,
+        {
+          id: media.id,
+          name: media.name,
+          url: media.url,
+        },
+      ]);
+    } else {
+      setMediaState((prev) => [...prev.filter((item) => item.id != media.id)]);
+    }
+  };
+
+  const handleSubmit = () => {
+    dispatch(setMedia(mediaState));
+    onOpenChange?.(false);
+  };
+
   return (
-    <Dialog onOpenChange={onOpenChange}>
-      <DialogTrigger>Open</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* {!open && <DialogTrigger>Open</DialogTrigger>} */}
       <DialogContent className="max-w-[70vw]">
         <DialogHeader>
-          <DialogTitle>Select file</DialogTitle>
+          <DialogTitle>Chọn file</DialogTitle>
         </DialogHeader>
         <div className="flex">
           <Input type="text" className="flex-1" />
@@ -171,7 +198,7 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
           onUpload={handleUpload}
           onValueChange={handleFileChange}
         >
-          <ListView<Media | MediaUploading>
+          <ListView<MediaType | MediaUploading>
             display="grid"
             className="grid-cols-5 gap-4"
             loading={isFetching}
@@ -184,11 +211,27 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
               })) ?? []),
             ]}
             render={(item, _) => {
-              return <MediaViewerCard {...item} />;
+              return (
+                <MediaViewerCard
+                  {...item}
+                  key={item.id}
+                  checked={medias.some((i) => i.id === item.id)}
+                  onChecked={(checked) => handleSelect(checked, item)}
+                />
+              );
             }}
           />
-          <div className="ml-auto flex gap-2">
+          <div className="flex gap-2">
+            <Button type="button" onClick={handleSubmit}>
+              Ok
+            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Close
+              </Button>
+            </DialogClose>
             <Button
+              className="ml-auto"
               disabled={paging.page == 1}
               onClick={() => {
                 setPaging((prev) => ({
@@ -214,38 +257,6 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
         </MediaFileUpload>
       </DialogContent>
     </Dialog>
-  );
-};
-
-type MediaViewerCardProps = {
-  id: string;
-  url?: string;
-  name: string;
-  checked?: boolean;
-  file?: File;
-};
-
-const MediaViewerCard = ({
-  url,
-  checked,
-  file,
-  id,
-  name,
-}: MediaViewerCardProps) => {
-  if (file)
-    return (
-      <FileUploadItem key={id} value={file} className="justify-between">
-        <FileUploadItemPreview className="w-full flex-1" />
-        <FileUploadItemProgress />
-      </FileUploadItem>
-    );
-  return (
-    <div className="border-accent aspect-square rounded-xl border-2 p-1">
-      <img src={url} className="size-full rounded-xl bg-white object-center" />
-      <div className="text-center">
-        <span className="block truncate text-xs">{name}</span>
-      </div>
-    </div>
   );
 };
 

@@ -1,10 +1,10 @@
-type Media = {
+type MediaType = {
   id: string;
   url?: string;
   name: string;
 };
 
-type MediaUploading = Omit<Media, 'url'> & {
+type MediaUploading = Omit<MediaType, 'url'> & {
   file?: File;
 };
 
@@ -49,7 +49,7 @@ type PagingMediaType = CreatedMediaResType & {
 };
 
 export type {
-  Media,
+  MediaType,
   MediaUploading,
   UploadSignature,
   UploadSignatureResult,
