@@ -1,7 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { UserStatus } from '@shared/constants/auth.constant';
-import { AddressType } from '@shared/models/address.model';
-import { RoleType } from '@shared/models/role.model';
+import { AddressModel } from '@shared/models/address.model';
 import { UserModel, UserType } from '@shared/models/user.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
@@ -65,19 +64,55 @@ type UserInformationAllowed = Omit<UserType, 'password' | 'role'> & {
 };
 type InfoUpdate = Partial<Pick<UserType, 'name' | 'phone' | 'dob'>>;
 
-type GetUserDetailResType = Omit<
-  UserType,
-  'password' | 'roleId' | 'role' | 'Addresses'
-> & {
-  addresses?: AddressType[];
-  role: RoleType['name'];
-};
+const GetUserResSchema = UserModel.pick({
+  id: true,
+  name: true,
+  email: true,
+  status: true,
+  createdAt: true,
+}).extend({
+  role: z.string(),
+});
 
-export { UserInfoBodySchema, GetUserQuerySchema };
+type GetUserResSchemaType = z.infer<typeof GetUserResSchema>;
+
+const GetUserDetailResSchema = UserModel.pick({
+  id: true,
+  name: true,
+  email: true,
+  status: true,
+  dob: true,
+  phone: true,
+  avatar: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  role: z.string(),
+  addresses: z
+    .array(
+      AddressModel.pick({
+        province: true,
+        district: true,
+        ward: true,
+        detail: true,
+      }),
+    )
+    .optional(),
+});
+
+type GetUserDetailResType = z.infer<typeof GetUserDetailResSchema>;
+
+export {
+  GetUserDetailResSchema,
+  GetUserQuerySchema,
+  GetUserResSchema,
+  UserInfoBodySchema,
+};
 export type {
-  GetUserQueryType,
-  GetUserResType,
   GetUserDetailResType,
-  UserInformationAllowed,
+  GetUserQueryType,
+  GetUserResSchemaType,
+  GetUserResType,
   InfoUpdate,
+  UserInformationAllowed,
 };
