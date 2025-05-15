@@ -2,8 +2,19 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { Role } from '@/types/auth.type';
+import { UserStatus } from '@/types/user.type';
 
-const badgeVariants = cva(
+const badgeVariants = cva<{
+  variant: {
+    default: string;
+    secondary: string;
+    destructive: string;
+    outline: string;
+  };
+  userRole: Record<Role, string>;
+  userStatus: Record<UserStatus, string>;
+}>(
   'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
@@ -15,10 +26,16 @@ const badgeVariants = cva(
         destructive:
           'border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80',
         outline: 'text-foreground',
-
-        active: 'bg-green-500 text-white',
-        inactive: 'bg-yellow-500 text-white',
-        blocked: 'bg-gray-600 text-white',
+      },
+      userRole: {
+        USER: 'bg-green-600 font-medium',
+        ADMIN: 'bg-red-500 font-medium',
+        SELLER: 'bg-green-400 font-medium',
+      },
+      userStatus: {
+        ACTIVE: 'bg-green-500 text-white',
+        INACTIVE: 'bg-yellow-500 text-white',
+        BLOCKED: 'bg-gray-600 text-white',
       },
     },
     defaultVariants: {
@@ -31,9 +48,21 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({
+  className,
+  userRole: roleUser,
+  userStatus,
+  variant,
+  ...props
+}: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div
+      className={cn(
+        badgeVariants({ variant, userRole: roleUser, userStatus }),
+        className,
+      )}
+      {...props}
+    />
   );
 }
 

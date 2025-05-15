@@ -34,14 +34,7 @@ const userColumns: ColumnDef<GetUserResType>[] = [
     cell: ({ row }) => {
       const value: UserStatus = row.getValue('status');
 
-      if (value === 'ACTIVE') return <Badge variant={'active'}>{value}</Badge>;
-      if (value === 'INACTIVE')
-        return <Badge variant={'inactive'}>{value}</Badge>;
-
-      if (value === 'BLOCKED')
-        return <Badge variant={'blocked'}>{value}</Badge>;
-
-      return <Badge variant={'default'}>{value}</Badge>;
+      return <Badge userStatus={value}>{value}</Badge>;
     },
   },
   {
@@ -50,13 +43,7 @@ const userColumns: ColumnDef<GetUserResType>[] = [
     cell: ({ row }) => {
       const value: Role = row.getValue('role');
 
-      if (value === 'ADMIN')
-        return <Badge className="bg-red-500 font-medium">{value}</Badge>;
-      if (value === 'USER')
-        return <Badge className="bg-green-600 font-medium">{value}</Badge>;
-      if (value === 'SELLER')
-        return <Badge className="bg-green-400 font-medium">{value}</Badge>;
-      return <Badge className="font-medium">{value}</Badge>;
+      return <Badge userRole={value}>{value}</Badge>;
     },
   },
   {

@@ -54,9 +54,9 @@ export class UserManagerService {
     });
   }
 
-  changeStatus(userId: number, status: UserStatus) {
+  async changeStatus(userId: number, status: UserStatus): Promise<void> {
     try {
-      this.userRepository.updateStatus(userId, status);
+      await this.userRepository.updateStatus(userId, status);
     } catch (e) {
       if (isNotFoundError(e)) {
         throw new Error();

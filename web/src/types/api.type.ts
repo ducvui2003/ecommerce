@@ -1,5 +1,5 @@
 type ResponseApi<T> = {
-  status: number;
+  statusCode: number;
   data: T & {
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;

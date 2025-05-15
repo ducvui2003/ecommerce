@@ -36,7 +36,7 @@ type GetUserResType = {
   status: UserStatus;
   avatar?: string;
   createdAt: Date;
-  role: string;
+  role: Role;
 };
 
 type GetAddressDetailResType = {
