@@ -1,19 +1,14 @@
 import { OrderBy, SortBy } from '@shared/constants/product.constant';
-import { DecimalToNumberSchema } from '@shared/models/base.model';
+import {
+  DecimalToNumberSchema,
+  NumberToDecimalSchema,
+} from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel, ProductType } from '@shared/models/product.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
-
-const CreateProductBodySchema = ProductModel.pick({
-  name: true,
-  description: true,
-  categoryId: true,
-}).extend({
-  option: OptionModel.pick({}),
-});
 
 const orderBySchema = z.enum([OrderBy.Asc, OrderBy.Desc]);
 const sortBySchema = z.enum([SortBy.CreatedAt, SortBy.Price]);
@@ -91,8 +86,34 @@ const ProductDetailResSchema = ProductModel.pick({
   })
   .optional();
 
+const CreateOptionBodySchema = OptionModel.pick({
+  name: true,
+  price: true,
+  resourceId: true,
+  stock: true,
+});
+
+const CreateProductBodySchema = ProductModel.pick({
+  name: true,
+  description: true,
+  categoryId: true,
+  supplierId: true,
+}).extend({
+  basePrice: NumberToDecimalSchema,
+  salePrice: NumberToDecimalSchema,
+  resourceIds: z.array(z.string().min(1)),
+  isDeleted: z.boolean().optional().default(false),
+  options: z.array(CreateOptionBodySchema),
+});
+
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
+type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
 
-export { SearchProductReqSchema, ProductDetailResSchema, ProductResSchema };
-export type { ProductDetailResType, ProductResType };
+export {
+  SearchProductReqSchema,
+  ProductDetailResSchema,
+  ProductResSchema,
+  CreateProductBodySchema,
+};
+export type { ProductDetailResType, ProductResType, CreateProductBodyType };

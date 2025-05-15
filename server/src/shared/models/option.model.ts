@@ -1,11 +1,18 @@
+import { MediaModel } from '@shared/models/media.model';
+import { ProductModel } from '@shared/models/product.model';
 import { z } from 'zod';
 
 const OptionModel = z.object({
   id: z.number(),
   name: z.string(),
-  volumeId: z.number(),
+
   price: z.bigint().positive(),
   stock: z.number().default(0),
+
+  productId: z.number(),
+  product: ProductModel,
+  resourceId: z.number(),
+  resource: MediaModel,
 
   createdAt: z.date(),
   updatedAt: z.date().nullable(),

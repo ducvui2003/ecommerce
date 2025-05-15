@@ -1,11 +1,21 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { SearchProductDto } from '@route/product/product.dto';
 import { ProductDetailResType } from '@route/product/product.schema';
 import { ProductServiceImpl } from '@route/product/product.service';
 
 @Controller('/api/v1/products')
 export class ProductController {
-  constructor(private readonly productService: ProductServiceImpl) {}
+  constructor(
+    @Inject('PRODUCT_SERVICE')
+    private readonly productService: ProductServiceImpl,
+  ) {}
 
   @Get('/search')
   searchProducts(@Query() query: SearchProductDto) {
