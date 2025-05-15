@@ -20,12 +20,14 @@ type UserInfoResType = {
 
 type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BLOCKED';
 
-type GetUserQueryReqType = PageReq<{
+type SearchQueyReqType = {
   id?: number;
   name?: string;
   email?: string;
-  status?: UserStatus[];
-}>;
+  status?: UserStatus | UserStatus[];
+};
+
+type GetUserQueryReqType = PageReq<SearchQueyReqType>;
 
 type GetUserResType = {
   id: number;
@@ -56,5 +58,6 @@ export type {
   GetUserQueryReqType,
   GetUserResType,
   GetUserDetailResType,
+  SearchQueyReqType,
   User,
 };

@@ -85,7 +85,8 @@ export class PrismaUserRepository implements UserRepository {
 
     if (email) {
       where.email = {
-        startsWith: name,
+        startsWith: email,
+        mode: 'insensitive',
       };
     }
 

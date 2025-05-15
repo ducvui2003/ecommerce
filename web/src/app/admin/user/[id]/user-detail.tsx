@@ -34,11 +34,11 @@ import { UserStatus } from '@/types/user.type';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-type UserFormProps = {
+type UserDetailProps = {
   id: number;
 };
 
-const UserForm = ({ id }: UserFormProps) => {
+const UserDetail = ({ id }: UserDetailProps) => {
   const { data, isFetching } = useGetUserDetailQuery(id, {
     skip: !id,
   });
@@ -300,4 +300,4 @@ const ActionDropdown = ({ id, status }: ActionDropdownProps) => {
   );
 };
 
-export default UserForm;
+export default UserDetail;

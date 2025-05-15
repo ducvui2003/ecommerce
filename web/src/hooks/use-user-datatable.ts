@@ -1,5 +1,6 @@
 import userColumns from '@/app/admin/user/column';
 import { useGetUserTableQuery } from '@/features/manager/user/user.api';
+import { SearchQueyReqType } from '@/types/user.type';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -9,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 
-export const useUserTable = () => {
+export const useUserTable = (searchParams: SearchQueyReqType) => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -18,17 +19,10 @@ export const useUserTable = () => {
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const getFilterValue = useCallback(
-    (filters: ColumnFiltersState, id: string): string => {
-      return (filters.find((f) => f.id === id)?.value ?? '') as string;
-    },
-    [],
-  );
-
   const { data, isFetching } = useGetUserTableQuery({
     page: pageIndex + 1,
     size: pageSize,
-    email: getFilterValue(columnFilters, 'email'),
+    ...searchParams,
   });
 
   const table = useReactTable({

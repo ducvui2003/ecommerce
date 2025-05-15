@@ -26,11 +26,11 @@ const userColumns: ColumnDef<GetUserResType>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: 'Họ và tên',
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Trạng thái',
     cell: ({ row }) => {
       const value: UserStatus = row.getValue('status');
 
@@ -39,7 +39,7 @@ const userColumns: ColumnDef<GetUserResType>[] = [
   },
   {
     accessorKey: 'role',
-    header: 'Role',
+    header: 'Vai trò',
     cell: ({ row }) => {
       const value: Role = row.getValue('role');
 
@@ -48,7 +48,8 @@ const userColumns: ColumnDef<GetUserResType>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Created',
+    header: 'Thời gian tham gia',
+    size: 100,
     cell: ({ row }) => {
       const value: Date = row.getValue('createdAt');
 

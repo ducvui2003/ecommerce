@@ -1,4 +1,4 @@
-import UserForm from '@/app/admin/user/[id]/user-form';
+import UserDetail from '@/app/admin/user/[id]/user-detail';
 
 type UserDetailAdminPageProps = {
   params: Promise<{ id: string }>;
@@ -12,5 +12,5 @@ export default async function UserDetailAdminPage({
   if (!id) {
     return null;
   }
-  return <UserForm id={parseInt(id)} />;
+  return <UserDetail id={parseInt(id)} />;
 }
