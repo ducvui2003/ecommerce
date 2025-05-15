@@ -194,34 +194,23 @@ model Product {
   deletedAt DateTime? @map("deleted_at")
 
   productResource ProductResource[]
+  Option          Option[]
 
   @@map("products")
 }
 
-model Volume {
-  id    Int     @id @default(autoincrement())
+model Option {
+  id Int @id @default(autoincrement())
+
   name  String
   value Decimal
-  unit  String
+  price BigInt
+  stock Int?    @default(0)
 
-  option Option[]
-
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-
-  @@map("volumns")
-}
-
-model Option {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  volumeId       Int
-  volume         Volume           @relation(fields: [volumeId], references: [id])
-  price          BigInt
-  stock          Int?             @default(0)
-  optionResource OptionResource[]
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  resourceId Int
+  resource   Resource @relation(fields: [resourceId], references: [id])
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -256,7 +245,7 @@ model Resource {
   isDeleted Boolean   @default(false)
 
   productResource ProductResource[]
-  optionResource  OptionResource[]
+  Option          Option[]
 
   @@map("resources")
 }
@@ -273,15 +262,6 @@ model ProductResource {
 
   @@id([productId, resourceId]) // Composite primary key
   @@map("product_resources") // Rename table in the DB
-}
-
-model OptionResource {
-  id         Int      @id
-  option     Option   @relation(fields: [id], references: [id], onDelete: Cascade)
-  resourceId Int
-  resource   Resource @relation(fields: [resourceId], references: [id])
-
-  @@map("option_resources") // Rename t
 }
 
 model Cart {
