@@ -109,7 +109,7 @@ const http = {
   },
   post<Response>(
     url: string,
-    body: any,
+    body?: any,
     options?: CustomOptions | undefined,
     auth: boolean = true,
   ) {
@@ -117,7 +117,7 @@ const http = {
   },
   put<Response>(
     url: string,
-    body: any,
+    body?: any,
     options?: CustomOptions | undefined,
     auth: boolean = true,
   ) {

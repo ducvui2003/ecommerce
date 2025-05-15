@@ -26,6 +26,21 @@ const userManagerService = {
     const body = res.payload.data;
     return body;
   },
+  block: async (userId: number): Promise<ResponseApi<void>> => {
+    const res = await http.put<ResponseApi<void>>(
+      `/api/v1/manager/user/block/${userId}`,
+    );
+    const body = res.payload;
+    return body;
+  },
+
+  unblock: async (userId: number): Promise<ResponseApi<void>> => {
+    const res = await http.put<ResponseApi<void>>(
+      `/api/v1/manager/user/unblock/${userId}`,
+    );
+    const body = res.payload;
+    return body;
+  },
 };
 
 export default userManagerService;

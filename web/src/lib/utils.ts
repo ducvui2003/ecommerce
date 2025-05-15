@@ -78,6 +78,9 @@ type AnyObject = { [key: string]: any };
 
 const toQueryString = (obj: AnyObject) => {
   return Object.entries(obj)
+    .filter(
+      ([, value]) => value !== undefined && value !== null && value !== '',
+    )
     .map(
       ([key, value]) =>
         `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
@@ -106,6 +109,17 @@ const matchPath = (path: string, routePatterns: string[]): boolean => {
   );
 };
 
+function setKey<T extends object, K extends keyof T>(
+  obj: T,
+  key: K,
+  value: T[K],
+) {
+  return {
+    ...obj,
+    [key]: value,
+  };
+}
+
 export {
   matchPath,
   handleErrorApi,
@@ -117,4 +131,5 @@ export {
   nanoId,
   normalizePath,
   uuid,
+  setKey,
 };

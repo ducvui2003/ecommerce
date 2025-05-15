@@ -1,4 +1,3 @@
-import userColumns from '@/app/admin/user/column';
 import { DataTable } from '@/app/admin/user/data-table';
 import { Metadata } from 'next';
 

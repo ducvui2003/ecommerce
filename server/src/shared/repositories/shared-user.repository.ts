@@ -46,6 +46,9 @@ export class SharedPrismaUserRepository implements SharedUserRepository {
         },
   ): Promise<UserType | null> {
     return await this.prismaService.user.findUnique({
+      include: {
+        role: true,
+      },
       where: uniqueObject,
     });
   }

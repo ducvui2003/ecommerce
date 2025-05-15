@@ -1,5 +1,5 @@
 type ResponseApi<T> = {
-  status: number;
+  statusCode: number;
   data: T & {
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;
@@ -36,7 +36,7 @@ type Metadata = {
   deletedBy?: string;
 };
 
-type PageReq<T> = {
+type PageReq<T = {}> = {
   page: number;
   size: number;
   sorts?: Sort[];
