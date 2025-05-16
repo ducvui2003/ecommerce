@@ -119,20 +119,32 @@ const CreateProductBodySchema = ProductModel.pick({
   options: z.array(CreateOptionBodySchema),
 });
 
+const CreateProductResSchema = ProductModel.pick({
+  id: true,
+  name: true,
+  createdAt: true,
+}).extend({
+  basePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberSchema,
+});
+
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
 type ProductManagerResType = z.infer<typeof ProductManagerResSchema>;
+type CreateProductResType = z.infer<typeof CreateProductResSchema>;
 export {
   SearchProductReqSchema,
   ProductDetailResSchema,
   ProductResSchema,
   CreateProductBodySchema,
   ProductManagerResSchema,
+  CreateProductResSchema,
 };
 export type {
   ProductDetailResType,
   ProductResType,
   CreateProductBodyType,
   ProductManagerResType,
+  CreateProductResType,
 };

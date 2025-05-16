@@ -3,6 +3,8 @@ import { ProductRepository } from '@route/product/interfaces/product-repository.
 import { SearchProductDto } from '@route/product/product.dto';
 import {
   CreateProductBodyType,
+  CreateProductResSchema,
+  CreateProductResType,
   ProductManagerResSchema,
   ProductManagerResType,
   ProductResType,
@@ -20,8 +22,11 @@ export class ProductManagerService {
     @Inject('FILE_SERVICE')
     private readonly fileService: FileService,
   ) {}
-  createProduct(product: CreateProductBodyType) {
-    return this.productRepository.create(product);
+  async createProduct(
+    product: CreateProductBodyType,
+  ): Promise<CreateProductResType> {
+    const data = await this.productRepository.create(product);
+    return CreateProductResSchema.parse(data);
   }
 
   async search(dto: SearchProductDto): Promise<Paging<ProductManagerResType>> {

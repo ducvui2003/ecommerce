@@ -3,7 +3,12 @@ import productManagerService from '@/service/manager/product-manager.service';
 import supplierService from '@/service/supplier.service';
 import { PageReq, Paging } from '@/types/api.type';
 import { CategoryType } from '@/types/category.type';
-import { ProductManagerResType, SearchParams } from '@/types/product.type';
+import {
+  CreateProductBodyType,
+  CreateProductResType,
+  ProductManagerResType,
+  SearchParams,
+} from '@/types/product.type';
 import { SupplierType } from '@/types/supplier.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
 
@@ -83,6 +88,28 @@ export const productManagerApi = createApi({
         }
       },
     }),
+
+    createProduct: builder.mutation<
+      CreateProductResType,
+      CreateProductBodyType
+    >({
+      async queryFn(arg) {
+        try {
+          const data = await productManagerService.create(arg);
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      invalidatesTags: () => {
+        return [{ type: 'ProductManager', id: 'LIST' }];
+      },
+    }),
   }),
 });
 
@@ -90,4 +117,5 @@ export const {
   useGetProductTableQuery,
   useGetAllCategoryQuery,
   useGetAllSupplierQuery,
+  useCreateProductMutation,
 } = productManagerApi;

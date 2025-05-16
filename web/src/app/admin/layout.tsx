@@ -1,6 +1,7 @@
 import getServerSession from '@/components/auth/getServerSession';
 import ClientIcon from '@/components/ClientIcon';
 import Link from '@/components/Link';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import avatar from 'public/images/logo-transparent.png';
@@ -10,7 +11,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const classLink =
     'border-accent rounded-md border bg-white p-4 block text-md flex items-center gap-2 text-xl';
   return (
-    <div className="grid-cols-13 grid gap-4">
+    <div className="grid grid-cols-13 gap-4">
       <aside className="bg-secondary col-span-3 my-2 ml-2 h-[calc(100vh-16px)] rounded-md px-4 py-2 shadow">
         <article
           className={
@@ -51,7 +52,9 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
           </li>
         </ul>
       </aside>
-      <section className="col-span-10 mr-2 mt-2">{children}</section>
+      <section className="col-span-10 mt-2 mr-2">
+        <ScrollArea className="relative h-screen">{children}</ScrollArea>
+      </section>
     </div>
   );
 };

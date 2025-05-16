@@ -79,6 +79,15 @@ type ProductManagerResType = {
   media: string;
 };
 
+type CreateProductResType = {
+  id: number;
+  name: string;
+  basePrice: number;
+  salePrice: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type {
   ProductCardType,
   ProductResType,
@@ -87,5 +96,6 @@ export type {
   CreateProductBodyType,
   ProductManagerResType,
   CreateOptionBodyType,
+  CreateProductResType,
 };
 export { CreateProductBodySchema, CreateOptionBodySchema };

@@ -32,9 +32,8 @@ import {
 } from '@/types/product.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-type CreateProductFormProps = {
-  children: ReactNode;
-};
+import { useCreateProductMutation } from '@/features/manager/product/product.api';
+import { toast } from 'sonner';
 
 const CreateProductForm = () => {
   const form = useForm<CreateProductBodyType>({
@@ -52,9 +51,20 @@ const CreateProductForm = () => {
     },
   });
   const [medias, setMedias] = useState<MediaType[]>([]);
+  const [create] = useCreateProductMutation();
   const { isSubmitting } = form.formState;
   const onSubmit = (values: CreateProductBodyType) => {
-    console.log(values);
+    create(values)
+      .unwrap()
+      .then((response) => {
+        toast.success('Tạo sản phẩm thành công', {
+          description: `${response.id} - ${response.name}`,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Tạo sản phẩm thất bại', {});
+      });
   };
 
   return (

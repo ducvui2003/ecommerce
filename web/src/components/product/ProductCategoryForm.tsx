@@ -12,13 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useGetAllSupplierQuery } from '@/features/manager/product/product.api';
+import {
+  useGetAllCategoryQuery,
+  useGetAllSupplierQuery,
+} from '@/features/manager/product/product.api';
 import { CreateProductBodyType } from '@/types/product.type';
 import { useFormContext } from 'react-hook-form';
 type ProductCategoryFormProps = {};
 
 const ProductCategoryForm = () => {
-  const { data } = useGetAllSupplierQuery();
+  const { data } = useGetAllCategoryQuery();
   const { control } = useFormContext<CreateProductBodyType>();
   return (
     <FormField
