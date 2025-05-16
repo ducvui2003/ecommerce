@@ -56,8 +56,8 @@ const CreateOptionBodySchema = z.object({
 const CreateProductBodySchema = z.object({
   name: string,
   description: z.string(),
-  categoryId: z.coerce.number(),
-  supplierId: z.coerce.number(),
+  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
+  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
   basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
   resourceIds: z.array(z.number()).optional(),
