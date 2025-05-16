@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useGetPagingMediaQuery } from '@/features/media/media.api';
@@ -180,7 +181,6 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* {!open && <DialogTrigger>Open</DialogTrigger>} */}
       <DialogContent className="max-w-[70vw]">
         <DialogHeader>
           <DialogTitle>Chọn file</DialogTitle>

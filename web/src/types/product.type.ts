@@ -44,24 +44,30 @@ type ProductType = {
   supplier: SupplierType;
 };
 
+const string = z.string().min(1, 'Name is required');
+const number = z.coerce.number().min(0, 'Price must be >= 0');
+const numberNotZero = z.coerce.number().min(1, 'Price must be >= 0');
+
 const CreateOptionBodySchema = z.object({
-  name: z.string(),
-  price: z.number(),
+  name: string,
+  price: numberNotZero,
   resourceId: z.number(),
-  stock: z.number(),
+  stock: number,
 });
 
 const CreateProductBodySchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  categoryId: z.string(),
-  supplierId: z.string(),
-  basePrice: z.number(),
-  salePrice: z.number(),
+  name: string,
+  description: string,
+  categoryId: z.number(),
+  supplierId: z.number(),
+  basePrice: numberNotZero,
+  salePrice: numberNotZero,
   resourceIds: z.array(z.string().min(1)),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(CreateOptionBodySchema),
 });
+
+type CreateOptionBodyType = z.infer<typeof CreateOptionBodySchema>;
 
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
 
@@ -83,5 +89,6 @@ export type {
   ProductSearchParams as SearchParams,
   CreateProductBodyType,
   ProductManagerResType,
+  CreateOptionBodyType,
 };
-export { CreateProductBodySchema };
+export { CreateProductBodySchema, CreateOptionBodySchema };
