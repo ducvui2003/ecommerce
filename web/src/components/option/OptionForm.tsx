@@ -9,7 +9,7 @@ type OptionFormProps = {
 };
 
 const OptionForm = () => {
-  const { control } = useFormContext<CreateProductBodyType>();
+  const { control, setValue } = useFormContext<CreateProductBodyType>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'options',

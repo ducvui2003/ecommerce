@@ -18,7 +18,14 @@ import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
 import { PageReq } from '@/types/api.type';
 import { MediaType, MediaUploading } from '@/types/media.type';
-import { memo, ReactNode, useCallback, useState } from 'react';
+import {
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { toast } from 'sonner';
 
 type MediaDialogProps = {
@@ -36,7 +43,7 @@ const MediaDialog = ({
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
   const { selectedImages, selectImages } = useMediaContext();
 
-  const [mediaState, setMediaState] = useState<MediaType[]>([]);
+  const mediasRef = useRef<MediaType[]>(selectedImages ?? []);
   const [paging, setPaging] = useState<PageReq<{}>>({
     page: 1,
     size: 3,
@@ -152,24 +159,29 @@ const MediaDialog = ({
 
   const handleSelect = (checked: boolean, media: MediaType) => {
     if (checked) {
-      setMediaState((prev) => [
-        ...prev,
-        {
-          id: media.id,
-          name: media.name,
-          url: media.url,
-        },
-      ]);
+      mediasRef.current.push({
+        id: media.id,
+        name: media.name,
+        url: media.url,
+      });
     } else {
-      setMediaState((prev) => [...prev.filter((item) => item.id != media.id)]);
+      mediasRef.current = [
+        ...mediasRef.current.filter((item) => item.id != media.id),
+      ];
     }
   };
 
   const handleSubmit = () => {
-    selectImages(mediaState);
-    expose?.(mediaState);
+    selectImages(mediasRef.current);
+    expose?.(mediasRef.current);
     onOpenChange?.(false);
   };
+
+  useEffect(() => {
+    if (open) {
+      mediasRef.current = [...selectedImages];
+    }
+  }, [open, selectedImages]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -207,7 +219,7 @@ const MediaDialog = ({
                 <MediaViewerCard
                   {...item}
                   key={item.id}
-                  checked={selectedImages.some((i) => i.id === item.id)}
+                  checked={mediasRef.current.some((i) => i.id === item.id)}
                   onChecked={(checked) => handleSelect(checked, item)}
                 />
               );

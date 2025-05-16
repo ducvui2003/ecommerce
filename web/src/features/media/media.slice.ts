@@ -1,12 +1,15 @@
 import { MediaType } from '@/types/media.type';
+import { OptionMediaPicked } from '@/types/option.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type MediaState = {
-  mediaPicks: MediaType[];
+  mediaProductPicked: MediaType[];
+  mediaOptionsPicked: OptionMediaPicked[];
 };
 
 const initialState: MediaState = {
-  mediaPicks: [],
+  mediaProductPicked: [],
+  mediaOptionsPicked: [],
 };
 
 const mediaSlice = createSlice({
@@ -14,13 +17,22 @@ const mediaSlice = createSlice({
   initialState: initialState,
   reducers: {
     setMedia: (state: MediaState, action: PayloadAction<MediaType[]>) => {
-      state.mediaPicks = action.payload;
+      state.mediaProductPicked = action.payload;
     },
     pushMedia: (state: MediaState, action: PayloadAction<MediaType>) => {
-      state.mediaPicks.push(action.payload);
+      state.mediaProductPicked.push(action.payload);
     },
-    removeMedia: (state: MediaState, action: PayloadAction<MediaType>) => {
-      state.mediaPicks;
+
+    pushOptionMedia: (
+      state: MediaState,
+      action: PayloadAction<OptionMediaPicked>,
+    ) => {
+      state.mediaOptionsPicked.push(action.payload);
+    },
+    removeOptionMedia: (state: MediaState, action: PayloadAction<string>) => {
+      state.mediaOptionsPicked = state.mediaOptionsPicked.filter(
+        (item) => item.formId === action.payload,
+      );
     },
   },
 });

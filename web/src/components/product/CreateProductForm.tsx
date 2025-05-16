@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 import Editor from '@/components/Editor';
 import ListView from '@/components/ListView';
@@ -7,7 +7,7 @@ import MediaButton from '@/components/media/MediaButton';
 import MediaCard from '@/components/media/MediaCard';
 import OptionForm from '@/components/option/OptionForm';
 import ProductCategoryForm from '@/components/product/ProductCategoryForm';
-import ProductSupplierForm from '@/components/product/ProductSuppilerForm';
+import ProductSupplierForm from '@/components/product/ProductSupplierForm';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -25,9 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { setMedia } from '@/features/media/media.slice';
-import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
-import { RootState } from '@/lib/store';
 import { MediaType } from '@/types/media.type';
 import {
   CreateProductBodySchema,
@@ -54,10 +51,7 @@ const CreateProductForm = () => {
       isDeleted: false,
     },
   });
-  const medias = useAppSelector(
-    (state: RootState) => state.mediaSlice.mediaProductPicked,
-  );
-  const dispatch = useAppDispatch();
+  const [medias, setMedias] = useState<MediaType[]>([]);
   const { isSubmitting } = form.formState;
   const onSubmit = (values: CreateProductBodyType) => {
     console.log(values);
@@ -123,7 +117,13 @@ const CreateProductForm = () => {
                 emptyComponent={null}
                 append={
                   <MediaButton
-                    expose={(mediaState) => dispatch(setMedia(mediaState))}
+                    expose={(mediaState) => {
+                      form.setValue(
+                        'resourceIds',
+                        mediaState.map((item) => item.id).map(Number),
+                      );
+                      setMedias(mediaState);
+                    }}
                     className="size-[100px]"
                   />
                 }

@@ -45,30 +45,27 @@ type ProductType = {
 };
 
 const string = z.string().min(1, 'Name is required');
-const number = z.coerce.number().min(0, 'Price must be >= 0');
-const numberNotZero = z.coerce.number().min(1, 'Price must be >= 0');
 
 const CreateOptionBodySchema = z.object({
   name: string,
-  price: numberNotZero,
-  resourceId: z.number(),
-  stock: number,
+  price: z.coerce.number().min(1, 'Price must be >= 0'),
+  resourceId: z.number().optional(),
+  stock: z.coerce.number(),
 });
 
 const CreateProductBodySchema = z.object({
   name: string,
-  description: string,
-  categoryId: z.number(),
-  supplierId: z.number(),
-  basePrice: numberNotZero,
-  salePrice: numberNotZero,
-  resourceIds: z.array(z.string().min(1)),
+  description: z.string(),
+  categoryId: z.coerce.number(),
+  supplierId: z.coerce.number(),
+  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
+  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(CreateOptionBodySchema),
 });
 
 type CreateOptionBodyType = z.infer<typeof CreateOptionBodySchema>;
-
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
 
 type ProductManagerResType = {

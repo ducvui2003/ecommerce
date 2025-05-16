@@ -24,7 +24,7 @@ const MediaButton = ({
         <MediaCard
           url={urlPreviewImage}
           onClick={() => setOpenMedia(true)}
-          className="hover:cursor-pointer"
+          className="size-[100px] hover:cursor-pointer"
         />
       ) : (
         <div

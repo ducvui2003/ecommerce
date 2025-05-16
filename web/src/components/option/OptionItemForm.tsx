@@ -18,11 +18,16 @@ type OptionItemFormProps = {
 };
 
 const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
-  const { control } = useFormContext<CreateProductBodyType>();
+  const { control, setValue } = useFormContext<CreateProductBodyType>();
 
   return (
     <div className="border-accent flex items-center gap-5 rounded-md border-2 p-2">
-      <MediaButton previewImage />
+      <MediaButton
+        previewImage
+        expose={(resources) =>
+          setValue(`options.${index}.resourceId`, Number(resources[0].id))
+        }
+      />
       <div className="grid flex-1 grid-cols-3 gap-2">
         <FormField
           control={control}
