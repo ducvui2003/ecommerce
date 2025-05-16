@@ -10,7 +10,6 @@ const OptionModel = z.object({
   stock: z.number().default(0),
 
   productId: z.number(),
-  product: ProductModel,
   resourceId: z.number(),
   resource: MediaModel,
 

@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
+import { CreateProductBodyType } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
-import { CreateProductBodyType } from '@route/product/product.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
-import { OptionType } from '@shared/models/option.model';
 import { ProductType } from '@shared/models/product.model';
 import { PrismaService } from '@shared/services/prisma.service';
 

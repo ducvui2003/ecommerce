@@ -34,8 +34,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useCreateProductMutation } from '@/features/manager/product/product.api';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 const CreateProductForm = () => {
+  const router = useRouter();
   const form = useForm<CreateProductBodyType>({
     resolver: zodResolver(CreateProductBodySchema),
     defaultValues: {
@@ -60,6 +62,7 @@ const CreateProductForm = () => {
         toast.success('Tạo sản phẩm thành công', {
           description: `${response.id} - ${response.name}`,
         });
+        router.push('/admin/product');
       })
       .catch((error) => {
         console.error(error);

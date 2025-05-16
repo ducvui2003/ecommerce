@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ProductManagerService } from '@route/product/product-manager.service';
 import {
   CreateProductBodyDto,
@@ -19,4 +28,7 @@ export class ProductManagerController {
   createProduct(@Body() body: CreateProductBodyDto) {
     return this.productManagerService.createProduct(body);
   }
+
+  @Get('/:id')
+  getProductById(@Param('id', ParseIntPipe) id: number) {}
 }

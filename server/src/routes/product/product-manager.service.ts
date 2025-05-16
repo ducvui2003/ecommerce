@@ -1,14 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
-import { SearchProductDto } from '@route/product/product.dto';
 import {
   CreateProductBodyType,
   CreateProductResSchema,
   CreateProductResType,
   ProductManagerResSchema,
   ProductManagerResType,
-  ProductResType,
-} from '@route/product/product.schema';
+} from '@route/product/product-manager.schema';
+import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { transformItemsPaging } from '@shared/helper.shared';
 import { ProductType } from '@shared/models/product.model';

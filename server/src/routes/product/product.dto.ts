@@ -1,7 +1,5 @@
-import {
-  CreateProductBodySchema,
-  SearchProductReqSchema,
-} from '@route/product/product.schema';
+import { CreateProductBodySchema } from '@route/product/product-manager.schema';
+import { SearchProductReqSchema } from '@route/product/product.schema';
 import { createZodDto } from 'nestjs-zod';
 
 export class SearchProductDto extends createZodDto(SearchProductReqSchema) {}

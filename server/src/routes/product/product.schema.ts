@@ -4,8 +4,9 @@ import {
   NumberToDecimalSchema,
 } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
+import { MediaModel } from '@shared/models/media.model';
 import { OptionModel } from '@shared/models/option.model';
-import { ProductModel, ProductType } from '@shared/models/product.model';
+import { ProductModel } from '@shared/models/product.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
@@ -68,83 +69,24 @@ const ProductResSchema = ProductModel.pick({
   media: z.array(z.string()),
 });
 
-const ProductManagerResSchema = ProductModel.pick({
-  id: true,
-  name: true,
-  createdAt: true,
-}).extend({
-  basePrice: DecimalToNumberSchema,
-  salePrice: DecimalToNumberSchema,
-  category: z.string(),
-  supplier: z.string(),
-  media: z.string(),
-});
-
 const ProductDetailResSchema = ProductModel.pick({
   id: true,
   name: true,
   description: true,
-})
-  .extend({
-    basePrice: DecimalToNumberSchema,
-    salePrice: DecimalToNumberSchema,
-    category: CategoryModel.pick({
-      name: true,
-    }),
-    supplier: SupplierModel.pick({
-      name: true,
-    }),
-    media: z.array(z.string()),
-  })
-  .optional();
-
-const CreateOptionBodySchema = OptionModel.pick({
-  name: true,
-  resourceId: true,
-  stock: true,
-}).extend({
-  price: NumberToDecimalSchema,
-});
-
-const CreateProductBodySchema = ProductModel.pick({
-  name: true,
-  description: true,
-  categoryId: true,
-  supplierId: true,
-}).extend({
-  basePrice: NumberToDecimalSchema,
-  salePrice: NumberToDecimalSchema,
-  resourceIds: z.array(z.number()).optional(),
-  isDeleted: z.boolean().optional().default(false),
-  options: z.array(CreateOptionBodySchema),
-});
-
-const CreateProductResSchema = ProductModel.pick({
-  id: true,
-  name: true,
-  createdAt: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
+  category: CategoryModel.pick({
+    name: true,
+  }),
+  supplier: SupplierModel.pick({
+    name: true,
+  }),
+  media: z.array(z.string()),
 });
 
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
-type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
-type ProductManagerResType = z.infer<typeof ProductManagerResSchema>;
-type CreateProductResType = z.infer<typeof CreateProductResSchema>;
-export {
-  SearchProductReqSchema,
-  ProductDetailResSchema,
-  ProductResSchema,
-  CreateProductBodySchema,
-  ProductManagerResSchema,
-  CreateProductResSchema,
-};
-export type {
-  ProductDetailResType,
-  ProductResType,
-  CreateProductBodyType,
-  ProductManagerResType,
-  CreateProductResType,
-};
+
+export { ProductDetailResSchema, ProductResSchema, SearchProductReqSchema };
+export type { ProductDetailResType, ProductResType };
