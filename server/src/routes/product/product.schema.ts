@@ -100,9 +100,10 @@ const ProductDetailResSchema = ProductModel.pick({
 
 const CreateOptionBodySchema = OptionModel.pick({
   name: true,
-  price: true,
   resourceId: true,
   stock: true,
+}).extend({
+  price: NumberToDecimalSchema,
 });
 
 const CreateProductBodySchema = ProductModel.pick({
@@ -113,7 +114,7 @@ const CreateProductBodySchema = ProductModel.pick({
 }).extend({
   basePrice: NumberToDecimalSchema,
   salePrice: NumberToDecimalSchema,
-  resourceIds: z.array(z.string().min(1)),
+  resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(CreateOptionBodySchema),
 });

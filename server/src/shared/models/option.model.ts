@@ -1,3 +1,4 @@
+import { NumberToDecimalSchema } from '@shared/models/base.model';
 import { MediaModel } from '@shared/models/media.model';
 import { ProductModel } from '@shared/models/product.model';
 import { z } from 'zod';
@@ -5,8 +6,7 @@ import { z } from 'zod';
 const OptionModel = z.object({
   id: z.number(),
   name: z.string(),
-
-  price: z.bigint().positive(),
+  price: NumberToDecimalSchema,
   stock: z.number().default(0),
 
   productId: z.number(),

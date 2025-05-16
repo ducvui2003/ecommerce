@@ -23,7 +23,7 @@ export const ProductModel = MetadataFields.extend({
       resource: MediaModel,
     }),
   ),
-  category: CategoryModel,
+  category: CategoryModel.optional(),
   supplier: SupplierModel,
 });
 

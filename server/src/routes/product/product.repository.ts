@@ -127,24 +127,26 @@ export class ProductRepositoryImpl implements ProductRepository {
           },
         },
       });
-
-      // 2. Create productResource entries using the returned product.id
-      await tx.productResource.createMany({
-        data: dto.resourceIds.map((resourceId) => ({
-          productId: product.id,
-          resourceId,
-        })),
+      tx.productResource.createMany({
+        data: [
+          {
+            productId: product.id,
+            resourceId: 1,
+          },
+        ],
       });
+      if (dto.resourceIds)
+        // 2. Create productResource entries using the returned product.id
+        await tx.productResource.createMany({
+          data: dto.resourceIds.map((resourceId) => {
+            return {
+              productId: product.id,
+              resourceId: resourceId,
+            };
+          }),
+        });
 
-      // 3. Return full product with related data if needed
-      return await tx.product.findUnique({
-        where: { id: product.id },
-        include: {
-          category: true,
-          productResource: true,
-          Option: true, // include if needed
-        },
-      });
+      return product;
     });
   }
 }
