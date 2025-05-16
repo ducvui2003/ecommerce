@@ -203,13 +203,12 @@ model Option {
   id Int @id @default(autoincrement())
 
   name  String
-  value Decimal
-  price BigInt
+  price Decimal
   stock Int?    @default(0)
 
-  productId  Int
+  productId  Int      @map("product_id")
   product    Product  @relation(fields: [productId], references: [id])
-  resourceId Int
+  resourceId Int      @map("resource_id")
   resource   Resource @relation(fields: [resourceId], references: [id])
 
   createdAt DateTime  @default(now()) @map("created_at")
