@@ -14,6 +14,7 @@ type ListViewProps<T> = {
     loadingComponent?: ReactNode;
   };
   emptyComponent?: ReactNode;
+  append?: ReactNode;
 } & React.ComponentProps<'div'>;
 
 const ListView = <T,>({
@@ -30,6 +31,7 @@ const ListView = <T,>({
     </div>
   ),
   className,
+  append,
 }: ListViewProps<T>) => {
   if (loading && !loadingItems) {
     return loadingComponent ? (
@@ -57,8 +59,8 @@ const ListView = <T,>({
               ),
           )}
       {data && data.map((item, index) => render(item, index))}
-
       {((loading && !data) || data?.length == 0) && emptyComponent}
+      {append && append}
     </div>
   );
 };

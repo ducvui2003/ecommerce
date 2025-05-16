@@ -52,6 +52,7 @@ export class PrismaMediaRepository implements MediaRepository {
   }
 
   async createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>) {
+    console.log(data);
     return await this.prismaService.resource.create({
       data: {
         publicId: data.publicId,

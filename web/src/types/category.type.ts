@@ -1,6 +1,10 @@
-type CategoryType = {
-    id: number,
-    name: string
-}
+import { MediaType } from '@/types/media.type';
 
-export type { CategoryType }
+type CategoryType = {
+  id: number;
+  name: string;
+};
+
+type CategoryMediaPicked = { id: string; media: MediaType }[];
+
+export type { CategoryType, CategoryMediaPicked };

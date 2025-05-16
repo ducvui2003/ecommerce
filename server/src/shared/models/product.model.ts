@@ -5,6 +5,7 @@ import {
 } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { MediaModel } from '@shared/models/media.model';
+import { OptionModel } from '@shared/models/option.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { z } from 'zod';
 
@@ -23,8 +24,8 @@ export const ProductModel = MetadataFields.extend({
       resource: MediaModel,
     }),
   ),
-  media: z.array(MediaModel).optional(),
-  category: CategoryModel,
+  options: z.array(OptionModel).optional(),
+  category: CategoryModel.optional(),
   supplier: SupplierModel,
 });
 

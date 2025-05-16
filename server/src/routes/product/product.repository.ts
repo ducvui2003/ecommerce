@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ProductRepository } from '@route/product/interfaces/product-repository.interface';
+import { CreateProductBodyType } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductType } from '@shared/models/product.model';
@@ -62,6 +63,9 @@ export class ProductRepositoryImpl implements ProductRepository {
     const calculateOrderBy: Prisma.ProductOrderByWithRelationInput = {};
 
     sort.forEach((item) => {
+      if (item.sortBy === 'id') {
+        calculateOrderBy.id = item.orderBy;
+      }
       if (item.sortBy === 'createdAt') {
         calculateOrderBy.createdAt = item.orderBy;
       }
@@ -75,6 +79,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       this.prisma.product.findMany({
         include: {
           category: true,
+          supplier: true,
           productResource: {
             include: {
               resource: true,
@@ -97,5 +102,50 @@ export class ProductRepositoryImpl implements ProductRepository {
         totalItems,
       },
     };
+  }
+
+  async create(dto: CreateProductBodyType): Promise<ProductType> {
+    return await this.prisma.$transaction(async (tx) => {
+      // 1. Create product (along with options if needed)
+      const product = await tx.product.create({
+        data: {
+          name: dto.name,
+          basePrice: dto.basePrice,
+          salePrice: dto.salePrice,
+          description: dto.description,
+          categoryId: dto.categoryId,
+          supplierId: dto.supplierId,
+
+          Option: {
+            create: dto.options.map((item) => ({
+              name: item.name,
+              price: item.price,
+              resourceId: item.resourceId,
+              stock: item.stock,
+            })),
+          },
+        },
+      });
+      tx.productResource.createMany({
+        data: [
+          {
+            productId: product.id,
+            resourceId: 1,
+          },
+        ],
+      });
+      if (dto.resourceIds)
+        // 2. Create productResource entries using the returned product.id
+        await tx.productResource.createMany({
+          data: dto.resourceIds.map((resourceId) => {
+            return {
+              productId: product.id,
+              resourceId: resourceId,
+            };
+          }),
+        });
+
+      return product;
+    });
   }
 }

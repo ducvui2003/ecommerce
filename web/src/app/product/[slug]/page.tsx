@@ -1,4 +1,3 @@
-import ListViewMedia from '@/components/media/ListViewMedia';
 import MediaDialog from '@/components/media/MediaDialog';
 
 export default async function ProductPage({
