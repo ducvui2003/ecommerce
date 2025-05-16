@@ -1,6 +1,10 @@
+import categoryService from '@/service/category.service';
 import productManagerService from '@/service/manager/product-manager.service';
+import supplierService from '@/service/supplier.service';
 import { PageReq, Paging } from '@/types/api.type';
+import { CategoryType } from '@/types/category.type';
 import { ProductManagerResType, SearchParams } from '@/types/product.type';
+import { SupplierType } from '@/types/supplier.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const productManagerApi = createApi({
@@ -48,7 +52,42 @@ export const productManagerApi = createApi({
         return final;
       },
     }),
+
+    getAllCategory: builder.query<CategoryType[], void>({
+      async queryFn() {
+        try {
+          const data = await categoryService.findAll();
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
+    getAllSupplier: builder.query<SupplierType[], void>({
+      async queryFn() {
+        try {
+          const data = await supplierService.findAll();
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetProductTableQuery } = productManagerApi;
+export const {
+  useGetProductTableQuery,
+  useGetAllCategoryQuery,
+  useGetAllSupplierQuery,
+} = productManagerApi;

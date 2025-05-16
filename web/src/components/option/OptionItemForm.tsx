@@ -1,6 +1,7 @@
 'use client';
 import ClientIcon from '@/components/ClientIcon';
 import MediaButton from '@/components/media/MediaButton';
+import ProductCategoryForm from '@/components/product/ProductCategoryForm';
 import {
   FormControl,
   FormField,
@@ -23,21 +24,6 @@ const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
     <div className="border-accent flex items-center gap-2 rounded-md border-2 p-2">
       <MediaButton />
       <div className="grid flex-1 grid-cols-3 gap-2">
-        <FormField
-          control={control}
-          name={`options.${index}.name`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="mb-2 block text-lg">Tên Option</FormLabel>
-              <FormControl>
-                <Input placeholder="Vui lòng không để trống" {...field} />
-              </FormControl>
-              <span className="h-[25px]">
-                <FormMessage />
-              </span>
-            </FormItem>
-          )}
-        />
         <FormField
           control={control}
           name={`options.${index}.price`}

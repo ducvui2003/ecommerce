@@ -32,6 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import ProductCategoryForm from '@/components/product/ProductCategoryForm';
+import ProductSupplierForm from '@/components/product/ProductSuppilerForm';
 type CreateProductFormProps = {
   children: ReactNode;
 };
@@ -200,64 +202,8 @@ const CreateProductForm = () => {
                 )}
               />
             </div>
-            {/* Supplier */}
-            <FormField
-              control={form.control}
-              name="supplierId"
-              render={({ field }) => {
-                return (
-                  <FormItem className="border-accent rounded-md border-2 p-2">
-                    <FormLabel className="mb-2 block text-lg">
-                      Nhà phân phối
-                    </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={String(field.value)}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Trạng thái" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="false">Đang bán</SelectItem>
-                        <SelectItem value="true">Đóng</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            {/* Category */}
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => {
-                return (
-                  <FormItem className="border-accent rounded-md border-2 p-2">
-                    <FormLabel className="mb-2 block text-lg">
-                      Thể loại
-                    </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={String(field.value)}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Trạng thái" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="false">Đang bán</SelectItem>
-                        <SelectItem value="true">Đóng</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            <ProductSupplierForm />
+            <ProductCategoryForm />
           </div>
         </div>
         <Button
