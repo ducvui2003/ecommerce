@@ -75,7 +75,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
   media: z.array(MediaResSchema),
-  options: z.array(OptionResSchema),
+  options: z.array(OptionResSchema).optional(),
 });
 type ProductDetailManagerResType = z.infer<
   typeof ProductDetailManagerResSchema
