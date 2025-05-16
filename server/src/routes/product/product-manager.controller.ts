@@ -14,6 +14,7 @@ export class ProductManagerController {
   searchProducts(@Query() query: SearchProductDto) {
     return this.productManagerService.search(query);
   }
+
   @Post()
   createProduct(@Body() body: CreateProductBodyDto) {
     return this.productManagerService.createProduct(body);
