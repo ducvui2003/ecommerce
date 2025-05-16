@@ -16,6 +16,7 @@ import {
   ProductResType,
 } from '@route/product/product.schema';
 import { ProductType } from '@shared/models/product.model';
+import { SharedMediaRepository } from '@shared/repositories/shared-media.repository';
 
 @Injectable()
 export class ProductServiceImpl implements ProductService {
@@ -24,17 +25,43 @@ export class ProductServiceImpl implements ProductService {
     private readonly productRepository: ProductRepository,
     @Inject('FILE_SERVICE')
     private readonly fileService: FileService,
+    @Inject()
+    private readonly sharedMediaRepository: SharedMediaRepository,
   ) {}
 
   async findById(id: number): Promise<ProductDetailResType> {
     try {
       const product = await this.productRepository.getProductById(id);
+      const temp = product.option?.map((option, index) => ({
+        index,
+        resourceId: option.resourceId,
+        publicId: '',
+      }));
+      if (temp) {
+        const resourceIds = temp
+          ?.map((item) => item.resourceId)
+          .filter((id): id is number => id != null);
+
+        const resources =
+          await this.sharedMediaRepository.findMediaInId(resourceIds);
+        temp.forEach((item) => {
+          item.publicId =
+            resources.find((i) => i.id === item.resourceId)?.publicId ?? '';
+        });
+      }
       return ProductDetailResSchema.parse({
         ...product,
-        media:
-          product.productResource.map(({ resource }) => {
-            return this.fileService.getUrl(resource.publicId);
-          }) ?? [],
+        media: product.productResource.map(({ resource }) => {
+          return this.fileService.getUrl(resource.publicId);
+        }),
+        option: product.option?.map((option, index) => {
+          return {
+            ...option,
+            media:
+              temp?.[index].publicId &&
+              this.fileService.getUrl(temp[index].publicId),
+          };
+        }),
       });
     } catch (error) {
       if (isUniqueConstraintError(error)) {

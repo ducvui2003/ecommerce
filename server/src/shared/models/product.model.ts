@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import {
   MetadataFields,
   NumberToDecimalSchema,
@@ -22,10 +21,11 @@ export const ProductModel = MetadataFields.extend({
       productId: z.number(),
       resourceId: z.number(),
       resource: MediaModel,
+      createdAt: z.date(),
     }),
   ),
-  options: z.array(OptionModel).optional(),
-  category: CategoryModel.optional(),
+  option: z.array(OptionModel).optional(),
+  category: CategoryModel,
   supplier: SupplierModel,
 });
 

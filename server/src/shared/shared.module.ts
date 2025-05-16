@@ -7,6 +7,7 @@ import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
 import { AccessTokenGuard } from '@shared/guards/access-token.guard';
 import { APIKeyGuard } from '@shared/guards/api-key.guard';
 import { LoggingMiddleware } from '@shared/middlewares/logging.middleware';
+import { SharedMediaRepository } from '@shared/repositories/shared-media.repository';
 import { SharedRoleRepository } from '@shared/repositories/shared-role.repository';
 import {
   SharedPrismaUserRepository,
@@ -48,6 +49,7 @@ const sharedServices: Provider[] = [
   },
   CacheService,
   SharedRoleRepository,
+  SharedMediaRepository,
 ];
 
 @Global()
