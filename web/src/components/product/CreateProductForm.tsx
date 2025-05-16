@@ -1,20 +1,13 @@
 'use client';
 import { ReactNode } from 'react';
 
-import { useAppSelector } from '@/hooks/use-store';
-import { RootState } from '@/lib/store';
-import { MediaType } from '@/types/media.type';
-import {
-  CreateProductBodySchema,
-  CreateProductBodyType,
-} from '@/types/product.type';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import Editor from '@/components/Editor';
 import ListView from '@/components/ListView';
 import MediaButton from '@/components/media/MediaButton';
 import MediaCard from '@/components/media/MediaCard';
 import OptionForm from '@/components/option/OptionForm';
+import ProductCategoryForm from '@/components/product/ProductCategoryForm';
+import ProductSupplierForm from '@/components/product/ProductSuppilerForm';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -32,8 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import ProductCategoryForm from '@/components/product/ProductCategoryForm';
-import ProductSupplierForm from '@/components/product/ProductSuppilerForm';
+import { setMedia } from '@/features/media/media.slice';
+import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
+import { RootState } from '@/lib/store';
+import { MediaType } from '@/types/media.type';
+import {
+  CreateProductBodySchema,
+  CreateProductBodyType,
+} from '@/types/product.type';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 type CreateProductFormProps = {
   children: ReactNode;
 };
@@ -54,8 +55,9 @@ const CreateProductForm = () => {
     },
   });
   const medias = useAppSelector(
-    (state: RootState) => state.mediaSlice.mediaPicks,
+    (state: RootState) => state.mediaSlice.mediaProductPicked,
   );
+  const dispatch = useAppDispatch();
   const { isSubmitting } = form.formState;
   const onSubmit = (values: CreateProductBodyType) => {
     console.log(values);
@@ -112,14 +114,19 @@ const CreateProductForm = () => {
                 render={(item) => {
                   return (
                     <MediaCard
-                      className="size-[80px]"
+                      className="size-[100px]"
                       key={item.id}
                       url={item.url ?? ''}
                     />
                   );
                 }}
                 emptyComponent={null}
-                append={<MediaButton />}
+                append={
+                  <MediaButton
+                    expose={(mediaState) => dispatch(setMedia(mediaState))}
+                    className="size-[100px]"
+                  />
+                }
               />
             </FormItem>
 

@@ -1,6 +1,7 @@
 'use client';
 import ClientIcon from '@/components/ClientIcon';
 import ListView from '@/components/ListView';
+import { useMediaContext } from '@/components/media/MediaContext';
 import { MediaFileUpload } from '@/components/media/MediaUpload';
 import MediaViewerCard from '@/components/media/MediaViewerCard';
 import { Button } from '@/components/ui/button';
@@ -10,13 +11,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useGetPagingMediaQuery } from '@/features/media/media.api';
-import { setMedia } from '@/features/media/media.slice';
-import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
-import { RootState } from '@/lib/store';
 import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
 import { PageReq } from '@/types/api.type';
@@ -27,29 +24,23 @@ import { toast } from 'sonner';
 type MediaDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  expose?: (
-    resources: (
-      | {
-          resourceId: number;
-          url: string;
-        }
-      | undefined
-    )[],
-  ) => void;
+  expose?: (resources: MediaType[]) => void;
   children?: ReactNode;
 };
 
-const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
+const MediaDialog = ({
+  open = undefined,
+  onOpenChange,
+  expose,
+}: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
-  const medias = useAppSelector(
-    (state: RootState) => state.mediaSlice.mediaPicks,
-  );
+  const { selectedImages, selectImages } = useMediaContext();
+
   const [mediaState, setMediaState] = useState<MediaType[]>([]);
   const [paging, setPaging] = useState<PageReq<{}>>({
     page: 1,
     size: 3,
   });
-  const dispatch = useAppDispatch();
 
   const { isFetching, data } = useGetPagingMediaQuery({
     page: paging.page,
@@ -175,7 +166,8 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
   };
 
   const handleSubmit = () => {
-    dispatch(setMedia(mediaState));
+    selectImages(mediaState);
+    expose?.(mediaState);
     onOpenChange?.(false);
   };
 
@@ -215,7 +207,7 @@ const MediaDialog = ({ open = undefined, onOpenChange }: MediaDialogProps) => {
                 <MediaViewerCard
                   {...item}
                   key={item.id}
-                  checked={medias.some((i) => i.id === item.id)}
+                  checked={selectedImages.some((i) => i.id === item.id)}
                   onChecked={(checked) => handleSelect(checked, item)}
                 />
               );

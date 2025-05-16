@@ -21,9 +21,24 @@ const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
   const { control } = useFormContext<CreateProductBodyType>();
 
   return (
-    <div className="border-accent flex items-center gap-2 rounded-md border-2 p-2">
-      <MediaButton />
+    <div className="border-accent flex items-center gap-5 rounded-md border-2 p-2">
+      <MediaButton previewImage />
       <div className="grid flex-1 grid-cols-3 gap-2">
+        <FormField
+          control={control}
+          name={`options.${index}.name`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="mb-2 block text-lg"> Tên</FormLabel>
+              <FormControl>
+                <Input placeholder="Vui lòng không để trống" {...field} />
+              </FormControl>
+              <span className="h-[25px]">
+                <FormMessage />
+              </span>
+            </FormItem>
+          )}
+        />
         <FormField
           control={control}
           name={`options.${index}.price`}
