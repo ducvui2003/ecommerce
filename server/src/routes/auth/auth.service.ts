@@ -19,6 +19,7 @@ import {
   TokenRevokedException,
 } from '@route/auth/auth.error';
 import { AuthRepository } from '@route/auth/auth.repository';
+import { RefreshResType } from '@route/auth/auth.schema';
 import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
 import { generateOTP, isNotFoundError } from '@shared/helper.shared';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
@@ -31,7 +32,7 @@ import { HashingService } from '@shared/services/hashing.service';
 import { MailFactory } from '@shared/services/mail/mail-factory.service';
 import { RoleService } from '@shared/services/role.service';
 import { TokenService } from '@shared/services/token.service';
-import { JwtCustomClaims } from '@shared/types/jwt.type';
+import { JwtCustomClaims, JwtData } from '@shared/types/jwt.type';
 import { addMilliseconds } from 'date-fns';
 import ms from 'ms';
 @Injectable()
@@ -136,21 +137,24 @@ export class AuthService {
     }
 
     // 3. Tạo AT và RT
-    const tokens = await this.generateToken({
+    const [accessToken, refreshToken] = await this.generateToken({
       id: user.id,
       email: user.email,
     });
 
+    // 4. Lưu refresh token vào redis
+    this.saveRefreshTokenToRedis(refreshToken, user.id);
+
     return {
       id: user.id,
       email: user.email,
-      accessToken: tokens.accessToken.token,
-      refreshToken: tokens.refreshToken.token,
-      exp: tokens.exp,
+      accessToken: accessToken.token,
+      refreshToken: refreshToken.token,
+      exp: accessToken.exp,
     };
   }
 
-  async refreshToken(token: string) {
+  async refreshToken(token: string): Promise<RefreshResType> {
     try {
       // 1. Decode refresh token
       const { id, email, jti } =
@@ -158,7 +162,6 @@ export class AuthService {
 
       // 2. Kiểm tra refresh token có tồn tại trong redis không?
       const exist = await this.cacheService.exist(keyRefreshToken(id, jti));
-
       if (!exist) {
         throw TokenRevokedException;
       }
@@ -167,7 +170,19 @@ export class AuthService {
       await this.cacheService.del(keyRefreshToken(id, jti));
 
       // 4. Tạo mới access token và refresh token
-      return await this.generateToken({ id, email });
+      const [accessToken, refreshToken] = await this.generateToken({
+        id,
+        email,
+      });
+
+      // 5. Lưu refresh token vào redis
+      this.saveRefreshTokenToRedis(refreshToken, id);
+
+      return {
+        accessToken: accessToken.token,
+        refreshToken: refreshToken.token,
+        exp: accessToken.exp,
+      };
     } catch (error) {
       // Xử lý trường hợp token đã bị mất
       if (isNotFoundError(error)) {
@@ -264,25 +279,23 @@ export class AuthService {
   /**
    * Tạo cặp AT và RT, Lưu RT vào redis
    */
-  async generateToken(payload: JwtCustomClaims) {
+  async generateToken(payload: JwtCustomClaims): Promise<JwtData[]> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAccessToken(payload),
       this.jwtService.signRefreshToken(payload),
     ]);
 
-    // Lưu refresh token vào redis
-    const { exp, iat, jti } = accessToken;
-    const ttl = exp - iat;
+    const result: JwtData[] = [accessToken, refreshToken];
+
+    return result;
+  }
+
+  private saveRefreshTokenToRedis(refreshToken: JwtData, userId: number) {
+    const ttl = refreshToken.exp - refreshToken.iat;
     this.cacheService.set(
-      keyRefreshToken(payload.id, jti),
+      keyRefreshToken(userId, refreshToken.jti),
       refreshToken,
       ttl * 1000,
     );
-
-    return {
-      accessToken,
-      refreshToken,
-      exp: exp,
-    };
   }
 }
