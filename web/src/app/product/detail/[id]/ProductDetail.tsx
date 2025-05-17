@@ -4,18 +4,21 @@ import { useState } from 'react';
 import { ProductDetailRespType } from '@/types/product.type';
 import ProductImages from './ProductImages';
 import ProductInfo from './ProductInfo';
-import ProductVolumeSelector from './ProductOption';
+import ProductOption from './ProductOption';
 import AddToCartTextButton from '@/components/button/AddToCartTextButton';
 import WishlistButton from '@/components/button/WishlistButton';
 import QuantitySelector from "@/components/QuantitySelector";
 import ProductDescription from "@/app/product/detail/[id]/ProductDescription";
+import RatingSummary from "@/app/product/detail/[id]/RatingSummary";
+import ProductComment from "@/app/product/detail/[id]/ProductComment";
+import notFound from "@/app/not-found";
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
 };
 
 export default function ProductDetail({ product }: ProductDetailProps) {
-  if (!product) return <div>Loading...</div>;
+  if (!product) return notFound();
 
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -41,7 +44,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
         <div className="flex flex-col space-y-6">
           <ProductInfo product={productInfoData} />
-          <ProductVolumeSelector />
+          <ProductOption options={product.option} />
           <div className={"mt-2"}>
             <QuantitySelector/>
           </div>
@@ -53,6 +56,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
       <div className={"mt-5 lg:mt-10"}>
         <ProductDescription description={product.description}/>
+      </div>
+      <div>
+        <RatingSummary/>
+        <ProductComment/>
       </div>
     </div>
   );
