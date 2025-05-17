@@ -20,6 +20,15 @@ export function isNotFoundError(
   );
 }
 
+export function isForeignKeyNotFound(
+  error: any,
+): error is Prisma.PrismaClientKnownRequestError {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2003'
+  );
+}
+
 export function generateOTP() {
   return String(randomInt(100000, 1000000));
 }

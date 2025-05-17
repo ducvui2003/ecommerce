@@ -127,7 +127,12 @@ export class ProductRepositoryImpl implements ProductRepository {
           },
         },
         include: {
-          productResource: true,
+          category: true,
+          productResource: {
+            include: {
+              resource: true,
+            },
+          },
         },
       });
       tx.productResource.createMany({
