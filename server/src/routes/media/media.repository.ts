@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { getCurrentDatetime } from '@shared/helper.shared';
-import { MediaType } from '@shared/models/media.model';
+import { ResourceType } from '@shared/models/resource.model';
 import { PrismaService } from '@shared/services/prisma.service';
 import { Pageable } from '@shared/types/request.type';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 
 export interface MediaRepository {
-  getMedia<K extends keyof MediaType>(
+  getMedia<K extends keyof ResourceType>(
     pageable: Pageable,
     fields?: K[],
-  ): Promise<Paging<Pick<MediaType, K>>>;
+  ): Promise<Paging<Pick<ResourceType, K>>>;
 
-  createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>);
+  createMedia(data: Pick<ResourceType, 'publicId' | 'format' | 'type'>);
 
   // changeVisibility(data: Pick<MediaType, 'id'>);
 }
@@ -19,17 +18,17 @@ export interface MediaRepository {
 export class PrismaMediaRepository implements MediaRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getMedia<K extends keyof MediaType>(
+  async getMedia<K extends keyof ResourceType>(
     pageable: Pageable,
     fields?: K[],
-  ): Promise<Paging<Pick<MediaType, K>>> {
+  ): Promise<Paging<Pick<ResourceType, K>>> {
     const { page, size } = pageable;
     const select = fields?.reduce(
       (acc, field) => {
         acc[field] = true;
         return acc;
       },
-      {} as Record<keyof MediaType, true>,
+      {} as Record<keyof ResourceType, true>,
     );
     const [database, total] = await this.prismaService.$transaction([
       this.prismaService.resource.findMany({
@@ -51,7 +50,8 @@ export class PrismaMediaRepository implements MediaRepository {
     };
   }
 
-  async createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>) {
+  async createMedia(data: Pick<ResourceType, 'publicId' | 'format' | 'type'>) {
+    console.log(data);
     return await this.prismaService.resource.create({
       data: {
         publicId: data.publicId,

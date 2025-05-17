@@ -4,6 +4,7 @@ const OrderBy = {
 } as const;
 
 const SortBy = {
+  Id: 'id',
   Price: 'price',
   CreatedAt: 'createdAt',
 } as const;

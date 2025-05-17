@@ -10,7 +10,7 @@ export const SupplierModel = MetadataFields.extend({
   phone: z.string(),
   country: z.string(),
   website: z.string(),
-  product: z.array(ProductModel),
+  product: z.array(ProductModel).optional(),
   addressId: z.number(),
   address: AddressModel,
 });

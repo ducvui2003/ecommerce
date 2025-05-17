@@ -2,21 +2,13 @@ import { OrderBy, SortBy } from '@shared/constants/product.constant';
 import { DecimalToNumberSchema } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { OptionModel } from '@shared/models/option.model';
-import { ProductModel, ProductType } from '@shared/models/product.model';
+import { ProductModel } from '@shared/models/product.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
 
-const CreateProductBodySchema = ProductModel.pick({
-  name: true,
-  description: true,
-  categoryId: true,
-}).extend({
-  option: OptionModel.pick({}),
-});
-
 const orderBySchema = z.enum([OrderBy.Asc, OrderBy.Desc]);
-const sortBySchema = z.enum([SortBy.CreatedAt, SortBy.Price]);
+const sortBySchema = z.enum([SortBy.CreatedAt, SortBy.Price, SortBy.Id]);
 
 const sortSchema = z
   .string()
@@ -55,7 +47,7 @@ const SearchProductReqSchema = PageableSchema.extend({
   maxPrice: z.coerce.number().optional(),
   sort: z
     .array(sortSchema)
-    .default([`${SortBy.CreatedAt}_${OrderBy.Desc}`])
+    .default([`${SortBy.Id}_${OrderBy.Asc}`])
     .transform((val) =>
       val.map((sortString) => {
         const { sortBy, orderBy } = sortString;
@@ -70,29 +62,38 @@ const ProductResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  media: z.array(z.string()),
+  resource: z.array(z.string()),
 });
 
 const ProductDetailResSchema = ProductModel.pick({
   id: true,
   name: true,
   description: true,
-})
-  .extend({
-    basePrice: DecimalToNumberSchema,
-    salePrice: DecimalToNumberSchema,
-    category: CategoryModel.pick({
-      name: true,
-    }),
-    supplier: SupplierModel.pick({
-      name: true,
-    }),
-    media: z.array(z.string()),
-  })
-  .optional();
+}).extend({
+  basePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberSchema,
+  category: CategoryModel.pick({
+    name: true,
+  }),
+  supplier: SupplierModel.pick({
+    name: true,
+  }),
+  resource: z.array(z.string()),
+  option: z
+    .array(
+      OptionModel.pick({
+        id: true,
+        name: true,
+      }).extend({
+        price: DecimalToNumberSchema,
+        resource: z.string().optional(),
+      }),
+    )
+    .optional(),
+});
 
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
 
-export { SearchProductReqSchema, ProductDetailResSchema, ProductResSchema };
+export { ProductDetailResSchema, ProductResSchema, SearchProductReqSchema };
 export type { ProductDetailResType, ProductResType };

@@ -16,6 +16,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -183,49 +187,37 @@ model Product {
   supplierId Int      @map("supplier_id")
   supplier   Supplier @relation(fields: [supplierId], references: [id])
 
-  cartItem  CartItem[]
-  orderItem OrderItem[]
-  review    Review[]
-  wishlist  Wishlist[]
-  comment   Comment[]
+  cartItem CartItem[]
+  review   Review[]
+  wishlist Wishlist[]
+  comment  Comment[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
   productResource ProductResource[]
+  option          Option[]
 
   @@map("products")
 }
 
-model Volume {
-  id    Int     @id @default(autoincrement())
-  name  String
-  value Decimal
-  unit  String
-
-  option Option[]
-
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-
-  @@map("volumns")
-}
-
 model Option {
-  id   Int    @id @default(autoincrement())
-  name String
+  id Int @id @default(autoincrement())
 
-  volumeId       Int
-  volume         Volume           @relation(fields: [volumeId], references: [id])
-  price          BigInt
-  stock          Int?             @default(0)
-  optionResource OptionResource[]
+  name  String
+  price Decimal
+  stock Int?    @default(0)
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  productId  Int       @map("product_id")
+  product    Product   @relation(fields: [productId], references: [id])
+  resourceId Int?      @map("resource_id")
+  resource   Resource? @relation(fields: [resourceId], references: [id])
+
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime?  @updatedAt @map("updated_at")
+  deletedAt DateTime?  @map("deleted_at")
+  CartItem  CartItem[]
 
   @@map("options")
 }
@@ -256,37 +248,26 @@ model Resource {
   isDeleted Boolean   @default(false)
 
   productResource ProductResource[]
-  optionResource  OptionResource[]
+  option          Option[]
 
   @@map("resources")
 }
 
 model ProductResource {
   product   Product @relation(fields: [productId], references: [id])
-  productId Int
+  productId Int     @map("product_id")
 
   resource   Resource @relation(fields: [resourceId], references: [id])
-  resourceId Int
+  resourceId Int      @map("resource_id")
 
-  // Optional: custom metadata fields
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@id([productId, resourceId]) // Composite primary key
   @@map("product_resources") // Rename table in the DB
 }
 
-model OptionResource {
-  id         Int      @id
-  option     Option   @relation(fields: [id], references: [id], onDelete: Cascade)
-  resourceId Int
-  resource   Resource @relation(fields: [resourceId], references: [id])
-
-  @@map("option_resources") // Rename t
-}
-
 model Cart {
-  id       Int @id @default(autoincrement())
-  quantity Int @default(0)
+  id Int @id @default(autoincrement())
 
   userId    Int        @unique @map("user_id")
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -300,14 +281,15 @@ model Cart {
 }
 
 model CartItem {
-  id String @id @default(uuid()) // char(36)
-
-  productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
-
-  cartId Int  @map("cart_id")
-  cart   Cart @relation(fields: [cartId], references: [id], name: "CartToCartItem")
-
+  id        String    @id @default(uuid())
+  productId Int       @map("product_id")
+  product   Product   @relation(fields: [productId], references: [id])
+  selected  Boolean   @map("selected")
+  quantity  Int       @default(1)
+  optionId  Int?      @map("option_id")
+  option    Option?   @relation(fields: [optionId], references: [id])
+  cartId    Int       @map("cart_id")
+  cart      Cart      @relation(fields: [cartId], references: [id], name: "CartToCartItem")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
@@ -321,14 +303,10 @@ model Order {
   feeShipping Decimal     @map("fee_shipping") @db.Decimal(10, 2)
   status      OrderStatus @default(PENDING)
 
-  // Address
-  detail   String
-  ward     String
-  district String
-  province String
-
-  userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// [Receiver]
+  receiver Json
+  userId   Int  @map("user_id")
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   orderItem      OrderItem[]
   promotionOrder PromotionOrder[]
@@ -345,10 +323,11 @@ model OrderItem {
   quantity Int
   price    Decimal
 
-  orderId   Int     @map("order_id")
-  order     Order   @relation(fields: [orderId], references: [id])
-  productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  orderId Int   @map("order_id")
+  order   Order @relation(fields: [orderId], references: [id])
+
+  /// [ProductOrderItem]
+  product Json
 
   createdAt          DateTime             @default(now()) @map("created_at")
   promotionOrderItem PromotionOrderItem[]
