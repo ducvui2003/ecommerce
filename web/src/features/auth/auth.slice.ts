@@ -24,7 +24,7 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-  name: 'authSlice',
+  name: 'mediaSlice',
   initialState: initialState,
   reducers: {
     setStatus(state: AuthState, action: PayloadAction<AuthStatus>) {

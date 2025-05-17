@@ -1,7 +1,9 @@
 import { addressApi } from '@/features/address/address.api';
 import authReducer from '@/features/auth/auth.slice';
+import { productManagerApi } from '@/features/manager/product/product.api';
 import { userApi } from '@/features/manager/user/user.api';
 import { mediaApi } from '@/features/media/media.api';
+import mediaReducer from '@/features/media/media.slice';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { cartApi } from '@/features/cart/cart.api';
@@ -11,9 +13,11 @@ export const makeStore = () => {
   const store = configureStore({
     reducer: {
       authSlice: authReducer,
+      mediaSlice: mediaReducer,
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
+      [productManagerApi.reducerPath]: productManagerApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,
       [promotionApi.reducerPath]: promotionApi.reducer,
     },
@@ -22,6 +26,7 @@ export const makeStore = () => {
         .concat(addressApi.middleware)
         .concat(mediaApi.middleware)
         .concat(userApi.middleware)
+        .concat(productManagerApi.middleware)
         .concat(cartApi.middleware)
         .concat(promotionApi.middleware);
     },

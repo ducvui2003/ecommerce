@@ -36,14 +36,16 @@ export class MediaController {
   @Post()
   @MessageHttp('Create media')
   async createMedia(@Body() req: CreatedMediaDTO) {
-    return await this.mediaService.createMedia(req);
+    const response = await this.mediaService.createMedia(req);
+    console.log(response);
+    return response;
   }
 
-  @Put()
-  @MessageHttp('Deleted / Un Deleted media')
-  changeVisibility(@Body() req: ChangeVisibilityDTO) {
-    return this.mediaService.changeVisibility(req);
-  }
+  // @Put()
+  // @MessageHttp('Deleted / Un Deleted media')
+  // changeVisibility(@Body() req: ChangeVisibilityDTO) {
+  //   return this.mediaService.changeVisibility(req);
+  // }
 
   @Get()
   @MessageHttp('Pageable media')

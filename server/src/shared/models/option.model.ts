@@ -1,13 +1,19 @@
+import { NumberToDecimalSchema } from '@shared/models/base.model';
 import { z } from 'zod';
-import { MetadataFields } from '@shared/models/base.model';
 
-export const OptionModel = MetadataFields.extend({
-  id: z.number().int().positive(),
+const OptionModel = z.object({
+  id: z.number(),
   name: z.string(),
-  volumeId: z.number(),
-  price: z.number().positive(),
-  stock: z.number().int().positive().default(0),
+  price: NumberToDecimalSchema,
+  stock: z.number().default(0),
+
+  productId: z.number(),
+  resourceId: z.number().nullable(),
+
+  createdAt: z.date(),
+  updatedAt: z.date().nullable(),
+  deletedAt: z.date().nullable(),
 });
 
 export type OptionType = z.infer<typeof OptionModel>;
-// export { OptionModel };
+export { OptionModel };

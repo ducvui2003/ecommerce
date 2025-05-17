@@ -21,6 +21,8 @@ import { ProductModule } from './routes/product/product.module';
 import { PaymentModule } from './routes/payment/payment.module';
 import { CartModule } from '@route/cart/cart.module';
 import { PromotionModule } from '@route/promotion/promotion.module';
+import { CategoryModule } from './routes/category/category.module';
+import { SupplierModule } from './routes/supplier/supplier.module';
 
 @Module({
   imports: [
@@ -34,7 +36,9 @@ import { PromotionModule } from '@route/promotion/promotion.module';
     ProductModule,
     PaymentModule,
     CartModule,
-    PromotionModule
+    PromotionModule,
+    CategoryModule,
+    SupplierModule,
   ],
   controllers: [AppController],
   providers: [

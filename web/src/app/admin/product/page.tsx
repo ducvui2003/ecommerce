@@ -1,5 +1,11 @@
+import { DataTable } from '@/app/admin/product/data-table';
+
 const ProductAdminPage = () => {
-  return <div>Quan ly san pham</div>;
+  return (
+    <div>
+      <DataTable />
+    </div>
+  );
 };
 
 export default ProductAdminPage;

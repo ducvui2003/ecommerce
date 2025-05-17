@@ -7,33 +7,24 @@ import productService from '@/service/product.service';
 import { PageReq } from '@/types/api.type';
 import { ProductCardType, SearchParams } from '@/types/product.type';
 
-const data: ProductCardType[] = Array(8).fill({
-  name: 'The Bloom',
-  basePrice: 300000,
-  numSell: 100,
-  star: 4.9,
-  thumbnail: '/images/product.png',
-  percentSale: 20,
-});
-
 type ProductPageProps = {
-  searchParams: PageReq<SearchParams>;
+  searchParams: Promise<Partial<PageReq<SearchParams>>>;
 };
 
 const ProductPage = async ({ searchParams }: ProductPageProps) => {
   const searchParamsAsync = await searchParams;
-  const query = searchParamsAsync || '';
   const currentPage = Number(searchParamsAsync?.page) || 1;
-  const currentSize = Number(searchParamsAsync?.limit) || 5;
+  const currentSize = Number(searchParamsAsync?.size) || 8;
 
   const response = await productService.getAllProducts({
     ...searchParamsAsync,
     page: currentPage,
-    limit: currentSize,
+    size: currentSize,
   });
 
   const data: ProductCardType[] = response.items.map((item) => ({
     ...item,
+    thumbnail: item.media[0],
   }));
 
   const { limit, page, totalItems = 0, totalPages } = response.pagination;
@@ -50,11 +41,6 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
         <div className="filter-header my-3 flex items-center justify-between">
           <span className="text-xl font-bold">
             Có {totalItems} sản phẩm hợp
-          </span>
-          <span>
-            <span className="text-xl font-bold">Sắp xếp theo</span>
-            <span className="ml-2">Bán chạy</span>
-            <span className="ml-2">Giá</span>
           </span>
         </div>
         <ScrollArea className="h-3/4">

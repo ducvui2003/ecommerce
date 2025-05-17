@@ -13,7 +13,7 @@ export interface MediaRepository {
 
   createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>);
 
-  changeVisibility(data: Pick<MediaType, 'id' | 'isDeleted'>);
+  // changeVisibility(data: Pick<MediaType, 'id'>);
 }
 @Injectable()
 export class PrismaMediaRepository implements MediaRepository {
@@ -52,6 +52,7 @@ export class PrismaMediaRepository implements MediaRepository {
   }
 
   async createMedia(data: Pick<MediaType, 'publicId' | 'format' | 'type'>) {
+    console.log(data);
     return await this.prismaService.resource.create({
       data: {
         publicId: data.publicId,
@@ -61,15 +62,15 @@ export class PrismaMediaRepository implements MediaRepository {
     });
   }
 
-  async changeVisibility(data: Pick<MediaType, 'id' | 'isDeleted'>) {
-    await this.prismaService.resource.update({
-      data: {
-        isDeleted: data.isDeleted,
-        deletedAt: getCurrentDatetime(),
-      },
-      where: {
-        id: data.id,
-      },
-    });
-  }
+  // async changeVisibility(data: Pick<MediaType, 'id' | 'isDeleted'>) {
+  //   await this.prismaService.resource.update({
+  //     data: {
+  //       isDeleted: data.isDeleted,
+  //       deletedAt: getCurrentDatetime(),
+  //     },
+  //     where: {
+  //       id: data.id,
+  //     },
+  //   });
+  // }
 }
