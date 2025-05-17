@@ -2,7 +2,7 @@ import {
   DecimalToNumberSchema,
   NumberToDecimalSchema,
 } from '@shared/models/base.model';
-import { MediaModel } from '@shared/models/media.model';
+import { ResourceModel } from '@shared/models/resource.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel } from '@shared/models/product.model';
 import { z } from 'zod';
@@ -37,7 +37,7 @@ const CreateProductResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
 });
 
-const MediaResSchema = MediaModel.pick({
+const ResourceResSchema = ResourceModel.pick({
   id: true,
 }).extend({
   url: z.string(),
@@ -48,7 +48,7 @@ const OptionResSchema = OptionModel.pick({
   name: true,
   price: true,
 }).extend({
-  media: MediaResSchema,
+  resource: ResourceResSchema,
 });
 
 const ProductManagerResSchema = ProductModel.pick({
@@ -60,7 +60,7 @@ const ProductManagerResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
   category: z.string(),
   supplier: z.string(),
-  media: z.string(),
+  resource: z.string(),
 });
 
 const ProductDetailManagerResSchema = ProductModel.pick({
@@ -74,7 +74,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  media: z.array(MediaResSchema),
+  resource: z.array(ResourceResSchema),
   options: z.array(OptionResSchema).optional(),
 });
 type ProductDetailManagerResType = z.infer<

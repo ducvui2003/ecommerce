@@ -24,7 +24,7 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
 
   const data: ProductCardType[] = response.items.map((item) => ({
     ...item,
-    thumbnail: item.media[0],
+    thumbnail: item.resource[0],
   }));
 
   const { limit, page, totalItems = 0, totalPages } = response.pagination;
