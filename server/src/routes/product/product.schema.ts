@@ -83,6 +83,17 @@ const ProductDetailResSchema = ProductModel.pick({
     name: true,
   }),
   media: z.array(z.string()),
+  option: z
+    .array(
+      OptionModel.pick({
+        id: true,
+        name: true,
+      }).extend({
+        price: DecimalToNumberSchema,
+        media: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;

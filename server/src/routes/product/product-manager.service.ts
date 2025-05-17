@@ -45,4 +45,6 @@ export class ProductManagerService {
       },
     );
   }
+
+  async findById(id: number) {}
 }

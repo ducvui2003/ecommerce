@@ -21,6 +21,7 @@ export class ProductRepositoryImpl implements ProductRepository {
             resource: true,
           },
         },
+        option: true,
       },
       where: {
         id: id,
@@ -116,7 +117,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
 
-          Option: {
+          option: {
             create: dto.options.map((item) => ({
               name: item.name,
               price: item.price,
@@ -124,6 +125,9 @@ export class ProductRepositoryImpl implements ProductRepository {
               stock: item.stock,
             })),
           },
+        },
+        include: {
+          productResource: true,
         },
       });
       tx.productResource.createMany({
