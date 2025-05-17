@@ -44,6 +44,12 @@ type ProductDetailRespType = {
     name: string;
   };
   media: string[];
+  option: {
+    id: number;
+    name: string;
+    price: number;
+    media: string;
+  }[];
 };
 
 type ProductType = {

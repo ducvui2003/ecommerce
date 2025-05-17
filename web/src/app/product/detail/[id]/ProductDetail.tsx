@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { ProductDetailRespType } from '@/types/product.type';
 import ProductImages from './ProductImages';
 import ProductInfo from './ProductInfo';
-import ProductVolumeSelector from './ProductVolumn';
+import ProductVolumeSelector from './ProductOption';
 import AddToCartTextButton from '@/components/button/AddToCartTextButton';
 import WishlistButton from '@/components/button/WishlistButton';
+import QuantitySelector from "@/components/QuantitySelector";
+import ProductDescription from "@/app/product/detail/[id]/ProductDescription";
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
@@ -40,11 +42,17 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         <div className="flex flex-col space-y-6">
           <ProductInfo product={productInfoData} />
           <ProductVolumeSelector />
+          <div className={"mt-2"}>
+            <QuantitySelector/>
+          </div>
           <div className="pt-4 flex gap-4 items-center">
             <AddToCartTextButton productId={product.id} />
             <WishlistButton isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
           </div>
         </div>
+      </div>
+      <div className={"mt-5 lg:mt-10"}>
+        <ProductDescription description={product.description}/>
       </div>
     </div>
   );
