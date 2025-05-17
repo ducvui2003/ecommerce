@@ -6,7 +6,7 @@ export const mediaApi = createApi({
   reducerPath: 'mediaApi', // name field of redux state
   baseQuery: () => ({ data: {} }),
   endpoints: (builder) => ({
-    getPagingMedia: builder.query<Paging<PagingMediaType>, PageReq>({
+    getPagingMedia: builder.query<Paging<PagingMediaType>, PageReq<any>>({
       async queryFn(paging) {
         try {
           const data = await mediaService.getMedia(paging);

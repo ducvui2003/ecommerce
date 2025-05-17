@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AddCartItemReqDTO, ChangeQltCartItemReqDTO, GetCartResDTO } from '@route/cart/cart.dto';
+import { AddCartItemReqDTO, ChangeQuantityCartItemReqDTO, GetCartResDTO } from '@route/cart/cart.dto';
 import { CartRepository } from '@route/cart/cart.repository';
 import { CART_REPOSITORY } from '@route/cart/cart.const';
 
@@ -19,7 +19,11 @@ export class CartService {
     return await this.cartRepository.deleteCartItem(cartItemId, userId);
   }
 
-  async changeQuantityCartItem(userId: number, cartItemId: string, body: ChangeQltCartItemReqDTO) {
+  async changeQuantityCartItem(userId: number, cartItemId: string, body: ChangeQuantityCartItemReqDTO) {
     return await this.cartRepository.changeQuantityCartItem(cartItemId, userId, body)
+  }
+
+  async toggleCartItem(userId: number, cartItem: string | 'all') {
+    return await this.cartRepository.toggleCartItem(userId, cartItem)
   }
 }

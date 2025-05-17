@@ -20,6 +20,7 @@ import { MediaModule } from './routes/media/media.module';
 import { ProductModule } from './routes/product/product.module';
 import { PaymentModule } from './routes/payment/payment.module';
 import { CartModule } from '@route/cart/cart.module';
+import { PromotionModule } from '@route/promotion/promotion.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { CartModule } from '@route/cart/cart.module';
     ProductModule,
     PaymentModule,
     CartModule,
+    PromotionModule
   ],
   controllers: [AppController],
   providers: [

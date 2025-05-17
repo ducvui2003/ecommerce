@@ -9,7 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
-  ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { ActiveUser } from '@shared/decorators/active-user.decorator';
@@ -18,8 +18,10 @@ import { Auth } from '@shared/decorators/auth.decorator';
 import { AuthType } from '@shared/constants/auth.constant';
 import {
   AddCartItemReqDTO,
-  ChangeQltCartItemReqDTO,
+  ChangeQuantityCartItemReqDTO,
 } from '@route/cart/cart.dto';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { ChangeQuantityCartItemBodySchema } from '@route/cart/cart.schema';
 
 @Controller('/api/v1/carts')
 export class CartController {
@@ -30,6 +32,7 @@ export class CartController {
   @Auth([AuthType.Bearer])
   @HttpCode(HttpStatus.OK)
   async getCart(@ActiveUser('id') userId: number) {
+    console.log(userId);
     return this.cartService.getCart(userId);
   }
 
@@ -44,14 +47,15 @@ export class CartController {
     return this.cartService.addCartItem(userId, body);
   }
 
-  @Patch('/current/items/:cartItemId')
+  @Put('/current/items/:cartItemId')
   @UseGuards(AuthenticationGuard)
   @Auth([AuthType.Bearer])
   @HttpCode(HttpStatus.OK)
   async changeQuantityCartItem(
     @ActiveUser('id') userId: number,
     @Param('cartItemId') cartItemId: string,
-    @Body() body: ChangeQltCartItemReqDTO,
+    @Body()
+    body: ChangeQuantityCartItemReqDTO,
   ) {
     return this.cartService.changeQuantityCartItem(userId, cartItemId, body);
   }
@@ -65,5 +69,16 @@ export class CartController {
     @Param('cartItemId') cartItemId: string,
   ) {
     return this.cartService.deleteCartItem(cartItemId, userId);
+  }
+
+  @Put('/current/toggle/items/:cartItemId')
+  @UseGuards(AuthenticationGuard)
+  @Auth([AuthType.Bearer])
+  @HttpCode(HttpStatus.OK)
+  async toggleCartItem(
+    @ActiveUser('id') userId: number,
+    @Param('cartItemId') cartItemId: string | 'all',
+  ) {
+    return this.cartService.toggleCartItem(userId, cartItemId);
   }
 }

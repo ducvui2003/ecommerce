@@ -8,8 +8,8 @@ export const buildSearchWhereClause = (dto: SearchProductDto): Prisma.ProductWhe
     categoryId: categoryId?.length ? { in: categoryId.map(Number) } : undefined,
     supplierId: supplierId?.length ? { in: supplierId.map(Number) } : undefined,
     salePrice: {
-      gte: minPrice ? BigInt(minPrice) : undefined,
-      lte: maxPrice ? BigInt(maxPrice) : undefined,
+      gte: minPrice ? Number(minPrice) : undefined,
+      lte: maxPrice ? Number(maxPrice) : undefined,
     },
     deletedAt: null,
   };

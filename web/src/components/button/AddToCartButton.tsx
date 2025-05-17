@@ -1,6 +1,6 @@
 'use client';
 
-import { useAddToCartMutation } from '@/features/cart/cart.api';
+import { useAddCartItemMutation } from '@/features/cart/cart.api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,7 +15,7 @@ export default function AddToCartButton({
     quantity = 1,
     onAdded,
 }: AddToCartButtonProps) {
-    const [addToCart, { isLoading }] = useAddToCartMutation();
+    const [addToCart, { isLoading }] = useAddCartItemMutation();
 
     const handleClick = async () => {
         try {

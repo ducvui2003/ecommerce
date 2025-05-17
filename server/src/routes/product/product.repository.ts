@@ -78,8 +78,8 @@ export class ProductRepositoryImpl implements ProductRepository {
           ? { in: supplierId.map(Number) }
           : undefined,
       salePrice: {
-        gte: minPrice ? BigInt(minPrice) : undefined,
-        lte: maxPrice ? BigInt(maxPrice) : undefined,
+        gte: minPrice ? Number(minPrice) : undefined,
+        lte: maxPrice ? Number(maxPrice) : undefined,
       },
       deletedAt: null,
     };
