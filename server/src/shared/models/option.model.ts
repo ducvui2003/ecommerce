@@ -5,7 +5,7 @@ const OptionModel = z.object({
   id: z.number(),
   name: z.string(),
   price: NumberToDecimalSchema,
-  stock: z.number().default(0),
+  stock: z.number().nullable().default(0),
 
   productId: z.number(),
   resourceId: z.number().nullable(),

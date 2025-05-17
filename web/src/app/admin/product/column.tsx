@@ -26,7 +26,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
     size: 200,
     enableHiding: false,
     cell: ({ row }) => {
-      const { media, name } = row.original;
+      const { resource: media, name } = row.original;
       return (
         <div className="flex gap-2">
           <img src={media} alt="" className="size-[50px] basis-[50px]" />

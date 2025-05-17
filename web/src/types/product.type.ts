@@ -24,7 +24,7 @@ type ProductResType = {
   id: number;
   name: string;
   description: string;
-  media: string[];
+  resource: string[];
   basePrice: number;
   salePrice: number;
   percentSale?: number;
@@ -76,7 +76,7 @@ type ProductManagerResType = {
   salePrice: number;
   category: number;
   supplier: number;
-  media: string;
+  resource: string;
 };
 
 type CreateProductResType = {

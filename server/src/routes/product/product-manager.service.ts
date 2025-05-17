@@ -36,7 +36,7 @@ export class ProductManagerService {
       (item) => {
         return ProductManagerResSchema.parse({
           ...item,
-          media: this.fileService.getUrl(
+          resource: this.fileService.getUrl(
             item.productResource[0].resource.publicId,
           ),
           supplier: item.supplier.name,
