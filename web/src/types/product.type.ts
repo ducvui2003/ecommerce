@@ -118,5 +118,6 @@ export type {
   ProductManagerResType,
   CreateOptionBodyType,
   CreateProductResType,
+  ProductDetailRespType
 };
 export { CreateProductBodySchema, CreateOptionBodySchema };
