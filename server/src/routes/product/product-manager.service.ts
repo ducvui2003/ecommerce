@@ -60,7 +60,6 @@ export class ProductManagerService {
       const product = await this.productRepository.getProductById(id);
 
       const temp = await this.getOptionDetail(product);
-
       return ProductDetailManagerResSchema.parse({
         ...product,
         media: product.productResource.map(({ resource }) => {
