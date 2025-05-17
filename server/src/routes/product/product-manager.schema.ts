@@ -46,8 +46,8 @@ const MediaResSchema = MediaModel.pick({
 const OptionResSchema = OptionModel.pick({
   id: true,
   name: true,
-  price: true,
 }).extend({
+  price: DecimalToNumberSchema,
   media: MediaResSchema,
 });
 
@@ -60,7 +60,7 @@ const ProductManagerResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
   category: z.string(),
   supplier: z.string(),
-  media: z.string(),
+  media: z.string().optional(),
 });
 
 const ProductDetailManagerResSchema = ProductModel.pick({
@@ -77,22 +77,38 @@ const ProductDetailManagerResSchema = ProductModel.pick({
   media: z.array(MediaResSchema),
   options: z.array(OptionResSchema).optional(),
 });
+
+const UpdateProductResSchema = ProductModel.pick({
+  name: true,
+  description: true,
+  categoryId: true,
+  supplierId: true,
+}).extend({
+  basePrice: NumberToDecimalSchema,
+  salePrice: NumberToDecimalSchema,
+  resourceIds: z.array(z.number()).optional(),
+  isDeleted: z.boolean().optional().default(false),
+  options: z.array(CreateOptionBodySchema),
+});
+
 type ProductDetailManagerResType = z.infer<
   typeof ProductDetailManagerResSchema
 >;
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
 type CreateProductResType = z.infer<typeof CreateProductResSchema>;
 type ProductManagerResType = z.infer<typeof ProductManagerResSchema>;
-
+type UpdateProductResType = z.infer<typeof UpdateProductResSchema>;
 export {
   ProductDetailManagerResSchema,
   ProductManagerResSchema,
   CreateProductBodySchema,
   CreateProductResSchema,
+  UpdateProductResSchema,
 };
 export type {
   ProductDetailManagerResType,
   ProductManagerResType,
   CreateProductBodyType,
   CreateProductResType,
+  UpdateProductResType,
 };

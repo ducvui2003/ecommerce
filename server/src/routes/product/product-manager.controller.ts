@@ -30,5 +30,7 @@ export class ProductManagerController {
   }
 
   @Get('/:id')
-  getProductById(@Param('id', ParseIntPipe) id: number) {}
+  getProductById(@Param('id', ParseIntPipe) id: number) {
+    return this.productManagerService.findById(id);
+  }
 }

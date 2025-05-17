@@ -4,13 +4,20 @@ import {
   CreateProductBodyType,
   CreateProductResSchema,
   CreateProductResType,
+  ProductDetailManagerResSchema,
+  ProductDetailManagerResType,
   ProductManagerResSchema,
   ProductManagerResType,
 } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
-import { transformItemsPaging } from '@shared/helper.shared';
+import { ProductNotFoundException } from '@shared/exceptions/product.exception';
+import {
+  isUniqueConstraintError,
+  transformItemsPaging,
+} from '@shared/helper.shared';
 import { ProductType } from '@shared/models/product.model';
+import { SharedMediaRepository } from '@shared/repositories/shared-media.repository';
 import { FileService } from '@shared/services/file/file.service';
 
 @Injectable()
@@ -20,6 +27,8 @@ export class ProductManagerService {
     private readonly productRepository: ProductRepository,
     @Inject('FILE_SERVICE')
     private readonly fileService: FileService,
+    @Inject()
+    private readonly sharedMediaRepository: SharedMediaRepository,
   ) {}
   async createProduct(
     product: CreateProductBodyType,
@@ -46,5 +55,92 @@ export class ProductManagerService {
     );
   }
 
-  async findById(id: number) {}
+  async findById(id: number): Promise<ProductDetailManagerResType> {
+    try {
+      const product = await this.productRepository.getProductById(id);
+
+      const temp = await this.getOptionDetail(product);
+      console.log({
+        ...product,
+        media: product.productResource.map(({ resource }) => {
+          return {
+            id: resource.id,
+            url: this.fileService.getUrl(resource.publicId),
+          };
+        }),
+        options: product.option?.map((option, index) => {
+          return {
+            ...option,
+            media:
+              temp?.[index].publicId &&
+              this.fileService.getUrl(temp[index].publicId),
+          };
+        }),
+      });
+      return ProductDetailManagerResSchema.parse({
+        ...product,
+        media: product.productResource.map(({ resource }) => {
+          return {
+            id: resource.id,
+            url: this.fileService.getUrl(resource.publicId),
+          };
+        }),
+        options: product.option?.map((option, index) => {
+          return {
+            ...option,
+            media: {
+              id: temp?.[index].mediaId,
+              url:
+                temp?.[index].publicId &&
+                this.fileService.getUrl(temp[index].publicId),
+            },
+          };
+        }),
+      });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new ProductNotFoundException();
+      }
+      throw error;
+    }
+  }
+
+  private async getOptionDetail(product: ProductType): Promise<
+    | {
+        index: number;
+        mediaId: number | null;
+        publicId: string;
+      }[]
+    | null
+  > {
+    const temp:
+      | {
+          index: number;
+          mediaId: number | null;
+          publicId: string;
+        }[]
+      | null =
+      product.option?.map((option, index) => ({
+        index,
+        mediaId: option.resourceId,
+        publicId: '',
+      })) ?? null;
+
+    if (!temp) return null;
+
+    if (temp) {
+      const mediaIds = temp
+        ?.map((item) => item.mediaId)
+        .filter((id): id is number => id != null);
+
+      const resources =
+        await this.sharedMediaRepository.findMediaInId(mediaIds);
+      temp.forEach((item) => {
+        item.publicId =
+          resources.find((i) => i.id === item.mediaId)?.publicId ?? '';
+      });
+    }
+
+    return temp;
+  }
 }
