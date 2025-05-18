@@ -21,7 +21,7 @@ export class ProductRepositoryImpl implements ProductRepository {
             resource: true,
           },
         },
-        option: true,
+        // option: true
       },
       where: {
         id: id,
@@ -29,7 +29,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       },
     });
 
-    return product;
+    return product;;
   }
 
   async search(dto: SearchProductDto): Promise<Paging<ProductType>> {
@@ -117,6 +117,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
 
+
           option: {
             create: dto.options.map((item) => ({
               name: item.name,
@@ -124,10 +125,16 @@ export class ProductRepositoryImpl implements ProductRepository {
               resourceId: item.resourceId,
               stock: item.stock,
             })),
-          },
+          }
         },
         include: {
-          productResource: true,
+          supplier: true,
+          productResource: {
+            include: {
+              resource: true,
+            },
+          },
+          category: true,
         },
       });
       tx.productResource.createMany({

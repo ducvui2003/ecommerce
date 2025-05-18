@@ -41,28 +41,28 @@ export class PrismaCartRepository implements CartRepository {
         option: {
           id: item.option!.id,
           name: item.option!.name,
-          price: item.option!.price.toNumber(),
+          price: item.option!.price
         },
         createdAt: item.createdAt,
         product: {
           name: item.product.name,
-          basePrice: Number(item.product.basePrice),
-          salePrice: Number(item.product.salePrice),
+          basePrice: item.product.basePrice,
+          salePrice: item.product.salePrice,
         },
       })).sort((itemFirst, itemSecond) =>  new Date(itemSecond.createdAt).getTime() - new Date(itemFirst.createdAt).getTime())
     };
+
+
   }
 
   async addCartItem(userId: number, body: AddCartItemReqDTO): Promise<void> {
     const cart = await this.manifestCart(userId);
     const { quantity, productId, optionId } = body;
-    const cartItem = cart.cartItems.find(
-      (item) => item.productId === productId && item.cartId === cart.id,
-    );
+    const cartItem = cart.cartItems.find((item) => item.productId === productId && item.cartId === cart.id);
     await this.upsertCartItem(
       { id: cartItem!.id ?? v4(), cartId: cart.id, productId, optionId },
       { quantity: { increment: 1 } },
-      { quantity, cartId: cart.id, productId },
+      { quantity, cartId: cart.id, productId},
     );
   }
 

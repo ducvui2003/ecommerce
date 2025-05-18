@@ -13,6 +13,11 @@ type GetCartResType = {
       name: string,
       basePrice: number,
       salePrice: number,
+    },
+    option: {
+      id: number,
+      name: string,
+      price: number
     }
   }[],
 }

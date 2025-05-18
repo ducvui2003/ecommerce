@@ -32,15 +32,6 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { currency } from '@/lib/utils';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Sheet,
   SheetClose,
   SheetContent,
@@ -53,6 +44,7 @@ import { Label } from '@/components/ui/label';
 import { ChangeQuantityCartItemReqType } from '@/types/cart.type';
 import { useGetActivePromotionsQuery } from '@/features/promotion/promotion.api';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 export default function Page() {
   const { data: cart } = useGetCartQuery();
@@ -65,12 +57,10 @@ export default function Page() {
     (): number =>
       cart?.cartItems
         .filter((item) => item.selected)
-        .reduce(
-          (accumulator, currentItem) =>
-            accumulator +
-            currentItem.quantity *
-              (currentItem.product.salePrice ?? currentItem.product.basePrice),
-          0,
+        .reduce((accumulator, currentItem) =>
+            accumulator + currentItem.quantity * (
+              Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option.price)
+            ), 0,
         )!,
     [cart],
   );
@@ -100,7 +90,7 @@ export default function Page() {
     } catch (error) {
       return;
     }
-  }
+  };
 
   const allItemSelected = cart?.cartItems.every((item) => item.selected);
 
@@ -142,7 +132,10 @@ export default function Page() {
             </div>
             {cart &&
               cart.cartItems.map((item) => (
-                <div key={item.id} className="flex gap-4 rounded-md border border-gray-200 bg-white px-4 py-6 shadow-sm">
+                <div
+                  key={item.id}
+                  className="flex gap-4 rounded-md border border-gray-200 bg-white px-4 py-6 shadow-sm"
+                >
                   <div className="flex gap-6 max-sm:flex-col sm:gap-4">
                     <Checkbox
                       className="cursor-pointer"
@@ -162,31 +155,21 @@ export default function Page() {
                       <div>
                         <Link
                           href={`/product/${item.product.id}`}
-                          className="text-sm font-semibold text-slate-900 sm:text-base"
+                          className="text-sm font-semibold text-black sm:text-base"
                         >
                           {item.product.name}
                         </Link>
-                        <div className="mt-2">
-                          <Select defaultValue="100ml">
-                            <SelectTrigger className="w-36">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Dung tích</SelectLabel>
-                                <SelectItem value="100ml">100ml</SelectItem>
-                                <SelectItem value="500ml">500ml</SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        <p className="mt-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                          Phân loại: <Badge>{item.option.name}</Badge>
+                        </p>
                       </div>
                       <div className="mt-auto">
-                        <h3 className="text-primary text-sm font-semibold">
+                        <h2 className="text-primary text-base font-semibold">
                           {item.product.salePrice
-                            ? currency(item.product.salePrice)
-                            : currency(item.product.basePrice)}
-                        </h3>
+                            ? currency(Number(item.product.salePrice) + Number(item.option.price))
+                            : currency(Number(item.product.basePrice) + Number(item.option.price))
+                          }
+                        </h2>
                       </div>
                     </div>
                   </div>
@@ -199,23 +182,23 @@ export default function Page() {
                         onClick={() => handleDeleteCartItem(item.id)}
                       />
                     </div>
-                    <div className="mt-auto flex items-center gap-3">
+                    <div className="mt-auto flex items-center gap-x-0.5">
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="group/qlt-btn flex size-8 items-center justify-center rounded-full"
+                        className="group/qlt-btn flex size-6 items-center justify-center rounded-full"
                         onClick={() =>
                           handleChangeQuantityCartItem(item.id, {
                             quantity: { decrement: 1 },
                           })
                         }
                       >
-                        <Minus className="group-hover/qlt-btn:text-white" />
+                        <Minus className="!size-3 group-hover/qlt-btn:text-white" />
                       </Button>
                       <Input
                         type="text"
-                        className="h-9 w-6 shrink-0 border-0 p-0 text-center text-base font-semibold shadow-none focus-visible:ring-0"
+                        className="size-6 shrink-0 border-0 p-0 text-center text-base font-semibold shadow-none focus-visible:ring-0"
                         value={item.quantity}
                         onChange={(e) =>
                           handleChangeQuantityCartItem(item.id, {
@@ -227,14 +210,14 @@ export default function Page() {
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="group/qlt-btn flex size-8 items-center justify-center rounded-full"
+                        className="group/qlt-btn flex size-6 items-center justify-center rounded-full"
                         onClick={() =>
                           handleChangeQuantityCartItem(item.id, {
                             quantity: { increment: 1 },
                           })
                         }
                       >
-                        <Plus className="group-hover/qlt-btn:text-white" />
+                        <Plus className="!size-3 group-hover/qlt-btn:text-white" />
                       </Button>
                     </div>
                   </div>
@@ -252,7 +235,7 @@ export default function Page() {
               <Separator />
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Tổng khuyến mãi</p>
-                <p>{currency(temporaryTotalPrice)}</p>
+                <p>{currency(0)}</p>
               </div>
               <Separator />
               <div className="flex justify-between">
@@ -308,37 +291,54 @@ export default function Page() {
                     </div>
                   </div>
                   <div className="px-4">
-                    <Separator orientation='horizontal'/>
+                    <Separator orientation="horizontal" />
                   </div>
-                  <div className="flex h-full mx-4 space-y-4 flex-col overflow-y-scroll no-scrollbar">
+                  <div className="no-scrollbar mx-4 flex h-full flex-col space-y-4 overflow-y-scroll">
                     {promotions?.map((promotion) => (
-                      <div key={promotion.id} className="flex w-full text-white">
+                      <div
+                        key={promotion.id}
+                        className="flex w-full text-white"
+                      >
                         <div className="grid h-full justify-items-center rounded-l-lg bg-neutral-700 px-4 py-5">
-                          <div className="size-8 self-start rounded-full bg-secondary place-content-center">
-                            <Percent className="text-neutral-700 size-4 text-center w-full" />
+                          <div className="bg-secondary size-8 place-content-center self-start rounded-full">
+                            <Percent className="size-4 w-full text-center text-neutral-700" />
                           </div>
-                          <Button size="icon" variant="secondary" className="rounded-full self-end size-8">
-                            <Plus/>
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                            className="size-8 self-end rounded-full"
+                          >
+                            <Plus />
                           </Button>
                         </div>
-                        <div className="relative flex h-full flex-col items-center justify-between border border-dashed border-zinc-50 bg-neutral-700">
+                        <div
+                          className="relative flex h-full flex-col items-center justify-between border border-dashed border-zinc-50 bg-neutral-700">
                           <div className="absolute -top-5 h-7 w-7 rounded-full bg-white" />
                           <div className="absolute -bottom-5 h-7 w-7 rounded-full bg-white" />
                         </div>
                         <div className="grid h-full w-80 flex-1 gap-1 rounded-r-lg bg-neutral-700 px-6 py-4">
                           <div className="text-primary text-xl font-extrabold">
-                            {promotion.code} <span className="text-sm font-normal text-white">({promotion.usageLimit})</span>
+                            {promotion.code}{' '}
+                            <span className="text-sm font-normal text-white">
+                              ({promotion.usageLimit})
+                            </span>
                           </div>
-                          <p className="row-span-6 truncate text-sm">{promotion.description}</p>
-                          <p className="text-sm font-bold mt-2">
-                            HSD: <span className="font-normal">{format(promotion.startDate,'dd/MM/yyyy')} - {format(promotion.endDate,'dd/MM/yyyy')}</span>
+                          <p className="row-span-6 truncate text-sm">
+                            {promotion.description}
+                          </p>
+                          <p className="mt-2 text-sm font-bold">
+                            HSD:{' '}
+                            <span className="font-normal">
+                              {format(promotion.startDate, 'dd/MM/yyyy')} -{' '}
+                              {format(promotion.endDate, 'dd/MM/yyyy')}
+                            </span>
                           </p>
                         </div>
                       </div>
                     ))}
                   </div>
                   <div className="px-4">
-                    <Separator orientation='horizontal'/>
+                    <Separator orientation="horizontal" />
                   </div>
                   <SheetFooter className="pt-0">
                     <SheetClose asChild className="bg-primary py-5 text-base">

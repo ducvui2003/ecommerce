@@ -59,6 +59,7 @@ const VietNamDong = new Intl.NumberFormat('vi-VN', {
 });
 
 const currency = (currency: number): string => {
+  console.log(currency);
   return VietNamDong.format(currency);
 };
 
