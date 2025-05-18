@@ -8,6 +8,8 @@ import { SharedUserRepository } from '@shared/repositories/shared-user.repositor
 import { buildUrl } from '@shared/helper.shared';
 import { RoleService } from '@shared/services/role.service';
 import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
+import { keyRefreshToken } from '@shared/services/cache/cache.util';
+import { CacheService } from '@shared/services/cache/cache.service';
 
 @Injectable()
 export abstract class OauthService {
@@ -19,6 +21,7 @@ export abstract class OauthService {
     private readonly authService: AuthService,
     @Inject(SHARED_USER_REPOSITORY)
     private readonly userRepository: SharedUserRepository,
+    private readonly cacheService: CacheService,
   ) {}
 
   abstract getInfo(accessToken: string): Promise<UserOauth2 | undefined>;
@@ -51,17 +54,25 @@ export abstract class OauthService {
       throw new Error('User oauth2 creation failed.');
     }
 
-    const tokens = await this.authService.generateToken({
-      id: user.id,
-      email: user.email,
-    });
+    const [appAccessToken, appRefreshToken] =
+      await this.authService.generateToken({
+        id: user.id,
+        email: user.email,
+      });
+
+    const ttl = appRefreshToken.exp - appRefreshToken.iat;
+    this.cacheService.set(
+      keyRefreshToken(user.id, appRefreshToken.jti),
+      appRefreshToken,
+      ttl * 1000,
+    );
 
     return {
       id: user.id,
       email: user.email,
-      accessToken: tokens.accessToken.token,
-      refreshToken: tokens.refreshToken.token,
-      exp: tokens.exp,
+      accessToken: appAccessToken.token,
+      refreshToken: appRefreshToken.token,
+      exp: appAccessToken.exp,
     };
   }
 }
@@ -74,6 +85,7 @@ export class GoogleService extends OauthService {
     roleService: RoleService,
     authService: AuthService,
     userRepository: SharedUserRepository,
+    cacheService: CacheService,
   ) {
     super(
       oauthRepository,
@@ -81,6 +93,7 @@ export class GoogleService extends OauthService {
       roleService,
       authService,
       userRepository,
+      cacheService,
     );
   }
 
@@ -109,6 +122,7 @@ export class FacebookService extends OauthService {
     roleService: RoleService,
     authService: AuthService,
     userRepository: SharedUserRepository,
+    cacheService: CacheService,
   ) {
     super(
       oauthRepository,
@@ -116,6 +130,7 @@ export class FacebookService extends OauthService {
       roleService,
       authService,
       userRepository,
+      cacheService,
     );
   }
   async getInfo(accessToken: string): Promise<UserOauth2 | undefined> {

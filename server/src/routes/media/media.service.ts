@@ -6,7 +6,7 @@ import {
   MediaResponseType,
 } from '@route/media/media.schema';
 import { transformItemsPaging } from '@shared/helper.shared';
-import { MediaType } from '@shared/models/media.model';
+import { ResourceType } from '@shared/models/resource.model';
 import { FileService } from '@shared/services/file/file.service';
 import { Pageable } from '@shared/types/request.type';
 
@@ -21,7 +21,7 @@ export class MediaService {
 
   async createMedia(
     data: CreatedMediaBodyType,
-  ): Promise<Pick<MediaType, 'publicId' | 'format' | 'type'>> {
+  ): Promise<Pick<ResourceType, 'publicId' | 'format' | 'type'>> {
     return await this.mediaRepository.createMedia({
       publicId: data.publicId,
       format: data.format,
@@ -45,7 +45,7 @@ export class MediaService {
     ]);
     return transformItemsPaging<
       MediaResponseType,
-      Pick<MediaType, 'id' | 'format' | 'publicId' | 'type'>
+      Pick<ResourceType, 'id' | 'format' | 'publicId' | 'type'>
     >(data, (item) => {
       return {
         ...item,

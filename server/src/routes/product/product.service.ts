@@ -16,7 +16,7 @@ import {
   ProductResType,
 } from '@route/product/product.schema';
 import { ProductType } from '@shared/models/product.model';
-import { SharedMediaRepository } from '@shared/repositories/shared-media.repository';
+import { SharedResourceRepository } from '@shared/repositories/shared-repository.repository';
 
 @Injectable()
 export class ProductServiceImpl implements ProductService {
@@ -26,7 +26,7 @@ export class ProductServiceImpl implements ProductService {
     @Inject('FILE_SERVICE')
     private readonly fileService: FileService,
     @Inject()
-    private readonly sharedMediaRepository: SharedMediaRepository,
+    private readonly sharedResourceRepository: SharedResourceRepository,
   ) {}
 
   async findById(id: number): Promise<ProductDetailResType> {
@@ -43,7 +43,7 @@ export class ProductServiceImpl implements ProductService {
           .filter((id): id is number => id != null);
 
         const resources =
-          await this.sharedMediaRepository.findMediaInId(resourceIds);
+          await this.sharedResourceRepository.findResourceInId(resourceIds);
         temp.forEach((item) => {
           item.publicId =
             resources.find((i) => i.id === item.resourceId)?.publicId ?? '';
@@ -51,13 +51,13 @@ export class ProductServiceImpl implements ProductService {
       }
       return ProductDetailResSchema.parse({
         ...product,
-        media: product.productResource.map(({ resource }) => {
+        resource: product.productResource.map(({ resource }) => {
           return this.fileService.getUrl(resource.publicId);
         }),
         option: product.option?.map((option, index) => {
           return {
             ...option,
-            media:
+            resource:
               temp?.[index].publicId &&
               this.fileService.getUrl(temp[index].publicId),
           };
@@ -76,7 +76,7 @@ export class ProductServiceImpl implements ProductService {
     return transformItemsPaging<ProductResType, ProductType>(page, (item) => {
       return ProductResSchema.parse({
         ...item,
-        media:
+        resource:
           item.productResource.map(({ resource }) => {
             return this.fileService.getUrl(resource.publicId);
           }) ?? [],

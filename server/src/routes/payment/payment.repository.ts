@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { WebhookPaymentBodyType } from '@route/payment/payment.schema';
-import { PREFIX_PAYMENT_CODE } from '@shared/constants/payment.constaint';
+import { PREFIX_PAYMENT_CODE } from '@shared/constants/payment.constant';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface PaymentRepository {

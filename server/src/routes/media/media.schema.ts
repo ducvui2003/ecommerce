@@ -1,7 +1,7 @@
-import { MediaModel, MediaType } from '@shared/models/media.model';
+import { ResourceModel, ResourceType } from '@shared/models/resource.model';
 import { z } from 'zod';
 
-export const CreatedMediaBodySchema = MediaModel.pick({
+export const CreatedMediaBodySchema = ResourceModel.pick({
   publicId: true,
   type: true,
   format: true,
@@ -20,7 +20,7 @@ export const ChangeVisibilitySchema = z.object({
 });
 
 export type MediaResponseType = Pick<
-  MediaType,
+  ResourceType,
   'id' | 'format' | 'publicId'
 > & {
   url: string;

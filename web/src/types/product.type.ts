@@ -24,12 +24,33 @@ type ProductResType = {
   id: number;
   name: string;
   description: string;
-  media: string[];
+  resource: string[];
   basePrice: number;
   salePrice: number;
   percentSale?: number;
   star: number;
   numSell: number;
+};
+
+type ProductDetailRespType = {
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  salePrice: number;
+  category: {
+    name: string;
+  };
+  supplier: {
+    name: string;
+  };
+  resource: string[];
+  option: {
+    id: number;
+    name: string;
+    price: number;
+    resource: string;
+  }[];
 };
 
 type ProductType = {
@@ -76,7 +97,7 @@ type ProductManagerResType = {
   salePrice: number;
   category: number;
   supplier: number;
-  media: string;
+  resource: string;
 };
 
 type CreateProductResType = {
@@ -97,5 +118,6 @@ export type {
   ProductManagerResType,
   CreateOptionBodyType,
   CreateProductResType,
+  ProductDetailRespType,
 };
 export { CreateProductBodySchema, CreateOptionBodySchema };

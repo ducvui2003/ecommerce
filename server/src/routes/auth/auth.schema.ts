@@ -63,6 +63,8 @@ export const RefreshResSchema = z.object({
   exp: z.number(),
 });
 
+export type RefreshResType = z.infer<typeof RefreshResSchema>;
+
 // Verification
 export const SendOTPBodySchema = VerificationCodeSchema.pick({
   email: true,

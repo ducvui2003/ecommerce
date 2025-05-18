@@ -17,7 +17,7 @@ import {
   transformItemsPaging,
 } from '@shared/helper.shared';
 import { ProductType } from '@shared/models/product.model';
-import { SharedMediaRepository } from '@shared/repositories/shared-media.repository';
+import { SharedResourceRepository } from '@shared/repositories/shared-repository.repository';
 import { FileService } from '@shared/services/file/file.service';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class ProductManagerService {
     @Inject('FILE_SERVICE')
     private readonly fileService: FileService,
     @Inject()
-    private readonly sharedMediaRepository: SharedMediaRepository,
+    private readonly sharedMediaRepository: SharedResourceRepository,
   ) {}
   async createProduct(
     product: CreateProductBodyType,
@@ -45,7 +45,7 @@ export class ProductManagerService {
       (item) => {
         return ProductManagerResSchema.parse({
           ...item,
-          media: this.fileService.getUrl(
+          resource: this.fileService.getUrl(
             item.productResource[0].resource.publicId,
           ),
           supplier: item.supplier.name,
@@ -117,7 +117,7 @@ export class ProductManagerService {
         .filter((id): id is number => id != null);
 
       const resources =
-        await this.sharedMediaRepository.findMediaInId(mediaIds);
+        await this.sharedMediaRepository.findResourceInId(mediaIds);
       temp.forEach((item) => {
         item.publicId =
           resources.find((i) => i.id === item.mediaId)?.publicId ?? '';
