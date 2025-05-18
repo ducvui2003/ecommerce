@@ -46,7 +46,9 @@ const ResourceResSchema = ResourceModel.pick({
 const OptionResSchema = OptionModel.pick({
   id: true,
   name: true,
+  stock: true,
 }).extend({
+  price: DecimalToNumberSchema,
   resource: ResourceResSchema,
 });
 
@@ -70,6 +72,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
   supplierId: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,

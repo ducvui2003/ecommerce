@@ -27,6 +27,7 @@ export const ProductModel = MetadataFields.extend({
   option: z.array(OptionModel).optional(),
   category: CategoryModel,
   supplier: SupplierModel,
+  deletedAt: z.date().nullable(),
 });
 
 export type ProductType = z.infer<typeof ProductModel>;

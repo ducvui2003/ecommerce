@@ -93,7 +93,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
               Copy ID
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href={`/admin/product/${id}`} className="flex-1">
+              <Link href={`/admin/product/update/${id}`} className="flex-1">
                 Chỉnh sửa sản phẩm
               </Link>
             </DropdownMenuItem>

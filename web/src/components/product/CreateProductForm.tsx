@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import Editor from '@/components/Editor';
 import ListView from '@/components/ListView';
@@ -29,18 +29,25 @@ import { MediaType } from '@/types/media.type';
 import {
   CreateProductBodySchema,
   CreateProductBodyType,
+  ProductDetailManagerResType,
+  ProductDetailRespType,
 } from '@/types/product.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useCreateProductMutation } from '@/features/manager/product/product.api';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Media from '@/components/media/Media';
 
-const CreateProductForm = () => {
+type CreateProductFormProp = {
+  initialValue?: ProductDetailManagerResType;
+};
+
+const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
   const router = useRouter();
   const form = useForm<CreateProductBodyType>({
     resolver: zodResolver(CreateProductBodySchema),
-    defaultValues: {
+    defaultValues: initialValue ?? {
       name: '',
       basePrice: 0,
       salePrice: 0,
@@ -52,9 +59,18 @@ const CreateProductForm = () => {
       isDeleted: false,
     },
   });
-  const [medias, setMedias] = useState<MediaType[]>([]);
+  const [medias, setMedias] = useState<MediaType[]>(
+    initialValue?.resource.map((item) => {
+      return {
+        id: item.id.toString(),
+        name: '',
+        url: item.url,
+      };
+    }) ?? [],
+  );
   const [create] = useCreateProductMutation();
   const { isSubmitting } = form.formState;
+
   const onSubmit = (values: CreateProductBodyType) => {
     create(values)
       .unwrap()
@@ -128,7 +144,7 @@ const CreateProductForm = () => {
                 }}
                 emptyComponent={null}
                 append={
-                  <MediaButton
+                  <Media
                     expose={(mediaState) => {
                       form.setValue(
                         'resourceIds',
@@ -157,7 +173,7 @@ const CreateProductForm = () => {
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={String(field.value)}
+                      value={String(field.value)}
                     >
                       <FormControl>
                         <SelectTrigger>

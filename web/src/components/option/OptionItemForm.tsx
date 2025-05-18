@@ -1,5 +1,6 @@
 'use client';
 import ClientIcon from '@/components/ClientIcon';
+import Media from '@/components/media/Media';
 import MediaButton from '@/components/media/MediaButton';
 import ProductCategoryForm from '@/components/product/ProductCategoryForm';
 import {
@@ -18,12 +19,12 @@ type OptionItemFormProps = {
 };
 
 const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
-  const { control, setValue } = useFormContext<CreateProductBodyType>();
-
+  const { control, setValue, getValues } =
+    useFormContext<CreateProductBodyType>();
   return (
     <div className="border-accent flex items-center gap-5 rounded-md border-2 p-2">
-      <MediaButton
-        previewImage
+      <Media
+        previewMode
         expose={(resources) =>
           setValue(`options.${index}.resourceId`, Number(resources[0].id))
         }

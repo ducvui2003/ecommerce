@@ -28,13 +28,11 @@ const ProductSupplierForm = () => {
       control={control}
       name="supplierId"
       render={({ field }) => {
+        console.log(field);
         return (
           <FormItem className="border-accent rounded-md border-2 p-2">
             <FormLabel className="mb-2 block text-lg">Nhà phân phối</FormLabel>
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={String(field.value)}
-            >
+            <Select onValueChange={field.onChange} value={String(field.value)}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Trạng thái" />

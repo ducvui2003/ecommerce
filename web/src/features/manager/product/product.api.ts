@@ -6,6 +6,7 @@ import { CategoryType } from '@/types/category.type';
 import {
   CreateProductBodyType,
   CreateProductResType,
+  ProductDetailManagerResType,
   ProductManagerResType,
   SearchParams,
 } from '@/types/product.type';
@@ -110,6 +111,22 @@ export const productManagerApi = createApi({
         return [{ type: 'ProductManager', id: 'LIST' }];
       },
     }),
+
+    getDetailProduct: builder.query<ProductDetailManagerResType, number>({
+      async queryFn(arg) {
+        try {
+          const data = await productManagerService.getById(arg);
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
   }),
 });
 
@@ -118,4 +135,5 @@ export const {
   useGetAllCategoryQuery,
   useGetAllSupplierQuery,
   useCreateProductMutation,
+  useGetDetailProductQuery,
 } = productManagerApi;

@@ -29,19 +29,20 @@ import {
 import { toast } from 'sonner';
 
 type MediaDialogProps = {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
   expose?: (resources: MediaType[]) => void;
   children?: ReactNode;
 };
 
-const MediaDialog = ({
-  open = undefined,
-  onOpenChange,
-  expose,
-}: MediaDialogProps) => {
+const MediaDialog = ({ expose }: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
-  const { selectedImages, selectImages } = useMediaContext();
+  const {
+    selectedImages,
+    selectImages,
+    openDialog,
+    setOpenDialog,
+    previewMode,
+    setPreview,
+  } = useMediaContext();
 
   const mediasRef = useRef<MediaType[]>(selectedImages ?? []);
   const [paging, setPaging] = useState<PageReq<{}>>({
@@ -173,18 +174,21 @@ const MediaDialog = ({
 
   const handleSubmit = () => {
     selectImages(mediasRef.current);
+    if (previewMode) {
+      setPreview(mediasRef.current[0]);
+    }
     expose?.(mediasRef.current);
-    onOpenChange?.(false);
+    setOpenDialog?.(false);
   };
 
   useEffect(() => {
-    if (open) {
+    if (openDialog) {
       mediasRef.current = [...selectedImages];
     }
   }, [open, selectedImages]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogContent className="max-w-[70vw]">
         <DialogHeader>
           <DialogTitle>Chọn file</DialogTitle>

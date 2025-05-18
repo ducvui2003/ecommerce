@@ -100,6 +100,35 @@ type ProductManagerResType = {
   resource: string;
 };
 
+type ResourceResSchema = {
+  id: number;
+  url: string;
+};
+
+type ProductDetailManagerResType = {
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  salePrice: number;
+
+  categoryId: number;
+  supplierId: number;
+
+  resource: ResourceResSchema[];
+
+  options: {
+    id: number;
+    name: string;
+    price: number;
+    stock: number;
+    resource: ResourceResSchema;
+  }[];
+
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 type CreateProductResType = {
   id: number;
   name: string;
@@ -119,5 +148,6 @@ export type {
   CreateOptionBodyType,
   CreateProductResType,
   ProductDetailRespType,
+  ProductDetailManagerResType,
 };
 export { CreateProductBodySchema, CreateOptionBodySchema };
