@@ -1,8 +1,7 @@
 'use client';
 
 import { useAddToCartMutation } from '@/features/cart/cart.api';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import ClientIcon from '../ClientIcon';
 
 interface AddToCartButtonProps {
     productId: number;
@@ -32,7 +31,7 @@ export default function AddToCartButton({
             disabled={isLoading}
             className="text-white px-4 py-2 rounded bg-[#FFAB66D1] disabled:opacity-50"
         >
-            {isLoading ? 'Đang thêm...' : <FontAwesomeIcon icon={faCartShopping} />}
+            {isLoading ? 'Đang thêm...' : <ClientIcon icon={"fa6-solid:cart-shopping"} />}
         </button>
     );
 }
