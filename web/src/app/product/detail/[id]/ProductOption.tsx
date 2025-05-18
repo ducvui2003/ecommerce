@@ -3,10 +3,10 @@ type ProductOptionProps = {
     id: number;
     name: string;
     price: number;
-    media: string;
+    resource: string;
   }[];
-}
-export default function ProductOption({options}: ProductOptionProps) {
+};
+export default function ProductOption({ options }: ProductOptionProps) {
   return (
     <form>
       <div>
