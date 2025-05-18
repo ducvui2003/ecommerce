@@ -8,6 +8,9 @@ import {
   ProductDetailManagerResType,
   ProductManagerResSchema,
   ProductManagerResType,
+  UpdateProductBodyType,
+  UpdateProductResSchema,
+  UpdateProductResType,
 } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
@@ -46,7 +49,7 @@ export class ProductManagerService {
         return ProductManagerResSchema.parse({
           ...item,
           resource: this.fileService.getUrl(
-            item.productResource[0].resource.publicId,
+            item.productResource?.[0]?.resource.publicId,
           ),
           supplier: item.supplier.name,
           category: item.category.name,
@@ -88,6 +91,14 @@ export class ProductManagerService {
       }
       throw error;
     }
+  }
+
+  async updateProduct(
+    id: number,
+    product: UpdateProductBodyType,
+  ): Promise<UpdateProductResType> {
+    const data = await this.productRepository.update(id, product);
+    return UpdateProductResSchema.parse(data);
   }
 
   private async getOptionDetail(product: ProductType): Promise<

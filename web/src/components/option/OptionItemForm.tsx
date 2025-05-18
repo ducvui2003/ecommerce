@@ -11,11 +11,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { currency } from '@/lib/utils';
 import { MediaType } from '@/types/media.type';
-import {
-  BaseProductFormType,
-  CreateProductBodyType,
-} from '@/types/product.type';
+import { BaseProductFormType } from '@/types/product.type';
 import { useFormContext } from 'react-hook-form';
 type OptionItemFormProps = {
   index: number;
@@ -80,7 +78,10 @@ const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
                   {...field}
                 />
               </FormControl>
-              <span className="h-[25px]">
+              <span className="item-center flex h-[25px] justify-between">
+                <span className="text-xs text-green-400">
+                  {currency(field.value)}
+                </span>
                 <FormMessage />
               </span>
             </FormItem>

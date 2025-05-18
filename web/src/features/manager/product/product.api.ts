@@ -9,6 +9,7 @@ import {
   ProductDetailManagerResType,
   ProductManagerResType,
   SearchParams,
+  UpdateProductBodyType,
 } from '@/types/product.type';
 import { SupplierType } from '@/types/supplier.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
@@ -127,6 +128,31 @@ export const productManagerApi = createApi({
         }
       },
     }),
+
+    updateProduct: builder.mutation<
+      CreateProductResType,
+      {
+        id: number;
+        payload: UpdateProductBodyType;
+      }
+    >({
+      async queryFn({ id, payload }) {
+        try {
+          const data = await productManagerService.update(id, payload);
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      invalidatesTags: (_, __, { id }) => {
+        return [{ type: 'ProductManager', id: id }];
+      },
+    }),
   }),
 });
 
@@ -136,4 +162,5 @@ export const {
   useGetAllSupplierQuery,
   useCreateProductMutation,
   useGetDetailProductQuery,
+  useUpdateProductMutation,
 } = productManagerApi;
