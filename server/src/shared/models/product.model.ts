@@ -3,7 +3,7 @@ import {
   NumberToDecimalSchema,
 } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
-import { MediaModel } from '@shared/models/media.model';
+import { ResourceModel } from '@shared/models/resource.model';
 import { OptionModel } from '@shared/models/option.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { z } from 'zod';
@@ -20,7 +20,7 @@ export const ProductModel = MetadataFields.extend({
     z.object({
       productId: z.number(),
       resourceId: z.number(),
-      resource: MediaModel,
+      resource: ResourceModel,
       createdAt: z.date(),
     }),
   ),

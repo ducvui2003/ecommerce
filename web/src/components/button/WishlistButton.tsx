@@ -1,20 +1,19 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as faHeartOutline } from '@fortawesome/free-regular-svg-icons';
 
-function WishlistButton() {
-  const handleClick = () => {
-    console.log('Wishlist button clicked');
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className="rounded bg-[#FFAB66D1] px-4 py-2 text-white disabled:opacity-50"
-    >
-      <FontAwesomeIcon icon={faHeart} className="h-6 w-6" />
-    </button>
-  );
+interface WishlistButtonProps {
+  isFavorite: boolean;
+  toggleFavorite: () => void;
 }
 
-export default WishlistButton;
+export default function WishlistButton({ isFavorite, toggleFavorite }: WishlistButtonProps) {
+  return (
+      <button
+        onClick={toggleFavorite}
+        className="px-3 py-2 bg-[#FFAB66D1] text-white rounded font-semibold transition-colors duration-300 hover:bg-[#FFAB66D1]"
+      >
+        <FontAwesomeIcon icon={isFavorite ? faHeartSolid : faHeartOutline} />
+      </button>
+  );
+}

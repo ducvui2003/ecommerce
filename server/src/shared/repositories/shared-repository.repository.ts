@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { MediaType } from '@shared/models/media.model';
+import { ResourceType } from '@shared/models/resource.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 @Injectable()
-export class SharedMediaRepository {
+export class SharedResourceRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  findMediaInId(ids: number[]): Promise<MediaType[]> {
+  findResourceInId(ids: number[]): Promise<ResourceType[]> {
     return this.prismaService.resource.findMany({
       where: {
         id: {

@@ -2,7 +2,7 @@ import {
   DecimalToNumberSchema,
   NumberToDecimalSchema,
 } from '@shared/models/base.model';
-import { MediaModel } from '@shared/models/media.model';
+import { ResourceModel } from '@shared/models/resource.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel } from '@shared/models/product.model';
 import { z } from 'zod';
@@ -37,7 +37,7 @@ const CreateProductResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
 });
 
-const MediaResSchema = MediaModel.pick({
+const ResourceResSchema = ResourceModel.pick({
   id: true,
 }).extend({
   url: z.string(),
@@ -46,9 +46,8 @@ const MediaResSchema = MediaModel.pick({
 const OptionResSchema = OptionModel.pick({
   id: true,
   name: true,
-  price: true,
 }).extend({
-  media: MediaResSchema,
+  resource: ResourceResSchema,
 });
 
 const ProductManagerResSchema = ProductModel.pick({
@@ -60,7 +59,7 @@ const ProductManagerResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
   category: z.string(),
   supplier: z.string(),
-  media: z.string(),
+  resource: z.string(),
 });
 
 const ProductDetailManagerResSchema = ProductModel.pick({
@@ -74,25 +73,41 @@ const ProductDetailManagerResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  media: z.array(MediaResSchema),
+  resource: z.array(ResourceResSchema),
   options: z.array(OptionResSchema).optional(),
 });
+
+const UpdateProductResSchema = ProductModel.pick({
+  name: true,
+  description: true,
+  categoryId: true,
+  supplierId: true,
+}).extend({
+  basePrice: NumberToDecimalSchema,
+  salePrice: NumberToDecimalSchema,
+  resourceIds: z.array(z.number()).optional(),
+  isDeleted: z.boolean().optional().default(false),
+  options: z.array(CreateOptionBodySchema),
+});
+
 type ProductDetailManagerResType = z.infer<
   typeof ProductDetailManagerResSchema
 >;
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
 type CreateProductResType = z.infer<typeof CreateProductResSchema>;
 type ProductManagerResType = z.infer<typeof ProductManagerResSchema>;
-
+type UpdateProductResType = z.infer<typeof UpdateProductResSchema>;
 export {
   ProductDetailManagerResSchema,
   ProductManagerResSchema,
   CreateProductBodySchema,
   CreateProductResSchema,
+  UpdateProductResSchema,
 };
 export type {
   ProductDetailManagerResType,
   ProductManagerResType,
   CreateProductBodyType,
   CreateProductResType,
+  UpdateProductResType,
 };

@@ -1,10 +1,6 @@
 import { OrderBy, SortBy } from '@shared/constants/product.constant';
-import {
-  DecimalToNumberSchema,
-  NumberToDecimalSchema,
-} from '@shared/models/base.model';
+import { DecimalToNumberSchema } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
-import { MediaModel } from '@shared/models/media.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel } from '@shared/models/product.model';
 import { SupplierModel } from '@shared/models/supplier.model';
@@ -66,7 +62,7 @@ const ProductResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  media: z.array(z.string()),
+  resource: z.array(z.string()),
 });
 
 const ProductDetailResSchema = ProductModel.pick({
@@ -82,7 +78,7 @@ const ProductDetailResSchema = ProductModel.pick({
   supplier: SupplierModel.pick({
     name: true,
   }),
-  media: z.array(z.string()),
+  resource: z.array(z.string()),
   option: z
     .array(
       OptionModel.pick({
@@ -90,7 +86,7 @@ const ProductDetailResSchema = ProductModel.pick({
         name: true,
       }).extend({
         price: DecimalToNumberSchema,
-        media: z.string().optional(),
+        resource: z.string().optional(),
       }),
     )
     .optional(),
