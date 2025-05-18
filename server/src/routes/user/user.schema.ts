@@ -68,6 +68,7 @@ const GetUserResSchema = UserModel.pick({
   id: true,
   name: true,
   email: true,
+  // dob: true,
   status: true,
   createdAt: true,
 }).extend({
