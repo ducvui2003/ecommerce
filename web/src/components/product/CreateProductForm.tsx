@@ -100,7 +100,6 @@ const CreateProductForm = () => {
                   <FormLabel className="mb-2 block text-lg">Mô tả</FormLabel>
                   <FormControl>
                     <Editor
-                      markdown=""
                       {...field}
                       classNameContainer="h-[200px] rounded-md border shadow-sm"
                     />
