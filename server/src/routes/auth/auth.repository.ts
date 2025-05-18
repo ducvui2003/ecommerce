@@ -11,28 +11,6 @@ export interface AuthRepository {
     data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId'>,
   ): Promise<any>;
 
-  createVerificationCode(
-    data: Pick<VerificationCodeType, 'email' | 'type' | 'code' | 'expiredAt'>,
-  ): Promise<VerificationCodeType>;
-
-  findUniqueVerificationCode(
-    uniqueValue:
-      | {
-          email: string;
-        }
-      | { id: number }
-      | { email: string; code: string; type: TypeOfVerificationType },
-  ): Promise<VerificationCodeType | null>;
-
-  deleteVerificationCode(
-    uniqueValue:
-      | {
-          email: string;
-        }
-      | { id: number }
-      | { email: string; code: string; type: TypeOfVerificationType },
-  ): Promise<any>;
-
   existEmail(email: string): Promise<boolean>;
 
   updatePassword(email: string, password: string);
@@ -43,11 +21,14 @@ export class PrismaAuthRepository implements AuthRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createUser(
-    data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId'>,
+    data: Omit<RegisterBodyType, 'otp'> & Pick<UserType, 'roleId' | 'role'>,
   ): Promise<any> {
     return await this.prismaService.user.create({
       data: {
-        ...data,
+        email: data.email,
+        name: data.name,
+        password: data.password,
+        roleId: data.roleId,
       },
       omit: {
         password: true,
@@ -55,44 +36,6 @@ export class PrismaAuthRepository implements AuthRepository {
     });
   }
 
-  async createVerificationCode(
-    data: Pick<VerificationCodeType, 'email' | 'type' | 'code' | 'expiredAt'>,
-  ): Promise<VerificationCodeType> {
-    return await this.prismaService.verificationCode.upsert({
-      where: {
-        email: data.email,
-      },
-      create: {
-        ...data,
-      },
-      update: {
-        code: data.code,
-        expiredAt: data.expiredAt,
-      },
-    });
-  }
-
-  findUniqueVerificationCode(
-    uniqueValue:
-      | { email: string }
-      | { id: number }
-      | { email: string; code: string; type: TypeOfVerificationType },
-  ): Promise<VerificationCodeType | null> {
-    return this.prismaService.verificationCode.findUnique({
-      where: uniqueValue,
-    });
-  }
-
-  deleteVerificationCode(
-    uniqueValue:
-      | { email: string }
-      | { id: number }
-      | { email: string; code: string; type: TypeOfVerificationType },
-  ): Promise<any> {
-    return this.prismaService.verificationCode.delete({
-      where: uniqueValue,
-    });
-  }
   async existEmail(email: string): Promise<boolean> {
     const response = await this.prismaService.user.findFirst({
       where: {

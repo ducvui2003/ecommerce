@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetWardsQuery } from '@/features/address/address.slice';
+import { useGetWardsQuery } from '@/features/address/address.api';
 import { uuid } from '@/lib/utils';
 type SelectWardProps = {
   districtId: number | null;
@@ -34,14 +34,14 @@ const SelectWard = ({ districtId, setValue }: SelectWardProps) => {
         <SelectValue placeholder="Chọn quận/huyện" />
       </SelectTrigger>
       <SelectContent>
-        {!districtId && <Skeleton className="w-full h-[20px] rounded-full" />}
+        {!districtId && <Skeleton className="h-[20px] w-full rounded-full" />}
         {isFetching &&
           Array(5)
             .fill(null)
             .map((_, index) => (
               <Skeleton
                 key={index}
-                className="w-full h-[20px] rounded-full my-2"
+                className="my-2 h-[20px] w-full rounded-full"
               />
             ))}
         {data &&

@@ -1,16 +1,18 @@
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { ComponentProps } from 'react';
+import image from '/public/images/logo-transparent.png';
 
-const Logo = () => {
+type LogoProps = ComponentProps<'a'>;
+
+const Logo = ({ className }: LogoProps) => {
   return (
-    <Link href="/" className="relative block size-[100px] overflow-hidden">
-      <Image
-        src="/images/logo.png"
-        alt="logo"
-        fill
-        className="object-contain"
-      />
+    <Link
+      href="/"
+      className={cn('relative block size-[100px] overflow-hidden', className)}
+    >
+      <Image src={image} alt="logo" fill className="object-contain" />
     </Link>
   );
 };

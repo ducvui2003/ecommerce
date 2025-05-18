@@ -1,4 +1,5 @@
 'use client';
+import signIn from '@/components/auth/signIn';
 import Link from '@/components/Link';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,74 +11,68 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { HTTP_STATUS_CODE } from '@/constraint/variable';
-import { EntityError } from '@/lib/http';
+import { HOME_PAGE, HTTP_STATUS_CODE } from '@/constraint/variable';
+import { setAuthState, setStatus } from '@/features/auth/auth.slice';
+import { useAppDispatch } from '@/hooks/use-store';
+import { EntityError } from '@/lib/http.client';
 import { handleErrorApi } from '@/lib/utils';
-import { LoginBodyReq, LoginBodyReqType } from '@/types/schema/auth.schema';
+import { LoginFormSchema, LoginFormType } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 const LoginForm = () => {
   const router = useRouter();
-
+  const dispatch = useAppDispatch();
   // 1. Define your form.
-  const form = useForm<LoginBodyReqType>({
-    resolver: zodResolver(LoginBodyReq),
+  const form = useForm<LoginFormType>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       email: '',
+      password: '',
     },
   });
 
+  const { isSubmitting } = form.formState;
+
   // 2. Define a submit handler.
-  async function onSubmit(values: LoginBodyReqType) {
-    try {
-      const response = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
-      if (
-        response?.error === HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE.toString()
-      ) {
-        // Đóng gói error để trả error trên form thay vì toast message error
-        throw new EntityError({
-          status: HTTP_STATUS_CODE.ENTITY_ERROR_STATUS_CODE,
-          payload: {
-            message: '',
-            error: [
-              {
-                field: 'password',
-                error: 'Email hoặc mật khẩu không đúng',
-              },
-            ],
-          },
-        });
-      }
-      if (response?.error === HTTP_STATUS_CODE.UNAUTHORIZED.toString()) {
-        // Đóng gói error để trả error trên form thay vì toast message error
+  function onSubmit(values: LoginFormType) {
+    return signIn({
+      email: values.email,
+      password: values.password,
+    })
+      .then(({ accessToken, expiresAt, user }) => {
+        dispatch(
+          setAuthState({
+            status: 'authenticated',
+            accessToken,
+            expiresAt,
+            user,
+          }),
+        );
+        router.push(HOME_PAGE);
+      })
+      .catch((_) => {
         throw new EntityError({
           status: HTTP_STATUS_CODE.UNAUTHORIZED,
           payload: {
-            message: '',
-            error: [
+            error: '',
+            message: [
               {
                 field: 'email',
-                error:
-                  'Tài khoản với email này chưa tồn tại, vui lòng thực hiện đăng ký',
+                error: 'Tài khoản với email này chưa tồn tại',
               },
             ],
           },
         });
-      }
-      router.push('/');
-    } catch (err) {
-      handleErrorApi({
-        error: err,
-        setError: form.setError,
+      })
+      .catch((error) => {
+        dispatch(setStatus('un-authenticated'));
+        handleErrorApi({
+          error: error,
+          setError: form.setError,
+        });
       });
-    }
   }
   return (
     <Form {...form}>
@@ -91,7 +86,9 @@ const LoginForm = () => {
               <FormControl>
                 <Input placeholder="Vui lòng không để trống" {...field} />
               </FormControl>
-              <FormMessage />
+              <span className="h-[25px]">
+                <FormMessage />
+              </span>
             </FormItem>
           )}
         />
@@ -110,18 +107,23 @@ const LoginForm = () => {
               </FormControl>
 
               <FormMessage />
-              <span className="block text-right ">
+              <span className="block text-right">
                 <Link
                   href={'/forgot-password'}
-                  className="hover:underline hover:text-pink-800 text-sm"
+                  className="hover:text-accent text-sm hover:underline"
                 >
-                  Quên mật khẩu{' '}
+                  Quên mật khẩu
                 </Link>
               </span>
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={isSubmitting}
+          loading={isSubmitting}
+        >
           Đăng nhập
         </Button>
       </form>

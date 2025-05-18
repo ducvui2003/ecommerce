@@ -1,83 +1,114 @@
 import envConfig from '@/config/env.config';
-import http from '@/lib/http';
+import { HTTP_STATUS_CODE } from '@/constraint/variable';
+import http, { EntityError } from '@/lib/http.client';
 import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
-import { LoginResType, RefreshTokenResType } from '@/types/auth.type';
 import {
-  ForgotPasswordType,
-  LoginBodyReqType,
-  RegisterBodyReqType,
-  RegisterResType,
-  SendOTPReqType,
-  SendOTPResType,
+  LoginReqType,
+  LoginResType,
+  OTPReqType,
+  OTPResType,
+  RefreshTokenResType,
+  RegisterReqType,
+  ResetPasswordReqType,
+  Role,
+  VerifyOTPReqType,
+} from '@/types/auth.type';
+import {
+  ForgotPasswordFormType,
+  LoginFormType,
+  RegisterFormType,
+  SendOTPFormType,
 } from '@/types/schema/auth.schema';
-import { User } from 'next-auth';
+import { User } from '@/types/user.type';
 
 const authService = {
-  login: async (data: LoginBodyReqType): Promise<User> => {
-    try {
-      const res = await http.post<ResponseApi<LoginResType>>(
-        '/api/v1/auth/login',
-        data,
-      );
-      const body = res.payload.data;
+  login: async (data: LoginReqType): Promise<User> => {
+    const res = await http.post<ResponseApi<LoginResType>>(
+      '/api/v1/auth/login',
+      data,
+      undefined,
+      false,
+    );
+    const body = res.payload.data;
 
-      const userInfo = await userService.getInfo(body.accessToken);
-      return {
-        ...userInfo,
-        image: userInfo.avatar,
-        accessToken: body.accessToken,
-        refreshToken: body.refreshToken,
-        expiresAt: body.exp,
-      };
-    } catch (error) {
-      throw error;
-    }
+    const userInfo = await userService.getInfo(body.accessToken);
+    return {
+      id: userInfo.id,
+      email: userInfo.email,
+      name: userInfo.name,
+      role: userInfo.role as Role,
+      image: userInfo.avatar,
+      accessToken: body.accessToken,
+      refreshToken: body.refreshToken,
+      expiresAt: body.exp,
+    };
   },
 
-  register: (data: RegisterBodyReqType) => {
-    const { 'confirm-password': _, ...dataAfter } = data;
-    return http.post<ResponseApi<RegisterResType>>(
+  register: (data: RegisterReqType) => {
+    return http.post<ResponseApi<RegisterFormType>>(
       '/api/v1/auth/register',
-      dataAfter,
+      data,
     );
   },
 
-  sendOTPVerify: (data: SendOTPReqType): Promise<any> => {
-    return http.post<ResponseApi<SendOTPResType>>('/api/v1/auth/send-otp', {
-      email: data.email,
-      type: 'REGISTER',
-    });
-  },
-
-  renewToken: async (refreshToken: string): Promise<User> => {
+  sendOTPVerify: async (data: OTPReqType): Promise<OTPResType> => {
     try {
-      const body = {
-        refreshToken: refreshToken,
-      };
-      const res = await fetch(
-        `${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/refresh-token`,
+      const response = await http.post<ResponseApi<OTPResType>>(
+        '/api/v1/auth/send-otp',
         {
-          method: 'POST',
-          body: JSON.stringify(body),
-          headers: { 'Content-Type': 'application/json' },
+          email: data.email,
+          type: 'REGISTER',
         },
       );
-      const data: ResponseApi<RefreshTokenResType> = await res.json();
-
-      const userInfo = await userService.getInfo(data.data.accessToken);
-
-      return {
-        ...userInfo,
-        image: userInfo.avatar,
-        accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken,
-        expiresAt: data.data.exp,
-      };
-    } catch (error) {
-      console.error('Renew token failed');
-      throw error;
+      return response.payload.data;
+    } catch (_) {
+      throw new EntityError({
+        status: HTTP_STATUS_CODE.UNAUTHORIZED,
+        payload: {
+          error: '',
+          message: [
+            {
+              field: 'email',
+              error: 'Email này đã tồn tại',
+            },
+          ],
+        },
+      });
     }
+  },
+
+  renewToken: async (refreshToken: string): Promise<User | null> => {
+    const body = {
+      refreshToken: refreshToken,
+    };
+    const res = await fetch(
+      `${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/refresh-token`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    if (!res.ok) {
+      return null;
+    }
+
+    const data: ResponseApi<RefreshTokenResType> = await res.json();
+
+    const userInfo = await userService.getInfo(data.data.accessToken);
+
+    return {
+      id: userInfo.id,
+      email: userInfo.email,
+      name: userInfo.name,
+      role: userInfo.role as Role,
+      image: userInfo.avatar,
+      accessToken: data.data.accessToken,
+      refreshToken: data.data.refreshToken,
+      expiresAt: data.data.exp,
+    };
   },
 
   logout: async (accessToken: string, refreshToken: string): Promise<void> => {
@@ -99,11 +130,11 @@ const authService = {
     }
   },
 
-  sendOTPForgetPassword: (data: SendOTPReqType): Promise<any> => {
-    return http.post<ResponseApi<SendOTPResType>>(
+  sendOTPForgetPassword: (email: string): Promise<any> => {
+    return http.post<ResponseApi<void>>(
       '/api/v1/auth/send-otp',
       {
-        email: data.email,
+        email: email,
         type: 'FORGOT_PASSWORD',
       },
       undefined,
@@ -111,7 +142,20 @@ const authService = {
     );
   },
 
-  resetPassword: (data: ForgotPasswordType) => {
+  verifyOTPForgetPassword: (data: VerifyOTPReqType) => {
+    return http.post<ResponseApi<void>>(
+      '/api/v1/auth/verify-otp',
+      {
+        email: data.email,
+        type: 'FORGOT_PASSWORD',
+        code: data.otp,
+      },
+      undefined,
+      false,
+    );
+  },
+
+  resetPassword: (data: ResetPasswordReqType) => {
     return http.post<ResponseApi<void>>(
       '/api/v1/auth/forget-password',
       {

@@ -6,7 +6,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { MESSAGE_HTTP } from '@shared/constants/api.constraint';
+import { MESSAGE_HTTP } from '@shared/constants/api.constant';
 import { Response } from '@shared/types/response.type';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -42,7 +42,9 @@ export class SerializerInterceptor implements NestInterceptor {
         };
 
         formatResponse.data =
-          Object.keys(dataParser).length == 0 ? undefined : dataParser;
+          dataParser && Object.keys(dataParser)?.length != 0
+            ? dataParser
+            : undefined;
 
         return formatResponse;
       }),

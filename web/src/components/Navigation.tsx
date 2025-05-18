@@ -8,7 +8,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-  NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
 import React, { useEffect, useRef } from 'react';
@@ -26,26 +25,13 @@ type NavigationType = {
 };
 export const components: NavigationType[] = [
   {
-    title: 'Trang chủ',
-    href: '/login',
+    title: 'Sản phẩm',
+    href: '/product',
   },
-  {
-    title: 'Tinh dầu',
-    href: '/',
-    child: [
-      {
-        title: 'Tinh dầu',
-        href: '/',
-      },
-      {
-        title: 'Tinh dầu',
-        href: '/',
-      },
-    ],
-  },
+
   {
     title: 'Về chúng tôi',
-    href: '/',
+    href: '/about',
   },
   {
     title: 'Tư vấn',
@@ -60,13 +46,13 @@ type NavigationProps = {
 const Navigation = ({ components }: NavigationProps) => {
   const triggerRef = useRef<HTMLButtonElement[]>([]);
   const viewPortRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    console.log('viewPortRef', viewPortRef.current);
-    console.log('navRefs', triggerRef.current);
-  }, [triggerRef.current, viewPortRef.current]);
+  // useEffect(() => {
+  //   console.log('viewPortRef', viewPortRef.current);
+  //   console.log('navRefs', triggerRef.current);
+  // }, [triggerRef.current, viewPortRef.current]);
   return (
     <NavigationMenu className="mx-auto">
-      <NavigationMenuList>
+      <NavigationMenuList className="gap-10">
         {components.map((component, index) => {
           return (
             <NavigationMenuItem key={uuid()}>

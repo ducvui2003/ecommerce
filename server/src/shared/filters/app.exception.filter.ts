@@ -8,9 +8,10 @@ export class AppExceptionFilter implements ExceptionFilter<AppException> {
   catch(exception: AppException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
     const statusCode = exception.getStatusCode();
     const statusBody = exception.getBodyCode();
-
     const message: string = exception.message;
     const error = exception.name;
 
@@ -19,6 +20,7 @@ export class AppExceptionFilter implements ExceptionFilter<AppException> {
       error: error,
       message: message,
       timestamp: new Date(),
+      path: request.url,
     };
 
     response.status(statusCode).json(body);
