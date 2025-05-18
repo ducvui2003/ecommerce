@@ -44,12 +44,12 @@ type ProductDetailRespType = {
   supplier: {
     name: string;
   };
-  media: string[];
+  resource: string[];
   option: {
     id: number;
     name: string;
     price: number;
-    media: string;
+    resource: string;
   }[];
 };
 
@@ -118,6 +118,6 @@ export type {
   ProductManagerResType,
   CreateOptionBodyType,
   CreateProductResType,
-  ProductDetailRespType
+  ProductDetailRespType,
 };
 export { CreateProductBodySchema, CreateOptionBodySchema };

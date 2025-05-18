@@ -36,7 +36,7 @@ const ProductCard = ({
       </div>
 
       <div className="mt-4 px-5 pb-5">
-        <Link href={`/product/${id}`} className="hover:underline">
+        <Link href={`/product/detail/${id}`} className="hover:underline">
           <h5 className="text-md o line-clamp-3 h-[80px] text-center font-semibold tracking-tight text-slate-900">
             {name}
           </h5>
