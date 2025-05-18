@@ -62,9 +62,10 @@ export class ProductManagerService {
       const temp = await this.getOptionDetail(product);
       return ProductDetailManagerResSchema.parse({
         ...product,
-        resource: product.productResource.map(({ resource }) => {
+        resources: product.productResource.map(({ resource }) => {
           return {
             id: resource.id,
+            publicId: resource.publicId,
             url: this.fileService.getUrl(resource.publicId),
           };
         }),
@@ -73,6 +74,7 @@ export class ProductManagerService {
             ...option,
             resource: {
               id: temp?.[index].mediaId,
+              publicId: temp?.[index].publicId,
               url:
                 temp?.[index].publicId &&
                 this.fileService.getUrl(temp[index].publicId),

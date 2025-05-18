@@ -24,7 +24,7 @@ export const useMediaContext = () => {
 
 type MediaProviderProps = {
   children: ReactNode;
-  initValue?: MediaType[];
+  initValue?: MediaType[] | MediaType;
   previewMode?: boolean;
 };
 
@@ -33,9 +33,13 @@ export const MediaProvider = ({
   initValue = [],
   previewMode = false,
 }: MediaProviderProps) => {
-  const [selectedImages, setSelectedImages] = useState<MediaType[]>(initValue);
+  const [selectedImages, setSelectedImages] = useState<MediaType[]>(
+    Array.isArray(initValue) ? initValue : [initValue],
+  );
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [preview, setPreview] = useState<MediaType>();
+  const [preview, setPreview] = useState<MediaType>(
+    Array.isArray(initValue) ? initValue[0] : initValue,
+  );
   const selectImages = (img: MediaType[]) => {
     setSelectedImages(img);
   };

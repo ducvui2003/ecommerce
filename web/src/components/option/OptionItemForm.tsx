@@ -11,7 +11,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { CreateProductBodyType } from '@/types/product.type';
+import { MediaType } from '@/types/media.type';
+import {
+  BaseProductFormType,
+  CreateProductBodyType,
+} from '@/types/product.type';
 import { useFormContext } from 'react-hook-form';
 type OptionItemFormProps = {
   index: number;
@@ -20,13 +24,31 @@ type OptionItemFormProps = {
 
 const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
   const { control, setValue, getValues } =
-    useFormContext<CreateProductBodyType>();
+    useFormContext<BaseProductFormType>();
+
+  const initValueMedia = (): MediaType | null => {
+    const data = getValues(`options.${index}.resource`);
+    if (data) {
+      return {
+        id: data.id.toString(),
+        publicId: data.publicId,
+        url: data.url,
+      };
+    }
+    return null;
+  };
   return (
     <div className="border-accent flex items-center gap-5 rounded-md border-2 p-2">
       <Media
+        multiple={false}
         previewMode
+        initialValue={initValueMedia() ?? undefined}
         expose={(resources) =>
-          setValue(`options.${index}.resourceId`, Number(resources[0].id))
+          setValue(`options.${index}.resource`, {
+            id: parseInt(resources[0].id),
+            publicId: resources[0].publicId,
+            url: resources[0].url ?? '',
+          })
         }
       />
       <div className="grid flex-1 grid-cols-3 gap-2">

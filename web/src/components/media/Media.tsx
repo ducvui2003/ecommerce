@@ -6,12 +6,12 @@ import {
 } from '@/components/media/MediaContext';
 import MediaDialog from '@/components/media/MediaDialog';
 import { MediaType } from '@/types/media.type';
-import { ReactNode, useState } from 'react';
 type MediaProps = {
   className?: string;
   expose?: (resources: MediaType[]) => void;
   previewMode?: boolean;
-  initialValue?: MediaType[];
+  multiple?: boolean;
+  initialValue?: MediaType[] | MediaType;
 };
 
 const Media = ({
@@ -19,11 +19,13 @@ const Media = ({
   expose,
   previewMode = false,
   initialValue,
+  multiple = false,
 }: MediaProps) => {
   return (
     <MediaProvider previewMode={previewMode} initValue={initialValue}>
       <MediaButton className={className} expose={expose} />
       <MediaDialog
+        multiple={multiple}
         expose={(resources) => {
           expose?.(resources);
         }}

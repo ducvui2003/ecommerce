@@ -1,15 +1,18 @@
 import OptionItemForm from '@/components/option/OptionItemForm';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { CreateProductBodyType } from '@/types/product.type';
-import { ReactNode, useState } from 'react';
+import {
+  BaseProductFormType,
+  CreateProductBodyType,
+} from '@/types/product.type';
+import { ReactNode } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 type OptionFormProps = {
   children: ReactNode;
 };
 
 const OptionForm = () => {
-  const { control, setValue } = useFormContext<CreateProductBodyType>();
+  const { control, setValue } = useFormContext<BaseProductFormType>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'options',
@@ -19,7 +22,6 @@ const OptionForm = () => {
     append({
       name: '',
       price: 0,
-      resourceId: 0,
       stock: 0,
     });
   };

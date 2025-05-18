@@ -59,7 +59,14 @@ const VietNamDong = new Intl.NumberFormat('vi-VN', {
 });
 
 const currency = (currency: number): string => {
+  if (isNaN(currency)) return '';
   return VietNamDong.format(currency);
+};
+
+const currencyFromString = (currency: string) => {
+  const num = parseFloat(currency.replace(/,/g, ''));
+  if (isNaN(num)) return '';
+  return VietNamDong.format(num);
 };
 
 const appendIfExist = (params: URLSearchParams, key: string, value: string) => {
@@ -132,4 +139,5 @@ export {
   normalizePath,
   uuid,
   setKey,
+  currencyFromString,
 };

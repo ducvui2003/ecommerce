@@ -12,7 +12,7 @@ type MediaButtonProps = {
 };
 
 const MediaButton = ({ className }: MediaButtonProps) => {
-  const { setOpenDialog, openDialog, preview, setPreview } = useMediaContext();
+  const { setOpenDialog, preview } = useMediaContext();
   return (
     <div>
       {preview ? (

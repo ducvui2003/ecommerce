@@ -25,7 +25,7 @@ const CreateProductBodySchema = ProductModel.pick({
   salePrice: NumberToDecimalSchema,
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
-  options: z.array(CreateOptionBodySchema),
+  options: z.array(CreateOptionBodySchema).optional(),
 });
 
 const CreateProductResSchema = ProductModel.pick({
@@ -39,6 +39,7 @@ const CreateProductResSchema = ProductModel.pick({
 
 const ResourceResSchema = ResourceModel.pick({
   id: true,
+  publicId: true,
 }).extend({
   url: z.string(),
 });
@@ -76,7 +77,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  resource: z.array(ResourceResSchema),
+  resources: z.array(ResourceResSchema),
   options: z.array(OptionResSchema).optional(),
 });
 
@@ -90,7 +91,7 @@ const UpdateProductResSchema = ProductModel.pick({
   salePrice: NumberToDecimalSchema,
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
-  options: z.array(CreateOptionBodySchema),
+  options: z.array(CreateOptionBodySchema).optional(),
 });
 
 type ProductDetailManagerResType = z.infer<

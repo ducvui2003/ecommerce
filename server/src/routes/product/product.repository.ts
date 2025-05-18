@@ -118,7 +118,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           supplierId: dto.supplierId,
 
           option: {
-            create: dto.options.map((item) => ({
+            create: dto.options?.map((item) => ({
               name: item.name,
               price: item.price,
               resourceId: item.resourceId,

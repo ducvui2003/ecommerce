@@ -31,10 +31,12 @@ import { toast } from 'sonner';
 type MediaDialogProps = {
   expose?: (resources: MediaType[]) => void;
   children?: ReactNode;
+  multiple: boolean;
 };
 
-const MediaDialog = ({ expose }: MediaDialogProps) => {
+const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
+
   const {
     selectedImages,
     selectImages,
@@ -43,8 +45,8 @@ const MediaDialog = ({ expose }: MediaDialogProps) => {
     previewMode,
     setPreview,
   } = useMediaContext();
-
   const mediasRef = useRef<MediaType[]>(selectedImages ?? []);
+
   const [paging, setPaging] = useState<PageReq<{}>>({
     page: 1,
     size: 3,
@@ -113,7 +115,7 @@ const MediaDialog = ({ expose }: MediaDialogProps) => {
               setFilesUploading((prev) => [
                 {
                   id: response.id.toString(),
-                  name: response.publicId,
+                  publicId: response.publicId,
                   url: result.url,
                 },
                 ...prev.filter((item) => !item.file),
@@ -152,17 +154,21 @@ const MediaDialog = ({ expose }: MediaDialogProps) => {
       ...prev,
       ...files.map((file) => ({
         id: uuid(),
-        name: file.name,
+        publicId: file.name,
         file: file,
       })),
     ]);
   }, []);
 
-  const handleSelect = (checked: boolean, media: MediaType) => {
+  const handleSelect = (
+    checked: boolean,
+    media: MediaType,
+    multiple: boolean,
+  ) => {
     if (checked) {
       mediasRef.current.push({
         id: media.id,
-        name: media.name,
+        publicId: media.publicId,
         url: media.url,
       });
     } else {
@@ -173,6 +179,10 @@ const MediaDialog = ({ expose }: MediaDialogProps) => {
   };
 
   const handleSubmit = () => {
+    if (!multiple && mediasRef.current.length > 1) {
+      toast.message('Vui lòng chọn 1 ảnh');
+      return;
+    }
     selectImages(mediasRef.current);
     if (previewMode) {
       setPreview(mediasRef.current[0]);
@@ -214,7 +224,7 @@ const MediaDialog = ({ expose }: MediaDialogProps) => {
               ...filesUploading,
               ...(data?.items.map((item) => ({
                 id: item.id.toString(),
-                name: item.publicId,
+                publicId: item.publicId,
                 url: item.url,
               })) ?? []),
             ]}
@@ -222,9 +232,10 @@ const MediaDialog = ({ expose }: MediaDialogProps) => {
               return (
                 <MediaViewerCard
                   {...item}
+                  name={item.publicId}
                   key={item.id}
                   checked={mediasRef.current.some((i) => i.id === item.id)}
-                  onChecked={(checked) => handleSelect(checked, item)}
+                  onChecked={(checked) => handleSelect(checked, item, multiple)}
                 />
               );
             }}

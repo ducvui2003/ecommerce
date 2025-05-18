@@ -1,9 +1,9 @@
 'use client';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Editor from '@/components/Editor';
 import ListView from '@/components/ListView';
-import MediaButton from '@/components/media/MediaButton';
+import Media from '@/components/media/Media';
 import MediaCard from '@/components/media/MediaCard';
 import OptionForm from '@/components/option/OptionForm';
 import ProductCategoryForm from '@/components/product/ProductCategoryForm';
@@ -25,28 +25,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { currency } from '@/lib/utils';
 import { MediaType } from '@/types/media.type';
 import {
-  CreateProductBodySchema,
-  CreateProductBodyType,
-  ProductDetailManagerResType,
-  ProductDetailRespType,
+  BaseProductFormSchema,
+  BaseProductFormType,
 } from '@/types/product.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useCreateProductMutation } from '@/features/manager/product/product.api';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import Media from '@/components/media/Media';
 
 type CreateProductFormProp = {
-  initialValue?: ProductDetailManagerResType;
+  initialValue?: BaseProductFormType;
+  onSubmit: (values: BaseProductFormType) => void;
 };
 
-const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
-  const router = useRouter();
-  const form = useForm<CreateProductBodyType>({
-    resolver: zodResolver(CreateProductBodySchema),
+const CreateProductForm = ({
+  initialValue,
+  onSubmit: handleSubmit,
+}: CreateProductFormProp) => {
+  const form = useForm<BaseProductFormType>({
+    resolver: zodResolver(BaseProductFormSchema),
     defaultValues: initialValue ?? {
       name: '',
       basePrice: 0,
@@ -54,36 +52,38 @@ const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
       supplierId: 0,
       categoryId: 0,
       description: '',
-      resourceIds: [],
+      resources: [],
       options: [],
       isDeleted: false,
     },
   });
+
+  useEffect(() => {
+    if (Object.keys(form.formState.errors).length > 0) {
+      console.log('❌ Form Errors:', form.formState.errors);
+
+      // Optional: log each field error
+      Object.entries(form.formState.errors).forEach(([fieldName, error]) => {
+        console.log(`Field "${fieldName}" has error:`, error?.message);
+      });
+    }
+  }, [form.formState.errors]);
+
   const [medias, setMedias] = useState<MediaType[]>(
-    initialValue?.resource.map((item) => {
+    initialValue?.resources?.map((item) => {
       return {
         id: item.id.toString(),
-        name: '',
+        publicId: item.publicId,
         url: item.url,
       };
     }) ?? [],
   );
-  const [create] = useCreateProductMutation();
+
   const { isSubmitting } = form.formState;
 
-  const onSubmit = (values: CreateProductBodyType) => {
-    create(values)
-      .unwrap()
-      .then((response) => {
-        toast.success('Tạo sản phẩm thành công', {
-          description: `${response.id} - ${response.name}`,
-        });
-        router.push('/admin/product');
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error('Tạo sản phẩm thất bại', {});
-      });
+  const onSubmit = (values: BaseProductFormType) => {
+    console.log(values);
+    handleSubmit(values);
   };
 
   return (
@@ -145,10 +145,17 @@ const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
                 emptyComponent={null}
                 append={
                   <Media
+                    multiple
                     expose={(mediaState) => {
                       form.setValue(
-                        'resourceIds',
-                        mediaState.map((item) => item.id).map(Number),
+                        'resources',
+                        mediaState.map((item) => {
+                          return {
+                            id: parseInt(item.id),
+                            publicId: item.publicId,
+                            url: item.url ?? '',
+                          };
+                        }),
                       );
                       setMedias(mediaState);
                     }}
@@ -203,12 +210,17 @@ const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
                         type="number"
                         placeholder="Vui lòng không để trống"
                         {...field}
+                        value={field.value.toString()}
                         onChange={(event) =>
                           form.setValue('basePrice', event.target.valueAsNumber)
                         }
                       />
                     </FormControl>
-                    <span className="h-[25px]">
+
+                    <span className="item-center flex h-[25px] justify-between">
+                      <span className="text-xs text-green-400">
+                        {currency(field.value)}
+                      </span>
                       <FormMessage />
                     </span>
                   </FormItem>
@@ -230,7 +242,10 @@ const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
                         }
                       />
                     </FormControl>
-                    <span className="h-[25px]">
+                    <span className="item-center flex h-[25px] justify-between">
+                      <span className="text-xs text-green-400">
+                        {currency(field.value)}
+                      </span>
                       <FormMessage />
                     </span>
                   </FormItem>
@@ -239,16 +254,16 @@ const CreateProductForm = ({ initialValue }: CreateProductFormProp) => {
             </div>
             <ProductSupplierForm />
             <ProductCategoryForm />
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={isSubmitting}
+              loading={isSubmitting}
+            >
+              Tạo sản phẩm
+            </Button>
           </div>
         </div>
-        <Button
-          className="w-full"
-          type="submit"
-          disabled={isSubmitting}
-          loading={isSubmitting}
-        >
-          Tạo sản phẩm
-        </Button>
       </form>
     </Form>
   );
