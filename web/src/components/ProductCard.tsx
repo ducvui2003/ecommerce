@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import { StarRating } from '@/components/StartRating';
 import Link from '@/components/Link';
+import { DEFAULT_IMAGE } from '@/constraint/variable';
 
 type ProductCardProps = ProductCardType;
 const getDiscountedPrice = (base: number, percent?: number) => {
@@ -23,7 +24,7 @@ const ProductCard = ({
     <div className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
       <div className="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
         <Image
-          src={thumbnail ?? '/images/product.png'}
+          src={thumbnail ?? DEFAULT_IMAGE}
           alt={name}
           fill
           className="rounded-xl object-cover"

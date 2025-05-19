@@ -7,6 +7,12 @@ import productService from '@/service/product.service';
 import { PageReq } from '@/types/api.type';
 import { ProductCardType, SearchParams } from '@/types/product.type';
 
+export async function generateMetadata() {
+  return {
+    title: 'Danh sách sản phẩm',
+  };
+}
+
 type ProductPageProps = {
   searchParams: Promise<Partial<PageReq<SearchParams>>>;
 };

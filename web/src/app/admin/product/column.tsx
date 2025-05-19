@@ -1,3 +1,4 @@
+import ClientIcon from '@/components/ClientIcon';
 import Link from '@/components/Link';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,10 +8,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { DEFAULT_IMAGE } from '@/constraint/variable';
 import { currency, formatDate } from '@/lib/utils';
 import { ProductManagerResType } from '@/types/product.type';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
+import Image from 'next/image';
 
 const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
@@ -26,11 +29,31 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
     size: 200,
     enableHiding: false,
     cell: ({ row }) => {
-      const { resource: media, name } = row.original;
+      const { resource, name, id } = row.original;
       return (
         <div className="flex gap-2">
-          <img src={media} alt="" className="size-[50px] basis-[50px]" />
-          <p className="text-md flex-1 text-wrap">{name}</p>
+          <div className="basis-[50px]">
+            {!resource ? (
+              <div className="grid size-[50px] place-items-center bg-gray-200">
+                <ClientIcon icon={'mdi-light:image'} />
+              </div>
+            ) : (
+              <Image
+                src={resource ?? DEFAULT_IMAGE}
+                alt=""
+                className=""
+                width={50}
+                height={50}
+              />
+            )}
+          </div>
+
+          <Link
+            href={`/admin/product/update/${id}`}
+            className="text-md flex-1 text-wrap hover:underline"
+          >
+            {name}
+          </Link>
         </div>
       );
     },
