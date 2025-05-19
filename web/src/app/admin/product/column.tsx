@@ -65,6 +65,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'basePrice',
     header: 'Giá',
+    size: 20,
     cell: ({ row }) => {
       const value: number = row.getValue('basePrice');
 
@@ -74,6 +75,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'salePrice',
     header: 'Giá giảm',
+    size: 20,
     cell: ({ row }) => {
       const value: number = row.getValue('salePrice');
 
