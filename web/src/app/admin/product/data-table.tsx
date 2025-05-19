@@ -30,7 +30,7 @@ export function DataTable() {
     <div>
       <ActionsBarDataTable table={table} />
 
-      <div className="mt-4 overflow-hidden rounded-md border">
+      <div className="relative mt-4 h-[80vh] overflow-y-auto rounded-md border">
         <Table className="mr-2">
           <TableHeader className="bg-secondary sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -82,7 +82,7 @@ export function DataTable() {
             )}
           </TableBody>
         </Table>
-        <div className="bg-secondary mt-2 py-2">
+        <div className="bg-secondary sticky bottom-0 mt-2 py-2">
           <DataTablePagination table={table} />
         </div>
       </div>

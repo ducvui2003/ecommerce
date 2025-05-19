@@ -20,6 +20,7 @@ const OptionForm = () => {
 
   const handleOptionAdd = () => {
     append({
+      id: null,
       name: '',
       price: 0,
       stock: 0,

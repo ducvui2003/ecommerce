@@ -8,7 +8,7 @@ type ProductPage = {
 };
 
 // cache
-export const getProduct = cache(async (id: string) => {
+const getProduct = cache(async (id: string) => {
   try {
     const res = await productService.getProductById(parseInt(id));
     return res;

@@ -1,9 +1,6 @@
 'use client';
 import MediaButton from '@/components/media/MediaButton';
-import {
-  MediaProvider,
-  useMediaContext,
-} from '@/components/media/MediaContext';
+import { MediaProvider } from '@/components/media/MediaContext';
 import MediaDialog from '@/components/media/MediaDialog';
 import { MediaType } from '@/types/media.type';
 type MediaProps = {

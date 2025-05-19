@@ -160,11 +160,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
     ]);
   }, []);
 
-  const handleSelect = (
-    checked: boolean,
-    media: MediaType,
-    multiple: boolean,
-  ) => {
+  const handleSelect = (checked: boolean, media: MediaType) => {
     if (checked) {
       mediasRef.current.push({
         id: media.id,
@@ -235,7 +231,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
                   name={item.publicId}
                   key={item.id}
                   checked={mediasRef.current.some((i) => i.id === item.id)}
-                  onChecked={(checked) => handleSelect(checked, item, multiple)}
+                  onChecked={(checked) => handleSelect(checked, item)}
                 />
               );
             }}

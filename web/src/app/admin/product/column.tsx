@@ -65,6 +65,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'basePrice',
     header: 'Giá',
+    size: 20,
     cell: ({ row }) => {
       const value: number = row.getValue('basePrice');
 
@@ -74,6 +75,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'salePrice',
     header: 'Giá giảm',
+    size: 20,
     cell: ({ row }) => {
       const value: number = row.getValue('salePrice');
 
@@ -118,6 +120,11 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
             <DropdownMenuItem>
               <Link href={`/admin/product/update/${id}`} className="flex-1">
                 Chỉnh sửa sản phẩm
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/product/detail/${id}`} className="flex-1">
+                Xem trước
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
