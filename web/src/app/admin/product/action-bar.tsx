@@ -156,8 +156,8 @@ const ActionBar = ({
                 placeholder="20.000"
                 defaultValue={0}
                 onChange={(e) => {
-                  let value = e.currentTarget.valueAsNumber;
-                  if (isNaN(value)) value = 0;
+                  let value: number | undefined = e.currentTarget.valueAsNumber;
+                  if (isNaN(value)) value = undefined;
                   setPrice((prev) => [value, prev?.[1]]);
                   handlePriceChange();
                 }}
@@ -167,8 +167,8 @@ const ActionBar = ({
                 type="number"
                 placeholder="200.000"
                 onChange={(e) => {
-                  let value = e.currentTarget.valueAsNumber;
-                  if (isNaN(value)) value = 0;
+                  let value: number | undefined = e.currentTarget.valueAsNumber;
+                  if (isNaN(value)) value = undefined;
                   setPrice((prev) => [prev?.[0], value]);
                   handlePriceChange();
                 }}
