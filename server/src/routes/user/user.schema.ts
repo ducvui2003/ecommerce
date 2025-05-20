@@ -12,7 +12,8 @@ const UserInfoBodySchema = UserModel.pick({
 }).extend({
   name: z.string().optional(),
   phone: z.string().optional(),
-  dob: z.date().optional(),
+  dob: z.coerce.date().optional(),
+  avatar: z.string().optional(),
 });
 
 type GetUserResType = Partial<

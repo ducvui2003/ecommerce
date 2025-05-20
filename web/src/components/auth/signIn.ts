@@ -36,7 +36,7 @@ const signIn = async (
         id: props.id,
         email: props.email,
         name: props.name,
-        image: props.image,
+        image: props.avatar,
         role: props.role,
       },
     };

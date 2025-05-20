@@ -1,6 +1,7 @@
 import envConfig from '@/config/env.config';
+import http from '@/lib/http.client';
 import { ResponseApi } from '@/types/api.type';
-import { UserInfoResType } from '@/types/user.type';
+import { InformationFormType, UserInfoResType } from '@/types/user.type';
 
 const userService = {
   getInfo: async (accessToken: string): Promise<UserInfoResType> => {
@@ -19,9 +20,25 @@ const userService = {
 
       return body.data;
     } catch (error) {
-      console.error('Renew token failed');
       throw error;
     }
+  },
+  updateInfo: async (req: InformationFormType) => {
+    const res = await http.post<ResponseApi<UserInfoResType>>(
+      `api/v1/user/info`,
+      req,
+    );
+    return res.payload.data;
+  },
+
+  updateAvatar: async (avatarUrl: string) => {
+    const res = await http.post<ResponseApi<UserInfoResType>>(
+      `api/v1/user/info`,
+      {
+        avatar: avatarUrl,
+      },
+    );
+    return res.payload.data;
   },
 };
 

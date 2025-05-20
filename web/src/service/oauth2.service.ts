@@ -19,7 +19,7 @@ const oauth2Api = {
     return {
       ...userInfo,
       role: userInfo.role as Role,
-      image: userInfo.avatar,
+      avatar: userInfo.avatar,
       accessToken: body.accessToken,
       refreshToken: body.refreshToken,
       expiresAt: body.exp,
