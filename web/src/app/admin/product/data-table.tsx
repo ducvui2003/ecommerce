@@ -1,16 +1,8 @@
 'use client';
 
 import { DataTablePagination } from '@/components/data-table/DataTablePagination';
-import { flexRender, Table as TableType } from '@tanstack/react-table';
+import { flexRender } from '@tanstack/react-table';
 
-import ClientIcon from '@/components/ClientIcon';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -19,18 +11,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+
+import ActionBar from '@/app/admin/product/action-bar';
 import { useProductTable } from '@/hooks/use-product-datatable';
-import { ProductManagerResType } from '@/types/product.type';
-import Link from 'next/link';
+import { SearchParams } from '@/types/product.type';
+import { useState } from 'react';
 
 export function DataTable() {
-  const { table, columns } = useProductTable();
+  const [search, setSearch] = useState<SearchParams>({});
+  const { table, columns } = useProductTable(search);
 
   return (
     <div>
-      <ActionsBarDataTable table={table} />
+      <ActionBar table={table} currentValue={search} onSearch={setSearch} />
 
-      <div className="relative mt-4 h-[80vh] overflow-y-auto rounded-md border">
+      <div className="relative mt-4 h-[67vh] overflow-y-auto rounded-md border">
         <Table className="mr-2">
           <TableHeader className="bg-secondary sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -89,41 +84,3 @@ export function DataTable() {
     </div>
   );
 }
-
-type ActionsBarDataTableProps = {
-  table: TableType<ProductManagerResType>;
-};
-
-const ActionsBarDataTable = ({ table }: ActionsBarDataTableProps) => {
-  return (
-    <div className="flex">
-      <Button>
-        <Link href={'/admin/product/create'}>Tạo sản phẩm </Link>
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="ml-auto">
-            <ClientIcon icon={'material-symbols:visibility'} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {table
-            .getAllColumns()
-            .filter((column) => column.getCanHide())
-            .map((column) => {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              );
-            })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-};

@@ -31,6 +31,7 @@ export class ProductManagerController {
   @MessageHttp('Paging product for manager')
   @Auth([AuthType.Bearer])
   searchProducts(@Query() query: SearchProductDto) {
+    console.log(query);
     return this.productManagerService.search(query);
   }
 

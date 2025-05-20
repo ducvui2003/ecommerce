@@ -9,6 +9,8 @@ type ProductSearchParams = {
   origin?: string;
   fragrance?: string;
   categoryId?: number[] | number;
+  supplierId?: number[] | number;
+  name?: string;
 };
 
 type ProductCardType = {
