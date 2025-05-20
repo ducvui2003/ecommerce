@@ -36,6 +36,14 @@ const SearchProductReqSchema = PageableSchema.extend({
 
       return Array.isArray(val) ? val : [val];
     }),
+  categoryName: z
+    .union([z.string(), z.array(z.string())])
+    .transform((val: string | string[] | undefined) => {
+      if (val === undefined) return [];
+
+      return Array.isArray(val) ? val : [val];
+    })
+    .optional(),
   supplierId: z
     .union([z.coerce.number(), z.array(z.coerce.number())])
     .optional()
@@ -73,6 +81,7 @@ const ProductDetailResSchema = ProductModel.pick({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
   category: CategoryModel.pick({
+    id: true,
     name: true,
   }),
   supplier: SupplierModel.pick({

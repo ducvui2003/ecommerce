@@ -23,4 +23,4 @@ export const mediaApi = createApi({
     }),
   }),
 });
-export const { useGetPagingMediaQuery } = mediaApi;
+export const { useGetPagingMediaQuery, useLazyGetPagingMediaQuery } = mediaApi;

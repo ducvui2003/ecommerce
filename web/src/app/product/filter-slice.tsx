@@ -1,34 +1,11 @@
 'use client';
 import { CheckboxFilter } from '@/components/product/CheckboxFilter';
 import RadioFilter from '@/components/product/RadioFilter';
+import { useGetAllCategoryQuery } from '@/features/manager/product/product.api';
 import { appendIfExist } from '@/lib/utils';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-type Range = {
-  from: number;
-  to: number;
-};
-
-type CategoryFilter = {
-  id: number;
-  name: string;
-};
 const origins: string[] = ['Pháp', 'Nhật', 'Singapore', 'Ấn Độ '];
-
-const category: CategoryFilter[] = [
-  {
-    id: 1,
-    name: 'Tinh dầu',
-  },
-  {
-    id: 2,
-    name: 'Máy xông tinh dầu',
-  },
-  {
-    id: 3,
-    name: 'Nến thơm tinh dầu',
-  },
-];
 
 const fragrances: string[] = [
   'Hương ấm áp',
@@ -41,13 +18,22 @@ const fragrances: string[] = [
 type KeySearching =
   | 'minPrice'
   | 'maxPrice'
-  | 'category'
+  | 'categoryName'
   | 'origin'
-  | 'fragrance';
+  | 'fragrance'
+  | 'priceRange';
+
+type Range = {
+  from: number;
+  to: number;
+};
 
 const FilterSlice = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+
+  const { data } = useGetAllCategoryQuery();
+
   const { replace } = useRouter();
 
   const hasKeyValueString = (key: KeySearching, value: string) => {
@@ -124,17 +110,18 @@ const FilterSlice = () => {
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">
         <span className="text-md mb-2 block font-bold uppercase">LOẠI</span>
-        {category.map((item, index) => (
-          <CheckboxFilter<string>
-            key={index}
-            name={item.name}
-            data={item.name}
-            onChecked={(check, data) => {
-              handleCheckString(check, 'category', data);
-            }}
-            checked={hasKeyValueString('category', item.name)}
-          />
-        ))}
+        {data &&
+          data.map((item, index) => (
+            <CheckboxFilter<string>
+              key={index}
+              name={item.name}
+              data={item.name}
+              onChecked={(check, data) => {
+                handleCheckString(check, 'categoryName', data);
+              }}
+              checked={hasKeyValueString('categoryName', item.name)}
+            />
+          ))}
       </div>
       <span className="block h-[1px] w-full bg-black"></span>
       <div className="py-2">

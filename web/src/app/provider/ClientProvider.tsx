@@ -3,7 +3,6 @@ import { Session } from '@/app/api/auth/session/type';
 import { LOCAL_STORAGE } from '@/constraint/variable';
 import { setAuthState } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-store';
-import { setAccessToken } from '@/lib/http.client';
 import { ReactNode, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -17,8 +16,8 @@ const ClientProvider = ({ session, children }: ClientProviderProps) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log('session', session);
     if (session) {
-      setAccessToken(session.accessToken);
       dispatch(
         setAuthState({
           accessToken: session.accessToken,

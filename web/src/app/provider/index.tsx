@@ -1,5 +1,5 @@
 import ServerProvider from '@/app/provider/ServerProvider';
-import StoreProvider from '@/app/provider/StoreProvinder';
+import StoreProvider from '@/app/provider/StoreProvider';
 import { Toaster } from '@/components/ui/sonner';
 
 import React from 'react';

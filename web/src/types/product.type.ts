@@ -8,6 +8,7 @@ type ProductSearchParams = {
   volume?: string;
   origin?: string;
   fragrance?: string;
+  categoryId?: number[] | number;
 };
 
 type ProductCardType = {
@@ -39,6 +40,7 @@ type ProductDetailRespType = {
   basePrice: number;
   salePrice: number;
   category: {
+    id: number;
     name: string;
   };
   supplier: {

@@ -40,6 +40,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       name,
       categoryId,
       supplierId,
+      categoryName,
       page,
       size,
       minPrice,
@@ -61,6 +62,11 @@ export class ProductRepositoryImpl implements ProductRepository {
       basePrice: {
         gte: minPrice,
         lte: maxPrice,
+      },
+      category: categoryName && {
+        name: {
+          in: categoryName,
+        },
       },
     };
 

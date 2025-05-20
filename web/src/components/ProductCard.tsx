@@ -1,4 +1,4 @@
-import { currency } from '@/lib/utils';
+import { cn, currency } from '@/lib/utils';
 import { ProductCardType } from '@/types/product.type';
 import Image from 'next/image';
 import React from 'react';
@@ -6,7 +6,9 @@ import { StarRating } from '@/components/StartRating';
 import Link from '@/components/Link';
 import { DEFAULT_IMAGE } from '@/constraint/variable';
 
-type ProductCardProps = ProductCardType;
+type ProductCardProps = ProductCardType & {
+  className?: string;
+};
 const getDiscountedPrice = (base: number, percent?: number) => {
   return percent ? base - (base * percent) / 100 : base;
 };
@@ -18,10 +20,16 @@ const ProductCard = ({
   percentSale,
   star,
   numSell,
+  className,
 }: ProductCardProps) => {
   const price = getDiscountedPrice(basePrice, percentSale);
   return (
-    <div className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
+    <div
+      className={cn(
+        'relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md',
+        className,
+      )}
+    >
       <div className="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
         <Image
           src={thumbnail ?? DEFAULT_IMAGE}

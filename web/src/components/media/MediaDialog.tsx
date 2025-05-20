@@ -1,6 +1,6 @@
 'use client';
 import ClientIcon from '@/components/ClientIcon';
-import ListView from '@/components/ListView';
+import InfiniteScrollList from '@/components/InfinityScrollList';
 import { useMediaContext } from '@/components/media/MediaContext';
 import { MediaFileUpload } from '@/components/media/MediaUpload';
 import MediaViewerCard from '@/components/media/MediaViewerCard';
@@ -13,7 +13,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useGetPagingMediaQuery } from '@/features/media/media.api';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  useGetPagingMediaQuery,
+  useLazyGetPagingMediaQuery,
+} from '@/features/media/media.api';
 import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
 import { PageReq } from '@/types/api.type';
@@ -46,7 +51,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
     setPreview,
   } = useMediaContext();
   const mediasRef = useRef<MediaType[]>(selectedImages ?? []);
-
+  const viewRef = useRef<HTMLDivElement | null>(null);
   const [paging, setPaging] = useState<PageReq<{}>>({
     page: 1,
     size: 3,
@@ -56,6 +61,30 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
     page: paging.page,
     size: paging.size,
   });
+
+  const [trigger] = useLazyGetPagingMediaQuery();
+
+  const loadFunc = useCallback(
+    async (
+      page: number,
+    ): Promise<{ data: (MediaType | MediaUploading)[]; more: boolean }> => {
+      const result = await trigger({
+        page: page,
+        size: paging.size,
+      }).unwrap();
+      return {
+        data: result.items.map((item) => {
+          return {
+            id: item.id.toString(),
+            publicId: item.publicId,
+            url: item.url,
+          };
+        }),
+        more: result.pagination.page < result.pagination.totalPages,
+      };
+    },
+    [trigger],
+  );
 
   const handleUpload = useCallback(
     async (
@@ -199,6 +228,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
         <DialogHeader>
           <DialogTitle>Chọn file</DialogTitle>
         </DialogHeader>
+
         <div className="flex">
           <Input type="text" className="flex-1" />
           <div className="flex-1">
@@ -212,7 +242,27 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
           onUpload={handleUpload}
           onValueChange={handleFileChange}
         >
-          <ListView<MediaType | MediaUploading>
+          <ScrollArea className="h-[40vh]" ref={viewRef}>
+            <InfiniteScrollList<MediaType | MediaUploading>
+              loadFunc={loadFunc}
+              className="grid grid-cols-5 gap-4"
+              refViewport={viewRef}
+              render={(item, index) => {
+                return (
+                  <MediaViewerCard
+                    {...item}
+                    key={`${item.id}-${index}`}
+                    name={item.publicId}
+                    checked={mediasRef.current.some((i) => i.id === item.id)}
+                    onChecked={(checked) => handleSelect(checked, item)}
+                  />
+                );
+              }}
+              loading={<div style={{ color: 'red' }}>Loading...</div>}
+              fallback={<div>No item</div>}
+            />
+          </ScrollArea>
+          {/* <ListView<MediaType | MediaUploading>
             display="grid"
             className="grid-cols-5 gap-4"
             loading={isFetching}
@@ -235,7 +285,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
                 />
               );
             }}
-          />
+          /> */}
           <div className="flex gap-2">
             <Button type="button" onClick={handleSubmit}>
               Ok
@@ -245,29 +295,6 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
                 Close
               </Button>
             </DialogClose>
-            <Button
-              className="ml-auto"
-              disabled={paging.page == 1}
-              onClick={() => {
-                setPaging((prev) => ({
-                  ...prev,
-                  page: prev.page - 1,
-                }));
-              }}
-            >
-              Previous
-            </Button>
-            <Button
-              disabled={paging.page == data?.pagination.totalPages}
-              onClick={() => {
-                setPaging((prev) => ({
-                  ...prev,
-                  page: prev.page + 1,
-                }));
-              }}
-            >
-              Next
-            </Button>
           </div>
         </MediaFileUpload>
       </DialogContent>
