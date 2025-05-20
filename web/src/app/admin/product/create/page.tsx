@@ -3,11 +3,7 @@ import CreateProductForm from '@/components/product/CreateProductForm';
 type CreateProductPageProps = {};
 
 const CreateProductPage = ({}: CreateProductPageProps) => {
-  return (
-    <>
-      <CreateProductForm />
-    </>
-  );
+  return <CreateProductForm />;
 };
 
 export default CreateProductPage;

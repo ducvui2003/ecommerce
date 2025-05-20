@@ -1,5 +1,4 @@
 'use client';
-import Link from '@/components/Link';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,6 +9,7 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
+import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 
 type NavigationLinkType = {

@@ -4,7 +4,6 @@ import { Session } from '@/app/api/auth/session/type';
 import { AuthState, setAuthState, setStatus } from '@/features/auth/auth.slice';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { getCurrentUnix, isSessionExpired } from '@/lib/auth.helper';
-import { setAccessToken } from '@/lib/http.client';
 import { useEffect } from 'react';
 
 type SessionState = {
@@ -45,7 +44,6 @@ const useSession = () => {
             user: currentSession.user,
           }),
         );
-        setAccessToken(currentSession.accessToken);
       } else {
         // access token expired => refresh new token
         const responseFromRefresh = await fetch('/api/auth/refresh', {
@@ -82,7 +80,6 @@ const useSession = () => {
               user: bodyFromRefresh.user,
             }),
           );
-          setAccessToken(bodyFromRefresh.accessToken);
         }
       }
     } else {
