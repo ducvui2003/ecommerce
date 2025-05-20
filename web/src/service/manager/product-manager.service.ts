@@ -9,8 +9,10 @@ import {
 import {
   CreateProductBodyType,
   CreateProductResType,
+  ProductDetailManagerResType,
   ProductManagerResType,
   SearchParams,
+  UpdateProductBodyType,
 } from '@/types/product.type';
 
 const productManagerService = {
@@ -28,6 +30,28 @@ const productManagerService = {
   create: async (req: CreateProductBodyType): Promise<CreateProductResType> => {
     const res = await http.post<ResponseApi<CreateProductResType>>(
       `api/v1/manager/products`,
+      req,
+      undefined,
+      true,
+    );
+    return res.payload.data;
+  },
+
+  getById: async (id: number) => {
+    const res = await http.get<ResponseApi<ProductDetailManagerResType>>(
+      `api/v1/manager/products/${id}`,
+      undefined,
+      true,
+    );
+    return res.payload.data;
+  },
+
+  update: async (
+    id: number,
+    req: UpdateProductBodyType,
+  ): Promise<CreateProductResType> => {
+    const res = await http.put<ResponseApi<CreateProductResType>>(
+      `api/v1/manager/products/${id}`,
       req,
       undefined,
       true,

@@ -21,7 +21,7 @@ import { useFormContext } from 'react-hook-form';
 type ProductCategoryFormProps = {};
 
 const ProductCategoryForm = () => {
-  const { data } = useGetAllCategoryQuery();
+  const { data, isFetching } = useGetAllCategoryQuery();
   const { control } = useFormContext<CreateProductBodyType>();
   return (
     <FormField
@@ -31,13 +31,13 @@ const ProductCategoryForm = () => {
         return (
           <FormItem className="border-accent rounded-md border-2 p-2">
             <FormLabel className="mb-2 block text-lg">Thể loại</FormLabel>
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={String(field.value)}
-            >
+            <Select onValueChange={field.onChange} value={String(field.value)}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Trạng thái" />
+                  <SelectValue
+                    defaultValue={field.value}
+                    placeholder="Trạng thái"
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
