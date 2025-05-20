@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { ProductManagerService } from '@route/product/product-manager.service';
 import {
   CreateProductBodyDto,
   SearchProductDto,
+  UpdateProductBodyDto,
 } from '@route/product/product.dto';
 import { AuthType } from '@shared/constants/auth.constant';
 import { Auth } from '@shared/decorators/auth.decorator';
@@ -29,6 +31,7 @@ export class ProductManagerController {
   @MessageHttp('Paging product for manager')
   @Auth([AuthType.Bearer])
   searchProducts(@Query() query: SearchProductDto) {
+    console.log(query);
     return this.productManagerService.search(query);
   }
 
@@ -46,5 +49,16 @@ export class ProductManagerController {
   @Auth([AuthType.Bearer])
   getProductById(@Param('id', ParseIntPipe) id: number) {
     return this.productManagerService.findById(id);
+  }
+
+  @Put('/:id')
+  @UseGuards(AuthenticationGuard)
+  @MessageHttp('Update product for manager')
+  @Auth([AuthType.Bearer])
+  updateProduct(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateProductBodyDto,
+  ) {
+    return this.productManagerService.updateProduct(id, body);
   }
 }

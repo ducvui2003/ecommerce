@@ -1,7 +1,7 @@
 type MediaType = {
   id: string;
   url?: string;
-  name: string;
+  publicId: string;
 };
 
 type MediaUploading = Omit<MediaType, 'url'> & {

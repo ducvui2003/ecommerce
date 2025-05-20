@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -78,5 +79,19 @@ export class AddressController {
     @ActiveUser('id') userId: number,
   ) {
     return this.addressService.deleteAddress(id, userId);
+  }
+
+  @Get('/token')
+  getToken(@Req() req) {
+    console.log(req);
+  }
+
+  @Post('/callbback')
+  callback(@Req() req) {
+    console.log(req);
+  }
+  @Get('/verify')
+  verify(@Req() req) {
+    console.log(req);
   }
 }

@@ -1,5 +1,6 @@
 import productColumns from '@/app/admin/product/column';
 import { useGetProductTableQuery } from '@/features/manager/product/product.api';
+import { SearchParams } from '@/types/product.type';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -10,7 +11,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
-export const useProductTable = () => {
+export const useProductTable = (searchParams: SearchParams) => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -28,6 +29,7 @@ export const useProductTable = () => {
   const { data, isFetching } = useGetProductTableQuery({
     page: pageIndex + 1,
     size: pageSize,
+    ...searchParams,
   });
 
   const table = useReactTable({

@@ -1,6 +1,3 @@
-'use client';
-
-import { useState } from 'react';
 import { ProductDetailRespType } from '@/types/product.type';
 import ProductImages from './ProductImages';
 import ProductInfo from './ProductInfo';
@@ -11,21 +8,14 @@ import QuantitySelector from '@/components/QuantitySelector';
 import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
 import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
 import ProductComment from '@/app/product/detail/[id]/ProductComment';
-import notFound from '@/app/not-found';
+import ProductRelated from '@/app/product/detail/[id]/ProductRelated';
+import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
 };
 
 export default function ProductDetail({ product }: ProductDetailProps) {
-  if (!product) return notFound();
-
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  const toggleFavorite = () => {
-    setIsFavorite((prev) => !prev);
-  };
-
   const productInfoData = {
     name: product.name,
     supplierName: product.supplier.name,
@@ -50,20 +40,16 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
           <div className="flex items-center gap-4 pt-4">
             <AddToCartTextButton productId={product.id} />
-            <WishlistButton
-              isFavorite={isFavorite}
-              toggleFavorite={toggleFavorite}
-            />
+            <WishlistButton />
           </div>
         </div>
       </div>
       <div className={'mt-5 lg:mt-10'}>
         <ProductDescription description={product.description} />
       </div>
-      <div>
-        <RatingSummary />
-        <ProductComment />
-      </div>
+      <RatingSummary />
+      <ProductComment />
+      <ProductRelation categoryId={product.category.id} />
     </div>
   );
 }
