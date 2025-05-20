@@ -55,7 +55,7 @@ export default function ProductImages({ images }: ProductImagesProps) {
           </CarouselContent>
         </Carousel>
 
-        <div className="width-[400px] relative aspect-square flex-1 rounded">
+        <div className="relative aspect-square w-[400px] flex-1 rounded">
           <Image
             src={selectedImage}
             alt="selected"

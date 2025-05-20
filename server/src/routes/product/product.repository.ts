@@ -250,7 +250,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       const createOption = dto.options?.filter((item) => item.id == null);
 
       if (deleteOption) {
-        this.prisma.option.deleteMany({
+        await this.prisma.option.deleteMany({
           where: {
             id: {
               in: deleteOption.map((item) => item.id),
@@ -260,18 +260,20 @@ export class ProductRepositoryImpl implements ProductRepository {
       }
 
       if (keepOption) {
-        keepOption.map((option) =>
-          tx.option.update({
-            where: {
-              id: option.id,
-            },
-            data: {
-              productId: id,
-              name: option.name,
-              price: option.price,
-              resourceId: option.resourceId,
-            },
-          }),
+        await Promise.all(
+          keepOption.map((option) =>
+            tx.option.update({
+              where: {
+                id: option.id,
+              },
+              data: {
+                productId: id,
+                name: option.name,
+                price: option.price,
+                resourceId: option.resourceId,
+              },
+            }),
+          ),
         );
       }
 
@@ -286,7 +288,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         });
       }
 
-      return tx.product.findUniqueOrThrow({
+      return await tx.product.findUniqueOrThrow({
         where: { id },
         include: {
           category: true,
