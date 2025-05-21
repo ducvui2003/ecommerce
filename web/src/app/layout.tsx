@@ -29,7 +29,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body>
-        <Providers accessToken={session?.accessToken ?? ''}>
+        <Providers>
           {children}
         </Providers>
       </body>
