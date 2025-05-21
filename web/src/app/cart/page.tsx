@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Heart,
   Percent,
+  ShoppingCart
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -45,13 +46,22 @@ import { ChangeQuantityCartItemReqType } from '@/types/cart.type';
 import { useGetActivePromotionsQuery } from '@/features/promotion/promotion.api';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function Page() {
-  const { data: cart } = useGetCartQuery();
+  const { data: cart, isSuccess } = useGetCartQuery();
   const { data: promotions } = useGetActivePromotionsQuery();
   const [toggleCartItem] = useToggleCartItemMutation();
   const [changeQuantityCartItem] = useChangeQuantityCartItemMutation();
   const [deleteCartItem] = useDeleteCartItemMutation();
+
+  const [inputQuantities, setInputQuantities] = useState<{ [key: string]: string }>({});
 
   const temporaryTotalPrice = useMemo<number>(
     (): number =>
@@ -59,7 +69,7 @@ export default function Page() {
         .filter((item) => item.selected)
         .reduce((accumulator, currentItem) =>
             accumulator + currentItem.quantity * (
-              Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option.price)
+              Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option?.price ?? 0)
             ), 0,
         )!,
     [cart],
@@ -78,7 +88,7 @@ export default function Page() {
     body: ChangeQuantityCartItemReqType,
   ) => {
     try {
-      await changeQuantityCartItem({ cartItemId, body });
+      const result = await changeQuantityCartItem({ cartItemId, body });
     } catch (error) {
       return;
     }
@@ -93,6 +103,33 @@ export default function Page() {
   };
 
   const allItemSelected = cart?.cartItems.every((item) => item.selected);
+
+  const handleInputQuantityChange = async (cartItemId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numericQty = Number(value);
+
+    setInputQuantities(prev => ({ ...prev, [cartItemId]: numericQty > 0 ? value : '' }));
+
+    if (!isNaN(numericQty) && numericQty > 0) {
+      await handleChangeQuantityCartItem(cartItemId, {quantity: numericQty})
+    }
+  };
+
+  const handleInputQuantityBlur = async (cartItemId: string) => {
+    const value = inputQuantities[cartItemId];
+    const numericQty = Number(value);
+
+    if (!value || isNaN(numericQty) || numericQty < 1) {
+      await handleChangeQuantityCartItem(cartItemId, { quantity: 1 });
+      setInputQuantities(prev => ({ ...prev, [cartItemId]: '1' }));
+    } else {
+      setInputQuantities(prev => {
+        const updated = { ...prev };
+        delete updated[cartItemId];
+        return updated;
+      });
+    }
+  };
 
   return (
     <div className="my-16 space-y-4">
@@ -119,6 +156,7 @@ export default function Page() {
               <Checkbox
                 id="all"
                 checked={allItemSelected}
+                disabled={!cart || cart.cartItems.length === 0}
                 onCheckedChange={() => handleToggleCartItem('all')}
               />
               <Label
@@ -126,103 +164,125 @@ export default function Page() {
                 className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Chọn tất cả (
-                {cart?.cartItems.filter((item) => item.selected).length} sản
+                {cart?.cartItems.filter((item) => item.selected).length ?? 0} sản
                 phẩm)
               </Label>
             </div>
-            {cart &&
-              cart.cartItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex gap-4 rounded-md border border-gray-200 bg-white px-4 py-6 shadow-sm"
-                >
-                  <div className="flex gap-6 max-sm:flex-col sm:gap-4">
-                    <Checkbox
-                      className="cursor-pointer"
-                      checked={item.selected}
-                      onCheckedChange={() => handleToggleCartItem(item.id)}
-                    />
-                    <div className="shrink-0 max-sm:h-24 max-sm:w-24">
-                      <Image
-                        alt={item.product.name}
-                        width={96}
-                        height={96}
-                        src="/images/product.png"
-                        className="object-contain"
+            {
+              cart && cart.cartItems.length > 0 && isSuccess ?
+                cart.cartItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex gap-4 rounded-md border border-gray-200 bg-white px-4 py-6 shadow-sm"
+                  >
+                    <div className="flex gap-6 max-sm:flex-col sm:gap-4">
+                      <Checkbox
+                        className="cursor-pointer"
+                        checked={item.selected}
+                        onCheckedChange={() => handleToggleCartItem(item.id)}
                       />
-                    </div>
-                    <div className="flex flex-col gap-4">
-                      <div>
-                        <Link
-                          href={`/product/${item.product.id}`}
-                          className="text-sm font-semibold text-black sm:text-base"
-                        >
-                          {item.product.name}
-                        </Link>
-                        <p className="mt-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                          Phân loại: <Badge>{item.option.name}</Badge>
-                        </p>
+                      <div className="shrink-0 max-sm:h-24 max-sm:w-24">
+                        <Image
+                          alt={item.product.name}
+                          width={96}
+                          height={96}
+                          src="/images/product.png"
+                          className="object-contain"
+                        />
                       </div>
-                      <div className="mt-auto">
-                        <h2 className="text-primary text-base font-semibold">
-                          {item.product.salePrice
-                            ? currency(Number(item.product.salePrice) + Number(item.option.price))
-                            : currency(Number(item.product.basePrice) + Number(item.option.price))
+                      <div className="flex flex-col gap-4">
+                        <div>
+                          <Link
+                            href={`/product/${item.product.id}`}
+                            className="text-sm font-semibold text-black sm:text-base"
+                          >
+                            {item.product.name}
+                          </Link>
+                          {
+                            item.option &&
+                            <p className="mt-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                              Dung tích: <Badge>{item.option.name}</Badge>
+                            </p>
                           }
-                        </h2>
+                        </div>
+                        <div className="mt-auto">
+                          <h2 className="text-primary text-base font-semibold">
+                            {item.product.salePrice
+                              ? currency(Number(item.product.salePrice) + Number(item.option?.price ?? 0))
+                              : currency(Number(item.product.basePrice) + Number(item.option?.price ?? 0))
+                            }
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="ml-auto flex flex-col">
+                      <div className="flex items-start justify-end gap-4">
+                        <Heart className="text-muted-foreground size-4 cursor-pointer hover:text-pink-500" />
+                        <AlertDialog>
+                          <AlertDialogTrigger><Trash2 className="text-muted-foreground hover:text-destructive size-4 cursor-pointer" /></AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Bạn có chắc xóa sản phẩm này khỏi giỏ hàng không?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn nếu bạn đã chắc chắn hãy nhấn nút "Xác nhận"
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="hover:text-white">Hủy</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteCartItem(item.id)}>Xác nhận</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                      <div className="mt-auto flex items-center rounded-lg border p-1">
+                        <Button
+                          size="icon"
+                          onClick={() =>
+                            handleChangeQuantityCartItem(item.id, {
+                              quantity: { decrement: 1 },
+                            })
+                          }
+                          className='text-lg transition-all size-6'
+                          disabled={item.quantity === 1}
+                        >
+                          <Minus className="text-white !size-3"/>
+                        </Button>
+                        <Input
+                          type="text"
+                          className="h-6 w-7 p-0 border-0 shadow-none focus-visible:ring-0 text-center text-lg font-medium"
+                          value={inputQuantities[item.id] ?? item.quantity}
+                          onChange={(e) => handleInputQuantityChange(item.id, e)}
+                          onBlur={() => handleInputQuantityBlur(item.id)}
+                          inputMode='numeric'
+                        />
+                        <Button
+                          size="icon"
+                          onClick={() =>
+                            handleChangeQuantityCartItem(item.id, {
+                              quantity: { increment: 1 },
+                            })
+                          }
+                          className='text-lg transition-all size-6'
+                        >
+                          <Plus className="text-white !size-3"/>
+                        </Button>
                       </div>
                     </div>
                   </div>
-
-                  <div className="ml-auto flex flex-col">
-                    <div className="flex items-start justify-end gap-4">
-                      <Heart className="text-muted-foreground size-4 cursor-pointer hover:text-pink-500" />
-                      <Trash2
-                        className="text-muted-foreground hover:text-destructive size-4 cursor-pointer"
-                        onClick={() => handleDeleteCartItem(item.id)}
-                      />
+              )) :
+                (
+                  <div className='flex flex-col items-center justify-center p-10 text-center rounded-lg border border-dashed'>
+                    <div className='mb-6'>
+                      <ShoppingCart className='mx-auto size-32 text-gray-400 ' />
                     </div>
-                    <div className="mt-auto flex items-center gap-x-0.5">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="group/qlt-btn flex size-6 items-center justify-center rounded-full"
-                        onClick={() =>
-                          handleChangeQuantityCartItem(item.id, {
-                            quantity: { decrement: 1 },
-                          })
-                        }
-                      >
-                        <Minus className="!size-3 group-hover/qlt-btn:text-white" />
-                      </Button>
-                      <Input
-                        type="text"
-                        className="size-6 shrink-0 border-0 p-0 text-center text-base font-semibold shadow-none focus-visible:ring-0"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleChangeQuantityCartItem(item.id, {
-                            quantity: Number(e.target.value),
-                          })
-                        }
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="group/qlt-btn flex size-6 items-center justify-center rounded-full"
-                        onClick={() =>
-                          handleChangeQuantityCartItem(item.id, {
-                            quantity: { increment: 1 },
-                          })
-                        }
-                      >
-                        <Plus className="!size-3 group-hover/qlt-btn:text-white" />
-                      </Button>
+                    <div className='mb-4'>
+                      <h2 className='text-xl font-semibold text-gray-800 mb-2'>Giỏ hàng của bạn trông có vẻ hơi trống trải nhỉ!</h2>
+                      <p className='text-gray-600'>Hãy bắt đầu thêm sản phẩm đầu tiên. Nhanh chóng, dễ dàng và bạn luôn có thể tùy chỉnh sau.</p>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+            }
           </CardContent>
         </Card>
         <div className="h-max space-y-6">
@@ -230,7 +290,7 @@ export default function Page() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Tổng tiền</p>
-                <p>{currency(temporaryTotalPrice)}</p>
+                <p>{currency(temporaryTotalPrice ?? 0)}</p>
               </div>
               <Separator />
               <div className="flex justify-between">
@@ -241,13 +301,13 @@ export default function Page() {
               <div className="flex justify-between">
                 <p className="font-semibold">Cần thanh toán</p>
                 <p className="text-primary font-semibold">
-                  {currency(temporaryTotalPrice)}
+                  {currency(temporaryTotalPrice ?? 0)}
                 </p>
               </div>
             </div>
             <Button
               type="submit"
-              disabled={temporaryTotalPrice === 0}
+              disabled={temporaryTotalPrice === 0 || !cart || cart.cartItems.length === 0}
               className="w-full py-5 text-base"
             >
               Tiến hành đặt hàng
@@ -260,7 +320,7 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               <Sheet>
-                <SheetTrigger asChild>
+                <SheetTrigger asChild disabled={!cart || cart.cartItems.length === 0}>
                   <Button
                     type="button"
                     variant="ghost"

@@ -11,7 +11,7 @@ export const CartItemModel = TimestampFields.extend({
   product: ProductModel.optional(),
   cartId: z.number().int().positive(),
   cart: CartModel.optional(),
-  optionId: z.number().int().positive(),
+  optionId: z.number().int().positive().optional(),
   option: OptionModel.optional(),
   selected: z.boolean().default(true)
 })

@@ -34,35 +34,45 @@ export class PrismaCartRepository implements CartRepository {
     return {
       id: cart.id,
       userId: cart.userId,
-      cartItems: cart.cartItems.map((item) => ({
-        id: item.id,
-        quantity: item.quantity,
-        selected: item.selected,
-        option: {
-          id: item.option!.id,
-          name: item.option!.name,
-          price: item.option!.price
-        },
-        createdAt: item.createdAt,
-        product: {
-          name: item.product.name,
-          basePrice: item.product.basePrice,
-          salePrice: item.product.salePrice,
-        },
-      })).sort((itemFirst, itemSecond) =>  new Date(itemSecond.createdAt).getTime() - new Date(itemFirst.createdAt).getTime())
+      cartItems: cart.cartItems
+        .map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          selected: item.selected,
+          createdAt: item.createdAt,
+          product: {
+            name: item.product.name,
+            basePrice: item.product.basePrice,
+            salePrice: item.product.salePrice,
+          },
+          ...(item.option && {
+            option: {
+              id: item.option.id,
+              name: item.option.name,
+              price: item.option.price,
+            },
+          }),
+        }))
+        .sort(
+          (itemFirst, itemSecond) =>
+            new Date(itemSecond.createdAt).getTime() -
+            new Date(itemFirst.createdAt).getTime(),
+        ),
     };
-
-
   }
 
   async addCartItem(userId: number, body: AddCartItemReqDTO): Promise<void> {
     const cart = await this.manifestCart(userId);
     const { quantity, productId, optionId } = body;
-    const cartItem = cart.cartItems.find((item) => item.productId === productId && item.cartId === cart.id);
+
     await this.upsertCartItem(
-      { id: cartItem!.id ?? v4(), cartId: cart.id, productId, optionId },
+      optionId
+        ? {
+            cartId_productId_optionId: { cartId: cart.id, productId, optionId },
+          }
+        : { cartId_productId: { cartId: cart.id, productId } },
       { quantity: { increment: 1 } },
-      { quantity, cartId: cart.id, productId},
+      { quantity, cartId: cart.id, productId, optionId: optionId },
     );
   }
 
@@ -88,8 +98,7 @@ export class PrismaCartRepository implements CartRepository {
         data: { selected: !allSelected },
       });
     } else {
-      console.log(cartId);
-      const cartItem = await this.manifestCartItem(cartItemId, cartId);
+      const cartItem = await this.manifestCartItem({ id: cartItemId, cartId });
       await this.prismaService.cartItem.update({
         where: { id: cartItemId, cartId },
         data: { selected: !cartItem.selected },
@@ -103,7 +112,10 @@ export class PrismaCartRepository implements CartRepository {
     body: ChangeQuantityCartItemReqDTO,
   ): Promise<void> {
     const cart = await this.manifestCart(userId);
-    const cartItem = await this.manifestCartItem(cartItemId, cart.id);
+    const cartItem = await this.manifestCartItem({
+      id: cartItemId,
+      cartId: cart.id,
+    });
     const { quantity } = body;
     await this.prismaService.cartItem.update({
       where: {
@@ -149,9 +161,9 @@ export class PrismaCartRepository implements CartRepository {
     });
   }
 
-  async manifestCartItem(id: string, cartId: number) {
+  async manifestCartItem(where: Prisma.CartItemWhereUniqueInput) {
     return this.prismaService.cartItem.findUniqueOrThrow({
-      where: { id, cartId },
+      where,
     });
   }
 }

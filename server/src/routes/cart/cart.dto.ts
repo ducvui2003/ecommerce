@@ -18,7 +18,7 @@ type GetCartResDTO = Pick<CartType, 'userId' | 'id'> & {
   cartItems: Array<
     Pick<CartItemType, 'id' | 'quantity' | 'selected' | 'createdAt'> & {
       product: Pick<ProductType, 'name' | 'basePrice' | 'salePrice'>;
-      option: Pick<OptionType, 'id' | 'name' | 'price'>
+      option?: Pick<OptionType, 'id' | 'name' | 'price'>
     }
   >;
 };

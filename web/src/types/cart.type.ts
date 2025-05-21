@@ -14,7 +14,7 @@ type GetCartResType = {
       basePrice: number,
       salePrice: number,
     },
-    option: {
+    option?: {
       id: number,
       name: string,
       price: number
