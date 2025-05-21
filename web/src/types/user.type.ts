@@ -1,5 +1,6 @@
 import { PageReq } from '@/types/api.type';
 import { Role } from '@/types/auth.type';
+import { passwordSchema } from '@/types/schema/auth.schema';
 import { z } from 'zod';
 interface User {
   id: number;
@@ -82,16 +83,13 @@ const InformationFormSchema = z.object({
 
 const PasswordFormSchema = z
   .object({
-    password: z.string(),
-    newPassword: z.string(),
+    password: z.string().min(1),
+    newPassword: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine(
     (data) => {
-      if (data.password || data.confirmPassword) {
-        return data.password === data.confirmPassword;
-      }
-      return true;
+      return data.newPassword === data.confirmPassword;
     },
     {
       path: ['confirmPassword'],

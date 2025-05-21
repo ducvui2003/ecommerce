@@ -1,7 +1,11 @@
 import envConfig from '@/config/env.config';
 import http from '@/lib/http.client';
 import { ResponseApi } from '@/types/api.type';
-import { InformationFormType, UserInfoResType } from '@/types/user.type';
+import {
+  InformationFormType,
+  PasswordFormType,
+  UserInfoResType,
+} from '@/types/user.type';
 
 const userService = {
   getInfo: async (accessToken: string): Promise<UserInfoResType> => {
@@ -38,6 +42,11 @@ const userService = {
         avatar: avatarUrl,
       },
     );
+    return res.payload.data;
+  },
+
+  changePassword: async (req: PasswordFormType) => {
+    const res = await http.put<ResponseApi<void>>(`api/v1/auth/password`, req);
     return res.payload.data;
   },
 };

@@ -21,7 +21,7 @@ const items: {
   },
   {
     title: 'Bảo mật',
-    url: '/user/info',
+    url: '/user/security',
     icon: <ClientIcon icon={'material-symbols:security'} />,
   },
   {
