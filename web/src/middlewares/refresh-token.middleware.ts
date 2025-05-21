@@ -35,7 +35,13 @@ const middlewareRefreshToken: Middleware = async (
       accessToken: accessToken,
       refreshToken: refreshToken,
       expiresAt: expiresAt,
-      user: props,
+      user: {
+        id: props.id,
+        email: props.email,
+        name: props.name,
+        role: props.role,
+        avatar: props.avatar,
+      },
     };
     const response = NextResponse.next();
     setSession(newSession, response);
