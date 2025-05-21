@@ -43,7 +43,7 @@ const CartDropdown = () => {
                 {
                   data.cartItems.map((cartItem) => (
                     <>
-                      <div className='grid grid-cols-4 w-full'>
+                      <div key={cartItem.id} className='grid grid-cols-4 w-full'>
                         <Image src="/images/product.png" className='border border-muted rounded-md' width={64} height={64} alt={cartItem.product.name}/>
                         <div className="col-span-3 flex flex-col">
                           <div className="space-y-1">
@@ -73,7 +73,7 @@ const CartDropdown = () => {
                 </Button>
               </div>
             ) : (
-              <div className="text-base w-full h-24 text-center place-content-center">
+              <div key='no-data' className="text-base w-full h-24 text-center place-content-center">
                 Chưa có sản phẩm nào trong giỏ hàng
               </div>
             )
