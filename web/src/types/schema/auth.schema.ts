@@ -90,4 +90,5 @@ export {
   ForgotPasswordFormSchema,
   VerifyForgetPasswordFormSchema,
   ResetPasswordFormSchema,
+  passwordSchema,
 };

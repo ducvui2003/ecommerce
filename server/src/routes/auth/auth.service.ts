@@ -2,6 +2,7 @@ import envConfig from '@config/env.config';
 import { Inject, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 import {
+  ChangePasswordBodyDTO,
   ForgetPasswordBodyDTO,
   LoginReqDTO,
   RegisterReqDTO,
@@ -21,6 +22,7 @@ import {
 import { AuthRepository } from '@route/auth/auth.repository';
 import { RefreshResType } from '@route/auth/auth.schema';
 import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
+import { UserNotFoundException } from '@shared/exceptions/user.exception';
 import { generateOTP, isNotFoundError } from '@shared/helper.shared';
 import { SharedUserRepository } from '@shared/repositories/shared-user.repository';
 import { CacheService } from '@shared/services/cache/cache.service';
@@ -243,6 +245,26 @@ export class AuthService {
         await this.authRepository.updatePassword(email, hashing);
       },
     );
+  }
+
+  async changePassword(id: number, req: ChangePasswordBodyDTO) {
+    const user = await this.userRepository.findUnique({
+      id: id,
+    });
+    if (user) {
+      const isPasswordMatch = await this.hashingService.compare(
+        user.password,
+        req.password,
+      );
+      if (isPasswordMatch) {
+        const newHashPW = await this.hashingService.hash(req.newPassword);
+        this.authRepository.updatePassword(user.email, newHashPW);
+      } else {
+        throw PasswordIncorrectException;
+      }
+    } else {
+      throw new UserNotFoundException();
+    }
   }
 
   /**

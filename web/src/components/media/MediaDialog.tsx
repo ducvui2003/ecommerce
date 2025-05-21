@@ -57,11 +57,6 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
     size: 3,
   });
 
-  const { isFetching, data } = useGetPagingMediaQuery({
-    page: paging.page,
-    size: paging.size,
-  });
-
   const [trigger] = useLazyGetPagingMediaQuery();
 
   const loadFunc = useCallback(

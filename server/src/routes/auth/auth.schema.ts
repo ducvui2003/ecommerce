@@ -71,7 +71,7 @@ export const SendOTPBodySchema = VerificationCodeSchema.pick({
   type: true,
 }).strict();
 
-export const verifyOTPBodySchema = VerificationCodeSchema.pick({
+export const VerifyOTPBodySchema = VerificationCodeSchema.pick({
   email: true,
   code: true,
   type: true,
@@ -85,3 +85,14 @@ export const ForgetPasswordSchema = UserModel.pick({
     password: PasswordSchema,
   })
   .strict();
+
+export const ChangePasswordSchema = UserModel.pick({
+  password: true,
+})
+  .extend({
+    newPassword: PasswordSchema,
+  })
+  .refine((data) => data.password !== data.newPassword, {
+    message: 'Mật khẩu mới không được trùng với mật khẩu cũ',
+    path: ['newPassword'],
+  });

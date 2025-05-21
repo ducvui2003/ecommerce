@@ -17,7 +17,7 @@ import {
 const urlUpload = 'https://api.cloudinary.com/v1_1/yourstyle/auto/upload';
 
 const mediaService = {
-  sign: async (data: UploadSignature[]) => {
+  sign: async (data: UploadSignature[]): Promise<UploadSignatureResult> => {
     const res = await http.post<ResponseApi<UploadSignatureResult>>(
       '/api/v1/media/signature',
       data,
