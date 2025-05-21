@@ -8,6 +8,8 @@ import WishlistButton from '@/components/button/WishlistButton';
 import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
 import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
 import ProductComment from '@/app/product/detail/[id]/ProductComment';
+import ProductRelated from '@/app/product/detail/[id]/ProductRelated';
+import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
 import notFound from '@/app/not-found';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
@@ -217,10 +219,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <div className="mt-5 lg:mt-10">
         <ProductDescription description={product.description} />
       </div>
-      <div>
-        <RatingSummary />
-        <ProductComment />
-      </div>
+      <RatingSummary />
+      <ProductComment />
+      <ProductRelation categoryId={product.category.id} />
     </div>
   );
 }

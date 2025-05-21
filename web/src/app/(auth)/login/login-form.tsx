@@ -14,16 +14,18 @@ import { Input } from '@/components/ui/input';
 import { HOME_PAGE, HTTP_STATUS_CODE } from '@/constraint/variable';
 import { setAuthState, setStatus } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-store';
-import { EntityError, setAccessToken } from '@/lib/http.client';
-import { handleErrorApi } from '@/lib/utils';
+import { EntityError } from '@/lib/http.client';
+import { cn, handleErrorApi } from '@/lib/utils';
 import { LoginFormSchema, LoginFormType } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const LoginForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [isError, setIsError] = useState<boolean>(false);
   // 1. Define your form.
   const form = useForm<LoginFormType>({
     resolver: zodResolver(LoginFormSchema),
@@ -50,10 +52,10 @@ const LoginForm = () => {
             user,
           }),
         );
-        setAccessToken(accessToken ?? '');
         router.push(HOME_PAGE);
       })
       .catch((_) => {
+        setIsError(true);
         throw new EntityError({
           status: HTTP_STATUS_CODE.UNAUTHORIZED,
           payload: {
@@ -61,7 +63,11 @@ const LoginForm = () => {
             message: [
               {
                 field: 'email',
-                error: 'Tài khoản với email này chưa tồn tại',
+                error: '',
+              },
+              {
+                field: 'password',
+                error: '',
               },
             ],
           },
@@ -77,6 +83,14 @@ const LoginForm = () => {
   }
   return (
     <Form {...form}>
+      <div
+        className={cn(
+          'bg-secondary mb-2 rounded-md px-4 py-2 text-center text-red-600',
+          !isError && 'hidden',
+        )}
+      >
+        Email hoặc mật khẩu không chính xác
+      </div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormField
           control={form.control}

@@ -1,56 +1,32 @@
+'use client';
 import { cn } from '@/lib/utils';
-import {
-  BlockTypeSelect,
-  BoldItalicUnderlineToggles,
-  CodeToggle,
-  linkPlugin,
-  markdownShortcutPlugin,
-  MDXEditor,
-  MDXEditorMethods,
-  UndoRedo,
-} from '@mdxeditor/editor';
-import {
-  headingsPlugin,
-  listsPlugin,
-  quotePlugin,
-  thematicBreakPlugin,
-  toolbarPlugin,
-} from '@mdxeditor/editor';
+import 'quill/dist/quill.snow.css';
+import { useQuill } from 'react-quilljs';
 
-import '@mdxeditor/editor/style.css';
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 
-type EditorProps = { classNameContainer?: string } & React.ComponentProps<
-  typeof MDXEditor
->;
+type EditorProps = {
+  value?: string;
+  onChange?: (value: string) => void;
+  classNameContainer?: string;
+};
 
-const Editor = forwardRef<MDXEditorMethods, EditorProps>(
-  ({ classNameContainer, ...props }, ref) => {
+const Editor = forwardRef<HTMLDivElement, EditorProps>(
+  ({ value = '', onChange, classNameContainer, ...props }, ref) => {
+    const { quill, quillRef } = useQuill();
+
+    useEffect(() => {
+      if (quill) {
+        quill.clipboard.dangerouslyPasteHTML(value);
+        quill.on('text-change', () => {
+          onChange?.(quill.root.innerHTML);
+        });
+      }
+    }, [quill]);
+
     return (
       <div className={cn('overflow-y-auto', classNameContainer)}>
-        <MDXEditor
-          ref={ref}
-          contentEditableClassName="prose"
-          plugins={[
-            headingsPlugin(),
-            listsPlugin(),
-            linkPlugin(),
-            quotePlugin(),
-            thematicBreakPlugin(),
-            markdownShortcutPlugin(),
-            toolbarPlugin({
-              toolbarContents: () => (
-                <>
-                  <UndoRedo />
-                  <BoldItalicUnderlineToggles />
-                  <BlockTypeSelect />
-                  <CodeToggle />
-                </>
-              ),
-            }),
-          ]}
-          {...props}
-        />
+        <div ref={quillRef} {...props} />
       </div>
     );
   },

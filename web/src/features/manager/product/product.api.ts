@@ -6,8 +6,10 @@ import { CategoryType } from '@/types/category.type';
 import {
   CreateProductBodyType,
   CreateProductResType,
+  ProductDetailManagerResType,
   ProductManagerResType,
   SearchParams,
+  UpdateProductBodyType,
 } from '@/types/product.type';
 import { SupplierType } from '@/types/supplier.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
@@ -110,6 +112,47 @@ export const productManagerApi = createApi({
         return [{ type: 'ProductManager', id: 'LIST' }];
       },
     }),
+
+    getDetailProduct: builder.query<ProductDetailManagerResType, number>({
+      async queryFn(arg) {
+        try {
+          const data = await productManagerService.getById(arg);
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
+
+    updateProduct: builder.mutation<
+      CreateProductResType,
+      {
+        id: number;
+        payload: UpdateProductBodyType;
+      }
+    >({
+      async queryFn({ id, payload }) {
+        try {
+          const data = await productManagerService.update(id, payload);
+          return { data: data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      invalidatesTags: (_, __, { id }) => {
+        return [{ type: 'ProductManager', id: id }];
+      },
+    }),
   }),
 });
 
@@ -118,4 +161,6 @@ export const {
   useGetAllCategoryQuery,
   useGetAllSupplierQuery,
   useCreateProductMutation,
+  useGetDetailProductQuery,
+  useUpdateProductMutation,
 } = productManagerApi;

@@ -3,6 +3,8 @@ import { AppStore, makeStore } from '@/lib/store';
 import { useRef } from 'react';
 import { Provider } from 'react-redux';
 
+let store: AppStore;
+
 export default function StoreProvider({
   children,
 }: {
@@ -12,7 +14,9 @@ export default function StoreProvider({
   if (!storeRef.current) {
     // Create the store instance the first time this renders
     storeRef.current = makeStore();
+    store = storeRef.current;
   }
 
   return <Provider store={storeRef.current}>{children}</Provider>;
 }
+export { store };

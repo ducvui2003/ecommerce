@@ -1,11 +1,10 @@
+import { store } from '@/app/provider/StoreProvider';
 import envConfig from '@/config/env.config';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
 
-export let accessToken: string = '';
-
-export function setAccessToken(newToken: string) {
-  accessToken = newToken;
-}
+const getAccessToken = (): string => {
+  return store?.getState().authSlice.accessToken ?? '';
+};
 
 type CustomOptions = RequestInit & {
   baseUrl?: string | undefined;
@@ -55,8 +54,9 @@ const request = async <Response>(
   console.log(auth, accessToken);
   const baseHeaders = {
     'Content-Type': 'application/json',
-    Authorization: auth ? `Bearer ${accessToken}` : '',
+    Authorization: auth ? `Bearer ${getAccessToken()}` : '',
   };
+  console.log('accessToken', getAccessToken());
   const baseUrl =
     options?.baseUrl === undefined
       ? envConfig.NEXT_PUBLIC_SERVER_URL

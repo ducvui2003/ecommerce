@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -15,6 +16,7 @@ import { AuthType } from '@shared/constants/auth.constant';
 import { Auth } from '@shared/decorators/auth.decorator';
 import { AuthenticationGuard } from '@shared/guards/authentication.guard';
 import {
+  ChangePasswordBodyDTO,
   ForgetPasswordBodyDTO,
   LoginReqDTO,
   LogoutReqDTO,
@@ -24,6 +26,7 @@ import {
   VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthService } from '@route/auth/auth.service';
+import { ActiveUser } from '@shared/decorators/active-user.decorator';
 
 @Controller('/api/v1/auth')
 export class AuthController {
@@ -81,5 +84,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   forgotPassword(@Body() body: ForgetPasswordBodyDTO) {
     return this.authService.forgotPassword(body);
+  }
+
+  @Put('/password')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthenticationGuard)
+  @Auth([AuthType.Bearer])
+  changePassword(
+    @ActiveUser('id') id: number,
+    @Body() body: ChangePasswordBodyDTO,
+  ) {
+    console.log('id', id);
+    return this.authService.changePassword(id, body);
   }
 }

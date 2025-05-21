@@ -59,8 +59,14 @@ const VietNamDong = new Intl.NumberFormat('vi-VN', {
 });
 
 const currency = (currency: number): string => {
-  console.log(currency);
+  if (isNaN(currency)) return '';
   return VietNamDong.format(currency);
+};
+
+const currencyFromString = (currency: string) => {
+  const num = parseFloat(currency.replace(/,/g, ''));
+  if (isNaN(num)) return '';
+  return VietNamDong.format(num);
 };
 
 const appendIfExist = (params: URLSearchParams, key: string, value: string) => {
@@ -79,13 +85,19 @@ type AnyObject = { [key: string]: any };
 
 const toQueryString = (obj: AnyObject) => {
   return Object.entries(obj)
-    .filter(
-      ([, value]) => value !== undefined && value !== null && value !== '',
-    )
-    .map(
-      ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
-    )
+    .flatMap(([key, value]) => {
+      if (value === undefined || value === null || value === '') {
+        return []; // skip empty values
+      }
+      if (Array.isArray(value)) {
+        // generate multiple key=value pairs for array items
+        return value.map(
+          (v) => `${encodeURIComponent(key)}=${encodeURIComponent(String(v))}`,
+        );
+      }
+      // normal single value
+      return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+    })
     .join('&');
 };
 
@@ -133,4 +145,5 @@ export {
   normalizePath,
   uuid,
   setKey,
+  currencyFromString,
 };

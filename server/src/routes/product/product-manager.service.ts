@@ -8,6 +8,9 @@ import {
   ProductDetailManagerResType,
   ProductManagerResSchema,
   ProductManagerResType,
+  UpdateProductBodyType,
+  UpdateProductResSchema,
+  UpdateProductResType,
 } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
@@ -46,7 +49,7 @@ export class ProductManagerService {
         return ProductManagerResSchema.parse({
           ...item,
           resource: this.fileService.getUrl(
-            item.productResource[0].resource.publicId,
+            item.productResource?.[0]?.resource.publicId,
           ),
           supplier: item.supplier.name,
           category: item.category.name,
@@ -62,17 +65,19 @@ export class ProductManagerService {
       const temp = await this.getOptionDetail(product);
       return ProductDetailManagerResSchema.parse({
         ...product,
-        media: product.productResource.map(({ resource }) => {
+        resources: product.productResource.map(({ resource }) => {
           return {
             id: resource.id,
+            publicId: resource.publicId,
             url: this.fileService.getUrl(resource.publicId),
           };
         }),
         options: product.option?.map((option, index) => {
           return {
             ...option,
-            media: {
+            resource: {
               id: temp?.[index].mediaId,
+              publicId: temp?.[index].publicId,
               url:
                 temp?.[index].publicId &&
                 this.fileService.getUrl(temp[index].publicId),
@@ -86,6 +91,14 @@ export class ProductManagerService {
       }
       throw error;
     }
+  }
+
+  async updateProduct(
+    id: number,
+    product: UpdateProductBodyType,
+  ): Promise<UpdateProductResType> {
+    const data = await this.productRepository.update(id, product);
+    return UpdateProductResSchema.parse(data);
   }
 
   private async getOptionDetail(product: ProductType): Promise<

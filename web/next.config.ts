@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next';
-
+import bundleAnalyzer from '@next/bundle-analyzer';
 const nextConfig: NextConfig = {
   logging: {
     fetches: {
@@ -7,14 +7,13 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
-    ],
+    domains: ['res.cloudinary.com'],
   },
   output: 'standalone',
 };
 
-export default nextConfig;
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default withBundleAnalyzer(nextConfig);

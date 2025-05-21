@@ -151,9 +151,9 @@ const ListAddress = ({ data }: ListAddressProps) => {
       }>
         className="gap-5"
         data={data}
-        render={(item) => {
+        render={(item, index) => {
           return (
-            <Card className="bg-secondary">
+            <Card className="bg-secondary" key={index}>
               <CardContent className="grid grid-cols-2 grid-rows-2 gap-2 p-3">
                 <div>{item.province}</div>
                 <div>{item.district}</div>

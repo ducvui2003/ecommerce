@@ -1,35 +1,18 @@
-'use client';
-import SessionRestoreProvider from '@/app/provider/SessionRestoreProvider';
-import StoreProvider from '@/app/provider/StoreProvinder';
+import ServerProvider from '@/app/provider/ServerProvider';
+import StoreProvider from '@/app/provider/StoreProvider';
 import { Toaster } from '@/components/ui/sonner';
 
-import { LOCAL_STORAGE } from '@/constraint/variable';
-import React, { useEffect } from 'react';
-import { toast } from 'sonner';
+import React from 'react';
 
-type ProvidersProps = {
-  accessToken?: string;
-  children: React.ReactNode;
-};
-
-const Providers = ({ children, accessToken }: ProvidersProps) => {
-  useEffect(() => {
-    const message = localStorage.getItem(LOCAL_STORAGE.LOGOUT);
-    if (message) {
-      toast.success('Đăng xuất thành công', {
-        duration: 2000,
-      });
-      localStorage.removeItem(LOCAL_STORAGE.LOGOUT);
-    }
-  }, []);
+const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
-      <SessionRestoreProvider accessToken={accessToken}>
+      <ServerProvider>
         <main className="relative">
           <Toaster position="bottom-right" richColors />
           {children}
         </main>
-      </SessionRestoreProvider>
+      </ServerProvider>
     </StoreProvider>
   );
 };
