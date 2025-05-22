@@ -275,7 +275,6 @@ model Cart {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
   @@map("carts")
 }
@@ -284,7 +283,7 @@ model CartItem {
   id        String    @id @default(uuid())
   productId Int       @map("product_id")
   product   Product   @relation(fields: [productId], references: [id])
-  selected  Boolean   @map("selected")
+  selected  Boolean   @default(true) @map("selected")
   quantity  Int       @default(1)
   optionId  Int?      @map("option_id")
   option    Option?   @relation(fields: [optionId], references: [id])
@@ -292,8 +291,9 @@ model CartItem {
   cart      Cart      @relation(fields: [cartId], references: [id], name: "CartToCartItem")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
+  @@unique([cartId, productId, optionId])
+  @@unique([cartId, productId])
   @@map("cart_items")
 }
 

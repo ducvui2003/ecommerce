@@ -1,5 +1,4 @@
 'use client';
-import Link from '@/components/Link';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,6 +9,7 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
+import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 
 type NavigationLinkType = {
@@ -20,22 +20,29 @@ type NavigationLinkType = {
 
 type NavigationType = {
   title: string;
-  href: string;
+  href?: string;
   child?: NavigationLinkType[];
 };
 export const components: NavigationType[] = [
   {
-    title: 'Sản phẩm',
-    href: '/product',
+    title: 'Trang chủ',
+    href: '/',
   },
-
+  {
+    title: 'Danh mục',
+    child: [],
+  },
   {
     title: 'Về chúng tôi',
-    href: '/about',
+    href: '/about-us',
+  },
+  {
+    title: 'Liên hệ',
+    href: '/contact-us',
   },
   {
     title: 'Tư vấn',
-    href: '/',
+    href: '/consultant',
   },
 ];
 
@@ -46,22 +53,40 @@ type NavigationProps = {
 const Navigation = ({ components }: NavigationProps) => {
   const triggerRef = useRef<HTMLButtonElement[]>([]);
   const viewPortRef = useRef<HTMLDivElement>(null);
+
+  components[1].child = [
+    {
+      title: 'aaa',
+      href: 'aaa',
+    },
+    {
+      title: 'bbb',
+      href: 'bbb',
+    },
+    {
+      title: 'ccc',
+      href: 'ccc',
+    },
+    {
+      title: 'ddd',
+      href: 'ddd',
+    },
+  ];
+
   // useEffect(() => {
   //   console.log('viewPortRef', viewPortRef.current);
   //   console.log('navRefs', triggerRef.current);
   // }, [triggerRef.current, viewPortRef.current]);
   return (
-    <NavigationMenu className="mx-auto">
-      <NavigationMenuList className="gap-10">
+    <NavigationMenu>
+      <NavigationMenuList className="gap-x-6 font-medium">
         {components.map((component, index) => {
           return (
             <NavigationMenuItem key={uuid()}>
               {!component.child ? (
-                <Link href={component.href} legacyBehavior passHref>
+                <Link href={component.href!} legacyBehavior passHref>
                   <NavigationMenuLink
-                    className={
-                      (navigationMenuTriggerStyle(), 'px-4 py-2 text-xl')
-                    }
+                    className={(navigationMenuTriggerStyle(),'text-lg hover:text-primary mx-2')}
                   >
                     {component.title}
                   </NavigationMenuLink>
@@ -69,7 +94,7 @@ const Navigation = ({ components }: NavigationProps) => {
               ) : (
                 <React.Fragment key={uuid()}>
                   <NavigationMenuTrigger
-                    className="text-xl"
+                    className="text-lg data-[state=open]:hover:text-primary data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent focus:bg-transparent hover:bg-transparent p-0"
                     ref={(ref) => {
                       if (ref) {
                         triggerRef.current[index] = ref;
@@ -79,19 +104,19 @@ const Navigation = ({ components }: NavigationProps) => {
                     {component.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    {component.child.map((item) => {
-                      return (
-                        <Link href={item.href} legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={
-                              (navigationMenuTriggerStyle(), 'text-xl')
-                            }
-                          >
-                            {item.title}
-                          </NavigationMenuLink>
-                        </Link>
-                      );
-                    })}
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                      {component.child.map((item, index) => {
+                        return (
+                          <li key={index}>
+                            <Link href={item.href} legacyBehavior passHref>
+                              <NavigationMenuLink className={(navigationMenuTriggerStyle(), 'text-base hover:text-primary mx-2')}>
+                                {item.title}
+                              </NavigationMenuLink>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </NavigationMenuContent>
                 </React.Fragment>
               )}

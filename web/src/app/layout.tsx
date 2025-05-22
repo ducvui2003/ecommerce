@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 import { Inter } from 'next/font/google';
+import getServerSession from '@/components/auth/getServerSession';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -12,6 +13,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'An Nhien',
   description: 'Oil',
+  icons: {
+    icon: '/favicon/favicon.ico',
+    shortcut: '/favicon/favicon.ico',
+    apple: '/favicon/apple-touch-icon.png',
+  },
 };
 
 export default async function RootLayout({
@@ -19,10 +25,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+    <html lang="en" className={inter.className}>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

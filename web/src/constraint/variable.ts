@@ -1,3 +1,5 @@
+import image from '/public/images/product.png';
+
 export const HOME_PAGE: string = '/';
 export const LOGIN_PAGE: string = '/login';
 export const HTTP_STATUS_CODE = {
@@ -12,3 +14,4 @@ export const LOCAL_STORAGE = {
 } as const;
 
 export const ALT = 'An Nhiem';
+export const DEFAULT_IMAGE = image;

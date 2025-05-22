@@ -1,5 +1,6 @@
 'use client';
 import ClientIcon from '@/components/ClientIcon';
+import Media from '@/components/media/Media';
 import MediaButton from '@/components/media/MediaButton';
 import ProductCategoryForm from '@/components/product/ProductCategoryForm';
 import {
@@ -10,7 +11,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { CreateProductBodyType } from '@/types/product.type';
+import { currency } from '@/lib/utils';
+import { MediaType } from '@/types/media.type';
+import { BaseProductFormType } from '@/types/product.type';
 import { useFormContext } from 'react-hook-form';
 type OptionItemFormProps = {
   index: number;
@@ -18,14 +21,32 @@ type OptionItemFormProps = {
 };
 
 const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
-  const { control, setValue } = useFormContext<CreateProductBodyType>();
+  const { control, setValue, getValues } =
+    useFormContext<BaseProductFormType>();
 
+  const initValueMedia = (): MediaType | null => {
+    const data = getValues(`options.${index}.resource`);
+    if (data) {
+      return {
+        id: data.id.toString(),
+        publicId: data.publicId,
+        url: data.url,
+      };
+    }
+    return null;
+  };
   return (
     <div className="border-accent flex items-center gap-5 rounded-md border-2 p-2">
-      <MediaButton
-        previewImage
+      <Media
+        multiple={false}
+        previewMode
+        initialValue={initValueMedia() ?? undefined}
         expose={(resources) =>
-          setValue(`options.${index}.resourceId`, Number(resources[0].id))
+          setValue(`options.${index}.resource`, {
+            id: parseInt(resources[0].id),
+            publicId: resources[0].publicId,
+            url: resources[0].url ?? '',
+          })
         }
       />
       <div className="grid flex-1 grid-cols-3 gap-2">
@@ -57,7 +78,10 @@ const OptionItemForm = ({ index, onRemove }: OptionItemFormProps) => {
                   {...field}
                 />
               </FormControl>
-              <span className="h-[25px]">
+              <span className="item-center flex h-[25px] justify-between">
+                <span className="text-xs text-green-400">
+                  {currency(field.value)}
+                </span>
                 <FormMessage />
               </span>
             </FormItem>

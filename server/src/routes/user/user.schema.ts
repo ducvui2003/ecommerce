@@ -12,7 +12,8 @@ const UserInfoBodySchema = UserModel.pick({
 }).extend({
   name: z.string().optional(),
   phone: z.string().optional(),
-  dob: z.date().optional(),
+  dob: z.coerce.date().optional(),
+  avatar: z.string().optional(),
 });
 
 type GetUserResType = Partial<
@@ -68,6 +69,7 @@ const GetUserResSchema = UserModel.pick({
   id: true,
   name: true,
   email: true,
+  // dob: true,
   status: true,
   createdAt: true,
 }).extend({

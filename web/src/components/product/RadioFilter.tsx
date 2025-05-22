@@ -62,7 +62,7 @@ const RadioFilter = ({ defaultValue, onChecked }: RadioFilterProps) => {
       {priceRange.map((item) => {
         const id = uuid();
         return (
-          <div className="flex items-center space-x-2">
+          <div key={id} className="flex items-center space-x-2">
             <RadioGroupItem value={item.from + '-' + item.to} id={id} />
             <Label htmlFor={id}>
               {`Giá từ ${currency(item.from)} ${item.to && `tới ${currency(item.to)}`}`}

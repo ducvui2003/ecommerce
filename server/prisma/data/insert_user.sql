@@ -1,7 +1,10 @@
 INSERT INTO public.users (
   id, email, name, password, phone, avatar, status, dob, role_id, created_at, updated_at, deleted_at
 )
-VALUES (2, 'user2@example.com', 'John Doe', 'fake_password_hash', '1234567890', NULL, 'ACTIVE', '1995-06-15', 2, now(), NULL, NULL),
+VALUES 
+
+(1,'ducvui2003@gmail.com',	'$argon2id$v=19$m=65536,t=3,p=4$RGUnK8MzXKquPL0ADTNQCg$1pUa7Rx9w67LZvpzkvbUd9L8IuELTgJ1BzvxN7F6iDM'		,	'ACTIVE'	'2025-05-03 06:54:32.751')
+(2, 'user2@example.com', 'John Doe', 'fake_password_hash', '1234567890', NULL, 'ACTIVE', '1995-06-15', 2, now(), NULL, NULL),
 (3, 'user3@example.com', 'Jane Smith', 'fake_password_hash', '1234567891', NULL, 'INACTIVE', '1990-09-22', 2, now(), NULL, NULL),
 (4, 'user4@example.com', 'Alice Johnson', 'fake_password_hash', '1234567892', NULL, 'BLOCKED', '1988-04-10', 2, now(), NULL, NULL),
 (5, 'user5@example.com', 'Bob Brown', 'fake_password_hash', '1234567893', NULL, 'ACTIVE', '1992-01-03', 2, now(), NULL, NULL),

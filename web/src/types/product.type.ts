@@ -8,6 +8,9 @@ type ProductSearchParams = {
   volume?: string;
   origin?: string;
   fragrance?: string;
+  categoryId?: number[] | number;
+  supplierId?: number[] | number;
+  name?: string;
 };
 
 type ProductCardType = {
@@ -39,6 +42,7 @@ type ProductDetailRespType = {
   basePrice: number;
   salePrice: number;
   category: {
+    id: number;
     name: string;
   };
   supplier: {
@@ -74,6 +78,34 @@ const CreateOptionBodySchema = z.object({
   stock: z.coerce.number(),
 });
 
+const BaseResourceForm = z.object({
+  id: z.number(),
+  publicId: z.string(),
+  url: z.string(),
+});
+
+const BaseOptionForm = z.object({
+  id: z.number().nullable().default(null),
+  name: string,
+  price: z.coerce.number().min(1, 'Price must be >= 0'),
+  resource: BaseResourceForm.optional(),
+  stock: z.coerce.number(),
+});
+
+const BaseProductFormSchema = z.object({
+  name: string,
+  description: z.string(),
+  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
+  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
+  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
+  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  resources: z.array(BaseResourceForm).optional(),
+  isDeleted: z.boolean().optional().default(false),
+  options: z.array(BaseOptionForm).optional(),
+});
+
+type BaseProductFormType = z.infer<typeof BaseProductFormSchema>;
+
 const CreateProductBodySchema = z.object({
   name: string,
   description: z.string(),
@@ -83,12 +115,24 @@ const CreateProductBodySchema = z.object({
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
-  options: z.array(CreateOptionBodySchema),
+  options: z.array(CreateOptionBodySchema).optional(),
+});
+
+const UpdateProductBodySchema = z.object({
+  name: string,
+  description: z.string(),
+  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
+  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
+  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
+  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  resourceIds: z.array(z.number()).optional(),
+  isDeleted: z.boolean().optional().default(false),
+  options: z.array(BaseOptionForm).optional(),
 });
 
 type CreateOptionBodyType = z.infer<typeof CreateOptionBodySchema>;
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
-
+type UpdateProductBodyType = z.infer<typeof UpdateProductBodySchema>;
 type ProductManagerResType = {
   id: number;
   name: string;
@@ -98,6 +142,36 @@ type ProductManagerResType = {
   category: number;
   supplier: number;
   resource: string;
+};
+
+type ResourceResSchema = {
+  id: number;
+  publicId: string;
+  url: string;
+};
+
+type ProductDetailManagerResType = {
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  salePrice: number;
+
+  categoryId: number;
+  supplierId: number;
+
+  resource: ResourceResSchema[];
+
+  options: {
+    id: number;
+    name: string;
+    price: number;
+    stock: number;
+    resource: ResourceResSchema;
+  }[];
+
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 type CreateProductResType = {
@@ -119,5 +193,13 @@ export type {
   CreateOptionBodyType,
   CreateProductResType,
   ProductDetailRespType,
+  ProductDetailManagerResType,
+  BaseProductFormType,
+  UpdateProductBodyType,
 };
-export { CreateProductBodySchema, CreateOptionBodySchema };
+export {
+  CreateProductBodySchema,
+  CreateOptionBodySchema,
+  BaseProductFormSchema,
+  UpdateProductBodySchema,
+};
