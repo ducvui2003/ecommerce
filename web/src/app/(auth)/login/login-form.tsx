@@ -63,11 +63,7 @@ const LoginForm = () => {
             message: [
               {
                 field: 'email',
-                error: '',
-              },
-              {
-                field: 'password',
-                error: '',
+                error: 'Tài khoản với email này chưa tồn tại',
               },
             ],
           },

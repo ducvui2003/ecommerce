@@ -1,17 +1,14 @@
+import { ProductDetailRespType } from '@/types/product.type';
+
 type ProductOptionProps = {
-  options: {
-    id: number;
-    name: string;
-    price: number;
-    resource: string;
-  }[];
+  options: ProductDetailRespType['option'];
 };
 export default function ProductOption({ options }: ProductOptionProps) {
   return (
     <form>
       <div>
         <h3 className="text-sm font-medium text-gray-900">Dung tích</h3>
-        <fieldset className="mt-4">
+        <fieldset className="mt-2">
           <div className="flex items-center gap-x-3">
             {options.map((option, idx) => (
               <label
