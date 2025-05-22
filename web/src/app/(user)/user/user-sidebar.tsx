@@ -26,7 +26,7 @@ const items: {
   },
   {
     title: 'Đơn hàng',
-    url: '/user/info',
+    url: '/user/order',
     icon: <ClientIcon icon={'material-symbols:box-outline'} />,
   },
 ];
