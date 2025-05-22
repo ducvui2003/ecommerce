@@ -6,6 +6,8 @@ import { mediaApi } from '@/features/media/media.api';
 import mediaReducer from '@/features/media/media.slice';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
+import { cartApi } from '@/features/cart/cart.api';
+import { promotionApi } from '@/features/promotion/promotion.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -15,15 +17,18 @@ export const makeStore = () => {
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
-
       [productManagerApi.reducerPath]: productManagerApi.reducer,
+      [cartApi.reducerPath]: cartApi.reducer,
+      [promotionApi.reducerPath]: promotionApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
         .concat(addressApi.middleware)
         .concat(mediaApi.middleware)
         .concat(userApi.middleware)
-        .concat(productManagerApi.middleware);
+        .concat(productManagerApi.middleware)
+        .concat(cartApi.middleware)
+        .concat(promotionApi.middleware);
     },
   });
 
