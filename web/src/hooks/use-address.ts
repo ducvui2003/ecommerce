@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import envConfig from '@/config/env.config';
 
 type LocationItem = {
   code: string
@@ -12,7 +11,7 @@ export function useAddress() {
   const [wards, setWards] = useState<LocationItem[]>([])
 
   useEffect(() => {
-    fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/address/province`)
+    fetch(`https://open.oapi.vn/location/provinces`)
     .then(res => res.json())
     .then(resData => {
       const data = resData.data.map((item: any) => ({
@@ -25,7 +24,8 @@ export function useAddress() {
   }, [])
 
   const fetchDistricts = async (provinceCode: string) => {
-    const res = await fetch(`/api/districts?provinceCode=${provinceCode}`)
+    let provinceCodeNum = Number(provinceCode)
+    const res = await fetch(`https://open.oapi.vn/location/districts/${provinceCodeNum}`)
     const data = await res.json()
     setDistricts(data)
     setWards([])
