@@ -21,6 +21,7 @@ import { ProductModule } from './routes/product/product.module';
 import { PaymentModule } from './routes/payment/payment.module';
 import { CategoryModule } from './routes/category/category.module';
 import { SupplierModule } from './routes/supplier/supplier.module';
+import { OrderModule } from './routes/order/order.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { SupplierModule } from './routes/supplier/supplier.module';
     PaymentModule,
     CategoryModule,
     SupplierModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [
