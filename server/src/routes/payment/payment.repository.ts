@@ -1,43 +1,53 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { WebhookPaymentBodyType } from '@route/payment/payment.schema';
+import { Injectable } from '@nestjs/common';
+import {
+  UrlIPNVnPayType,
+  WebhookPaymentBodyType,
+} from '@route/payment/payment.schema';
 import { PREFIX_PAYMENT_CODE } from '@shared/constants/payment.constant';
+import {
+  PaymentTransactionType,
+  SePaymentTransactionModel,
+} from '@shared/models/payment-transaction.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface PaymentRepository {
-  receiver: (body: WebhookPaymentBodyType) => Promise<void>;
+  handleWebhookSepay: (body: WebhookPaymentBodyType) => Promise<void>;
 }
 
 @Injectable()
 export class PrismaPaymentRepository implements PaymentRepository {
   constructor(private readonly prismaService: PrismaService) {}
-  async receiver(body: WebhookPaymentBodyType): Promise<void> {
+  async handleWebhookSepay(body: WebhookPaymentBodyType): Promise<void> {
     // 1. Create payment transaction
-    let amountIn = 0;
-    let amountOut = 0;
-
-    if (body.transferType === 'out') {
-      amountOut = Number(body.transferAmount);
-    } else {
-      amountIn = Number(body.transferAmount);
-    }
-    await this.prismaService.paymentTransaction.create({
-      data: {
-        gateway: body.gateway,
-        transactionDate: body.transactionDate,
-        accountNumber: body.accountNumber,
-        code: body.code,
-        transactionContent: body.content,
-        amountIn,
-        amountOut,
-        accumulated: Number(body.accumulated),
-        subAccount: body.subAccount,
-        referenceNumber: body.referenceCode,
-        body: body.description,
-      },
-    });
     const paymentId = body.code
       ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
       : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
+
+    let amount;
+
+    if (body.transferType === 'out') {
+      amount = -1 * Number(body.transferAmount);
+    } else {
+      amount = Number(body.transferAmount);
+    }
+
+    const providerPaymentId = body.id.toString();
+
+    const payload = SePaymentTransactionModel.parse(body);
+
+    const paymentTransaction: PaymentTransactionType =
+      await this.prismaService.paymentTransaction.create({
+        data: {
+          paymentId: paymentId,
+          provider: 'SEPAY',
+          providerPaymentId: providerPaymentId,
+          payload: payload,
+          amount: amount,
+        },
+      });
+
+    console.log(paymentTransaction);
+
     // if (isNaN(paymentId)) {
     //   throw new BadRequestException('Cannot get payment id from content');
     // }
@@ -48,4 +58,6 @@ export class PrismaPaymentRepository implements PaymentRepository {
 
     // 4. Update status in payment and order
   }
+
+  async handleUrlIPNVnPay(data: UrlIPNVnPayType) {}
 }

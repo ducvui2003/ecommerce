@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PaymentRepository } from '@route/payment/payment.repository';
-import { WebhookPaymentBodyType } from '@route/payment/payment.schema';
+import {
+  UrlIPNVnPayType,
+  WebhookPaymentBodyType,
+} from '@route/payment/payment.schema';
 
 @Injectable()
 export class PaymentService {
@@ -9,7 +12,12 @@ export class PaymentService {
     private readonly paymentRepository: PaymentRepository,
   ) {}
 
-  receiver(body: WebhookPaymentBodyType) {
-    this.paymentRepository.receiver(body);
+  handleWebhookSepay(body: WebhookPaymentBodyType) {
+    this.paymentRepository.handleWebhookSepay(body);
+  }
+
+  handleUrlIPNVnPay(body: UrlIPNVnPayType) {
+    if (body.responseCode) {
+    }
   }
 }

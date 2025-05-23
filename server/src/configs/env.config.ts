@@ -37,6 +37,12 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string(),
 
   PAYMENT_API_KEY: z.string(),
+
+  VNPAY_PAY_URL: z.string(),
+  VNPAY_PAY_RETURN_URL: z.string(),
+  VNPAY_TNN_CODE: z.string(),
+  VNPAY_HASH_SECRET: z.string(),
+  VNPAY_API_URL: z.string(),
 });
 
 const configServer = envSchema.safeParse(process.env);
