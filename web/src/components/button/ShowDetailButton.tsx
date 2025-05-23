@@ -1,8 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import ClientIcon from '../ClientIcon';
 
 interface ShowDetailButtonProps {
   productId: number;
@@ -20,7 +19,7 @@ export default function ShowDetailButton({ productId }: ShowDetailButtonProps) {
       onClick={handleClick}
       className="text-white px-4 py-2 rounded bg-[#FFAB66D1] disabled:opacity-50"
     >
-      <FontAwesomeIcon icon={faCircleInfo} className="mr-2" />
+      <ClientIcon icon={"fa-solid:eye"} className="mr-2" />
       Xem chi tiết
     </button>
   );
