@@ -16,7 +16,7 @@ import {
   ProductResType,
 } from '@route/product/product.schema';
 import { ProductType } from '@shared/models/product.model';
-import { SharedResourceRepository } from '@shared/repositories/shared-repository.repository';
+import { SharedResourceRepository } from '@shared/repositories/shared-resource.repository';
 
 @Injectable()
 export class ProductServiceImpl implements ProductService {

@@ -43,6 +43,9 @@ const envSchema = z.object({
   VNPAY_TNN_CODE: z.string(),
   VNPAY_HASH_SECRET: z.string(),
   VNPAY_API_URL: z.string(),
+
+  SEPAY_BANK: z.string(),
+  SEPAY_ACCOUNT_NUMBER: z.string(),
 });
 
 const configServer = envSchema.safeParse(process.env);

@@ -1,11 +1,6 @@
 import { NumberToDecimalSchema } from '@shared/models/base.model';
 import { z } from 'zod';
 
-const PaymentProvider = {
-  SEPAY: 'SEPAY',
-  VNPAY: 'VNPAY',
-} as const;
-
 const SePaymentTransactionModel = z.object({
   id: z.number(),
   gateway: z.string(),
@@ -41,7 +36,6 @@ type VnPayPaymentTransactionType = z.infer<typeof VnPayPaymentTransactionModel>;
 const PaymentTransactionModel = z.object({
   id: z.number(),
   paymentId: z.number().nullable(),
-  provider: z.enum(['SEPAY', 'VNPAY']),
   providerPaymentId: z.string(),
   amount: NumberToDecimalSchema,
   payload: z.union([SePaymentTransactionModel, VnPayPaymentTransactionModel]),

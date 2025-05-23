@@ -1,14 +1,19 @@
 import envConfig from '@config/env.config';
 import { Injectable } from '@nestjs/common';
+import { VNPAY } from '@shared/constants/payment.constant';
+import { PaymentService } from '@shared/services/payment/payment.service';
+import crypto from 'crypto';
 import { format } from 'date-fns';
 import qs from 'qs';
-import crypto from 'crypto';
-import { VNPAY } from '@shared/constants/payment.constant';
 
 @Injectable()
-export class PaymentService {
-  constructor() {}
-  generateUrPayment(ipArr: string, paymentRef: string, price: number) {
+export class VnpayPaymentService extends PaymentService {
+  private ipArr: string;
+  constructor(paymentRef: string, price: number, ipArr: string) {
+    super(paymentRef, price, 'VNPAY');
+    this.ipArr = ipArr;
+  }
+  generatePaymentUrl(): string {
     const tmnCode = envConfig.VNPAY_TNN_CODE;
     const secretKey = envConfig.VNPAY_HASH_SECRET;
     let vnpUrl = envConfig.VNPAY_PAY_URL;
@@ -18,7 +23,7 @@ export class PaymentService {
 
     const createDate = format(now, 'yyyyMMddHHmmss');
 
-    const orderInfo = 'Thanh toán đơn hàng:' + paymentRef;
+    const orderInfo = 'Thanh toán đơn hàng:' + this.paymentRef;
     const orderType = VNPAY.ORDER_TYPE;
 
     const currCode = VNPAY.CURR_CODE;
@@ -28,12 +33,12 @@ export class PaymentService {
     vnp_Params['vnp_TmnCode'] = tmnCode;
     vnp_Params['vnp_Locale'] = VNPAY.LOCALE;
     vnp_Params['vnp_CurrCode'] = currCode;
-    vnp_Params['vnp_TxnRef'] = paymentRef;
+    vnp_Params['vnp_TxnRef'] = this.paymentRef;
     vnp_Params['vnp_OrderInfo'] = orderInfo;
     vnp_Params['vnp_OrderType'] = orderType.toString();
-    vnp_Params['vnp_Amount'] = (price * 100).toString();
+    vnp_Params['vnp_Amount'] = (this.price * 100).toString();
     vnp_Params['vnp_ReturnUrl'] = returnUrl;
-    vnp_Params['vnp_IpAddr'] = ipArr;
+    vnp_Params['vnp_IpAddr'] = this.ipArr;
     vnp_Params['vnp_CreateDate'] = createDate;
 
     // Sort params
