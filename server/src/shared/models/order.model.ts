@@ -1,7 +1,9 @@
-import { z } from 'zod'
+import { z } from 'zod';
 import { PaymentModel } from '@shared/models/payment.model';
 import { ProductModel } from '@shared/models/product.model';
 import { ReceiverModel } from '@shared/models/receiver.model';
+import { NumberToDecimalSchema } from '@shared/models/base.model';
+import { OrderItemModel } from '@shared/models/order-item.model';
 
 export const OrderStatusEnum = z.enum([
   'PENDING',
@@ -9,30 +11,23 @@ export const OrderStatusEnum = z.enum([
   'DELIVERING',
   'DELIVERED',
   'CANCELED',
-  'COMPLETE'
-])
-export type OrderStatus = z.infer<typeof OrderStatusEnum>
-
-export const OrderItemModel = z.object({
-  id: z.number(),
-  quantity: z.number().int(),
-  price: z.number(),
-  product: ProductModel,
-})
+  'COMPLETE',
+]);
+export type OrderStatus = z.infer<typeof OrderStatusEnum>;
 
 export const OrderModel = z.object({
   id: z.number(),
-  totalAmount: z.number(),
+  totalAmount: NumberToDecimalSchema,
+  feeShipping: NumberToDecimalSchema,
   status: OrderStatusEnum,
   receiver: ReceiverModel,
 
   userId: z.number(),
-  orderItem: z.array(OrderItemModel),
+  orderItem: z.array(OrderItemModel).optional(),
 
   createdAt: z.coerce.date(),
 
-  paymentId: z.number().nullable().optional(),
-  payment: PaymentModel.nullish().optional(),
-})
+  payment: PaymentModel.optional(),
+});
 
-export type Order = z.infer<typeof OrderModel>
+export type OrderType = z.infer<typeof OrderModel>;

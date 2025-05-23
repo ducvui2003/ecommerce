@@ -1,24 +1,28 @@
-import { NumberToDecimalSchema } from '@shared/models/base.model';
-import { OrderModel } from '@shared/models/order.model';
-export class CreateOrderDto {
-  userId: number;
+import { PaymentProvider } from '@prisma/client';
+import { z } from 'zod';
+
+export const ReceiverSchema = z.object({
+  name: z.string().min(1),
+  phone: z.string().min(1),
+  email: z.string().email(),
+  province: z.string().min(1),
+  district: z.string().min(1),
+  ward: z.string().min(1),
+  detail: z.string().min(1),
+});
+
+export const CreateOrderSchema = z.object({
+  feeShipping: z.coerce.number().nonnegative(),
+  receiver: ReceiverSchema,
+  orderItemIds: z.array(z.string()).min(1),
+  method: z.enum([PaymentProvider.SEPAY, PaymentProvider.VNPAY]),
+});
+
+type CreateOrderResType = {
+  paymentId: number;
   totalAmount: number;
-  feeShipping: number;
-  receiver: {
-    name: string;
-    phone: string;
-    email: string;
-    province: string;
-    district: string;
-    ward: string;
-    detail: string;
-  };
-  orderItem: Array<{
-    productId: number;
-    quantity: number;
-    price: number;
-  }>;
-}
-
-
-export const CreateOrderItemBodySchema = OrderModel;
+  url: string;
+  type: 'QR_CODE' | 'REDIRECT';
+};
+type CreateOrderType = z.infer<typeof CreateOrderSchema>;
+export type { CreateOrderResType, CreateOrderType };
