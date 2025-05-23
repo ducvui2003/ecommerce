@@ -5,7 +5,7 @@ export const WebhookPaymentBodySchema = SePaymentTransactionModel;
 
 export type WebhookPaymentBodyType = z.infer<typeof WebhookPaymentBodySchema>;
 
-export const UrlIPNVnPaySchema = z.object({
+export const UrlIPNVnPayBodySchema = z.object({
   responseCode: z.coerce.string(),
   txnRef: z.string(),
   tnnCode: z.string(),
@@ -32,4 +32,4 @@ export const UrlIPNVnPaySchema = z.object({
   secureHash: z.string(),
 });
 
-export type UrlIPNVnPayType = z.infer<typeof UrlIPNVnPaySchema>;
+export type UrlIPNVnPayType = z.infer<typeof UrlIPNVnPayBodySchema>;
