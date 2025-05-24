@@ -6,10 +6,10 @@ export const PaymentStatus = {
 
 // Mã danh mục hàng hóa
 export const VNPAY: Readonly<Record<string, string>> = {
-  ORDER_TYPE: '21000',
+  ORDER_TYPE: 'other',
   CURR_CODE: 'VND',
   COMMAND: 'pay',
-  VERSION: '2.1.1',
+  VERSION: '2.1.0',
   LOCALE: 'vn',
 };
 

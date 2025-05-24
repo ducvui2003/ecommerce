@@ -32,6 +32,22 @@ export const cartApi = createApi({
       },
       providesTags: ['Cart'],
     }),
+    getCartSelected: builder.query<GetCartResType, void>({
+      async queryFn() {
+        try {
+          const data = await cartService.getCartSelected();
+          return { data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      providesTags: ['Cart'],
+    }),
 
     addCartItem: builder.mutation<void, AddCartItemReqType>({
       async queryFn(body) {
@@ -70,7 +86,7 @@ export const cartApi = createApi({
           };
         }
       },
-      invalidatesTags: ['Cart']
+      invalidatesTags: ['Cart'],
     }),
 
     toggleCartItem: builder.mutation<void, string | 'all'>({
@@ -95,7 +111,7 @@ export const cartApi = createApi({
         try {
           const result = await cartService.deleteCartItem(cartItemId);
           return { data: result.payload };
-        }catch (error: any){
+        } catch (error: any) {
           return {
             error: {
               status: error?.status || 500,
@@ -104,8 +120,8 @@ export const cartApi = createApi({
           };
         }
       },
-      invalidatesTags: ['Cart']
-    })
+      invalidatesTags: ['Cart'],
+    }),
   }),
 });
 
@@ -114,5 +130,6 @@ export const {
   useAddCartItemMutation,
   useToggleCartItemMutation,
   useChangeQuantityCartItemMutation,
-  useDeleteCartItemMutation
+  useDeleteCartItemMutation,
+  useGetCartSelectedQuery,
 } = cartApi;

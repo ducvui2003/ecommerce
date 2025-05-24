@@ -6,11 +6,7 @@ const ProductLayout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  return (
-    <>
-      <HeaderWrapper container>{children}</HeaderWrapper>
-    </>
-  );
+  return <HeaderWrapper container>{children}</HeaderWrapper>;
 };
 
 export default ProductLayout;
