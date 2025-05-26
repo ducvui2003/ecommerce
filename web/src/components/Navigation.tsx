@@ -38,7 +38,7 @@ export const components: NavigationType[] = [
   },
   {
     title: 'Liên hệ',
-    href: '/contact-us-us',
+    href: '/contact-us',
   },
   {
     title: 'Tư vấn',
