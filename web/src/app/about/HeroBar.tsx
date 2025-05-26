@@ -25,13 +25,13 @@ function HeroBar() {
         <div className="flex flex-wrap justify-between items-center">
           <div className="lg:w-5/12 w-full mb-8 lg:mb-0">
             <div className="intro-excerpt">
-              <h1 className="text-4xl font-bold text-[#FFAB66D1]">{heroContent.heading}</h1>
-              <p className="mb-4 text-[#FFAB66]">{heroContent.description}</p>
+              <h1 className="text-4xl font-bold text-primary">{heroContent.heading}</h1>
+              <p className="mb-4 text-primary">{heroContent.description}</p>
               <p>
-                <HeroButton href="#" className="bg-black text-[#FFAB66] mr-4 hover:bg-[#FFAB66] hover:text-black rounded">
+                <HeroButton href="#" className="bg-black text-primary mr-4 hover:bg-primary hover:text-black rounded">
                   Xem ngay
                 </HeroButton>
-                <HeroButton href="#" className="bg-[#FFAB66] text-black mr-4 hover:bg-black hover:text-[#FFAB66] rounded">
+                <HeroButton href="#" className="bg-primary text-black mr-4 hover:bg-black hover:text-primary rounded">
                   Khám phá
                 </HeroButton>
               </p>
