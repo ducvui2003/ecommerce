@@ -11,6 +11,8 @@ export const VNPAY: Readonly<Record<string, string>> = {
   COMMAND: 'pay',
   VERSION: '2.1.0',
   LOCALE: 'vn',
+  SUCCESS_CODE: '00',
+  FAILED_CODE: '07',
 };
 
 export type PaymentStatusType =

@@ -1,3 +1,0 @@
-const VN_PAY_SUCCESS = '00';
-const VN_PAY_PROCESSING = '07';
-export { VN_PAY_SUCCESS, VN_PAY_PROCESSING };

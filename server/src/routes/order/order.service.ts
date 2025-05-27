@@ -6,7 +6,6 @@ import {
 } from '@shared/constants/dependency.constant';
 import { toDecimalSchema } from '@shared/helper.shared';
 import { OrderItemType } from '@shared/models/order-item.model';
-import { OrderStatusEnum } from '@shared/models/order.model';
 import { SharedCartItemRepository } from '@shared/repositories/shared-cart-item.repository';
 import { PrismaService } from '@shared/services/prisma.service';
 import { OrderRepository } from './order.repository';
@@ -16,6 +15,7 @@ import { ProductType } from '@shared/models/product.model';
 import { CreateOrderType } from '@route/order/order.schema';
 
 import { PaymentType } from '@shared/models/payment.model';
+import { OrderStatus } from '@shared/constants/order.constant';
 
 @Injectable()
 export class OrderService {
@@ -65,7 +65,7 @@ export class OrderService {
           totalAmount: toDecimalSchema(totalAmount),
           feeShipping: toDecimalSchema(dto.feeShipping),
           receiver: dto.receiver,
-          status: OrderStatusEnum.enum.PENDING,
+          status: OrderStatus.PENDING,
         },
         tx,
       );

@@ -18,6 +18,7 @@ export class PaymentController {
 
   @Post('vn-pay-return')
   public vnPayReturn(@Body() body: UrlIPNVnPayDto) {
+    console.log(body);
     this.paymentService.handleUrlIPNVnPay(body);
   }
 }

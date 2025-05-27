@@ -4,19 +4,23 @@ import {
   UrlIPNVnPayType,
   WebhookPaymentBodyType,
 } from '@route/payment/payment.schema';
-import { PREFIX_PAYMENT_CODE } from '@shared/constants/payment.constant';
+import { SHARED_ORDER_REPOSITORY } from '@shared/constants/dependency.constant';
+import { PREFIX_PAYMENT_CODE, VNPAY } from '@shared/constants/payment.constant';
 import { toDecimalSchema } from '@shared/helper.shared';
 import {
   PaymentTransactionType,
   SePaymentTransactionModel,
   VnPayPaymentTransactionModel,
 } from '@shared/models/payment-transaction.model';
+import { SharedOrderRepository } from '@shared/repositories/shared-order.repository';
 
 @Injectable()
 export class PaymentService {
   constructor(
     @Inject('PaymentRepository')
     private readonly paymentRepository: PaymentRepository,
+    @Inject(SHARED_ORDER_REPOSITORY)
+    private readonly sharedOrderRepository: SharedOrderRepository,
   ) {}
 
   async handleWebhookSepay(body: WebhookPaymentBodyType) {
@@ -63,14 +67,23 @@ export class PaymentService {
     const amount = body.amount;
     const payload = VnPayPaymentTransactionModel.parse(body);
 
-    const paymentTransaction: PaymentTransactionType =
-      await this.paymentRepository.createPaymentTransaction({
-        paymentId: paymentId,
-        providerPaymentId: providerPaymentId,
-        payload: payload,
-        amount: toDecimalSchema(amount),
-      });
+    await this.paymentRepository.createPaymentTransaction({
+      paymentId: paymentId,
+      providerPaymentId: providerPaymentId,
+      payload: payload,
+      amount: toDecimalSchema(amount),
+    });
 
-    console.log(paymentTransaction);
+    // 2. Find payment with payment ref & Update status in Payment
+    if (body.responseCode === VNPAY.SUCCESS_CODE) {
+      const payment = await this.paymentRepository.updatePayment(
+        paymentId,
+        'SUCCESS',
+      );
+      // 3. Update status in Order
+      this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
+    } else {
+      await this.paymentRepository.updatePayment(paymentId, 'FAILED');
+    }
   }
 }

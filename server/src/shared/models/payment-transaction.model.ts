@@ -26,7 +26,7 @@ const VnPayPaymentTransactionModel = z.object({
   bankCode: z.string(),
   bankTranNo: z.string(),
   cardType: z.string(),
-  payDate: z.string(),
+  payDate: z.date(),
   orderInfo: z.string(),
   transactionNo: z.string(),
   transactionStatus: z.string(),

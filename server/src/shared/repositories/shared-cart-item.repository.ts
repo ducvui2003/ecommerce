@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CartItemType } from '@shared/models/cart-item.model';
-import { ProductType } from '@shared/models/product.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface SharedCartItemRepository {

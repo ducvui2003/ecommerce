@@ -8,6 +8,7 @@ import {
   SHARED_CART_ITEM_REPOSITORY,
   SHARED_USER_REPOSITORY,
   SHARED_PRODUCT_REPOSITORY,
+  SHARED_ORDER_REPOSITORY,
 } from '@shared/constants/dependency.constant';
 import { AccessTokenGuard } from '@shared/guards/access-token.guard';
 import { APIKeyGuard } from '@shared/guards/api-key.guard';
@@ -26,6 +27,7 @@ import { MailRegisterService } from '@shared/services/mail/mail-register-verify.
 import { PrismaService } from '@shared/services/prisma.service';
 import { TokenService } from '@shared/services/token.service';
 import { PrismaProductRepository } from '@shared/repositories/shared-product.repository';
+import { PrismaOrderRepository } from '@shared/repositories/shared-order.repository';
 
 const sharedServices: Provider[] = [
   PrismaService,
@@ -61,6 +63,8 @@ const sharedServices: Provider[] = [
     useClass: PrismaProductRepository,
   },
   { provide: SHARED_CART_ITEM_REPOSITORY, useClass: PrismaCartItemRepository },
+  { provide: SHARED_ORDER_REPOSITORY, useClass: PrismaOrderRepository },
+
   CacheService,
   SharedRoleRepository,
   SharedResourceRepository,
