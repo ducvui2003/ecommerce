@@ -113,7 +113,7 @@ export default function ContactForm() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Họ và tên</FormLabel>
+                        <FormLabel>Họ và tên <span className={"text-red-600"}>*</span></FormLabel>
                         <FormControl>
                           <Input placeholder="Nguyễn Văn A" {...field} />
                         </FormControl>
@@ -126,7 +126,7 @@ export default function ContactForm() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email <span className={"text-red-600"}>*</span></FormLabel>
                         <FormControl>
                           <Input placeholder="example@gmail.com" {...field} />
                         </FormControl>
@@ -141,7 +141,7 @@ export default function ContactForm() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormLabel>Số điện thoại <span className={"text-red-600"}>*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="0987 654 321" {...field} />
                       </FormControl>
@@ -155,7 +155,7 @@ export default function ContactForm() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tiêu đề</FormLabel>
+                      <FormLabel>Tiêu đề <span className={"text-red-600"}>*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Tiêu đề liên hệ" {...field} />
                       </FormControl>
@@ -169,7 +169,7 @@ export default function ContactForm() {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nội dung liên hệ</FormLabel>
+                      <FormLabel>Nội dung liên hệ <span className={"text-red-600"}>*</span></FormLabel>
                       <FormControl>
                         <Textarea placeholder="Viết nội dung liên hệ tại đây..." rows={5} {...field} />
                       </FormControl>
