@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       vnp_TransactionStatus,
       vnp_TxnRef,
     } = query.data;
-    const response = await paymentService.vnpaySentToBackend({
+    await paymentService.vnpaySentToBackend({
       amount: vnp_Amount,
       bankCode: vnp_BankCode,
       bankTranNo: vnp_BankTranNo,

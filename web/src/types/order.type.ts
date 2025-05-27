@@ -41,6 +41,16 @@ type CreateOrderResType = {
   type: 'QR_CODE' | 'REDIRECT';
 };
 
+type CreateOrderCookie = {
+  req: CreateOrderReqType;
+  res?: CreateOrderResType;
+};
+
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
 export { CreateOrderFormSchema };
-export type { CreateOrderFormType, CreateOrderReqType, CreateOrderResType };
+export type {
+  CreateOrderFormType,
+  CreateOrderReqType,
+  CreateOrderResType,
+  CreateOrderCookie,
+};

@@ -1,8 +1,9 @@
 import { PrismaService } from '@shared/services/prisma.service';
-import { OrderStatusEnum, OrderType } from '@shared/models/order.model';
+import { OrderType } from '@shared/models/order.model';
 import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { OrderItemType } from '@shared/models/order-item.model';
+import { OrderStatus } from '@shared/constants/order.constant';
 
 @Injectable()
 export class OrderRepository {
@@ -21,7 +22,7 @@ export class OrderRepository {
         totalAmount: data.totalAmount,
         feeShipping: data.feeShipping,
         receiver: data.receiver,
-        status: OrderStatusEnum.enum.PENDING,
+        status: OrderStatus.PENDING,
       },
     });
   }

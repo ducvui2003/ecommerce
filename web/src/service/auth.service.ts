@@ -14,12 +14,7 @@ import {
   Role,
   VerifyOTPReqType,
 } from '@/types/auth.type';
-import {
-  ForgotPasswordFormType,
-  LoginFormType,
-  RegisterFormType,
-  SendOTPFormType,
-} from '@/types/schema/auth.schema';
+import { RegisterFormType } from '@/types/schema/auth.schema';
 import { User } from '@/types/user.type';
 
 const authService = {
