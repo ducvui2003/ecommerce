@@ -1,6 +1,6 @@
-import HeroBar from '@/app/about/HeroBar';
-import WhyChooseUs from '@/app/about/WhyChooseUs';
-import CoreValuesSection from '@/app/about/CoreValuesSection';
+import HeroBar from '@/app/about-us/HeroBar';
+import WhyChooseUs from '@/app/about-us/WhyChooseUs';
+import CoreValuesSection from '@/app/about-us/CoreValuesSection';
 import HeaderWrapper from '@/components/HeaderWrapper';
 import Testimonials from './Testimonials';
 
