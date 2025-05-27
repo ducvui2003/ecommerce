@@ -9,6 +9,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { cartApi } from '@/features/cart/cart.api';
 import { promotionApi } from '@/features/promotion/promotion.api';
 import addressReducer from '@/features/address/address.slice';
+import orderReducer from '@/features/order/order.slice';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -16,6 +17,7 @@ export const makeStore = () => {
       authSlice: authReducer,
       mediaSlice: mediaReducer,
       addressSlice: addressReducer,
+      orderSlice: orderReducer,
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
       [userApi.reducerPath]: userApi.reducer,

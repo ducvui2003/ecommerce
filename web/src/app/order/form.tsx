@@ -2,6 +2,11 @@
 import OrderInfo from '@/app/order/OrderInfo';
 import OrderPayment from '@/app/order/OrderPayment';
 import { Form } from '@/components/ui/form';
+import {
+  createOrderThunk,
+  setCreateOrderReq,
+} from '@/features/order/order.slice';
+import { useAppDispatch } from '@/hooks/use-store';
 import orderService from '@/service/order.service';
 import { CreateOrderFormSchema, CreateOrderFormType } from '@/types/order.type';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,23 +23,26 @@ const OrderForm = ({ cartItemIds }: OrderFormTypeProps) => {
       cartItemIds: cartItemIds,
     },
   });
+  const dispatch = useAppDispatch();
 
   function onSubmit(values: CreateOrderFormType) {
-    orderService
-      .createOrder({
-        feeShipping: 0,
-        method: values.method,
-        cartItemIds: values.cartItemIds,
-        receiver: {
-          name: values.name,
-          email: values.email,
-          phone: values.phone,
-          province: values.province,
-          district: values.district,
-          ward: values.ward,
-          detail: values.detail,
-        },
-      })
+    const data = {
+      feeShipping: 0,
+      method: values.method,
+      cartItemIds: values.cartItemIds,
+      receiver: {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        province: values.province,
+        district: values.district,
+        ward: values.ward,
+        detail: values.detail,
+      },
+    };
+    dispatch(setCreateOrderReq(data));
+    dispatch(createOrderThunk(data))
+      .unwrap()
       .then((response) => {
         const { type, url } = response;
         if (type === 'REDIRECT') {

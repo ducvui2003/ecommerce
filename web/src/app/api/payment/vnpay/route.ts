@@ -1,3 +1,4 @@
+import { PAYMENT_COOKIE } from '@/constraint/variable';
 import paymentService from '@/service/payment.service';
 import { VnpayReturnSchema } from '@/types/payment.type';
 import { NextRequest, NextResponse } from 'next/server';
@@ -42,7 +43,13 @@ export async function GET(request: NextRequest) {
       txnRef: vnp_TxnRef,
     });
 
-    return NextResponse.redirect(new URL('/payment', request.url));
+    const redirect = NextResponse.redirect(new URL('/payment', request.url));
+    redirect.cookies.set(PAYMENT_COOKIE, 'true', {
+      path: '/',
+      httpOnly: true,
+      maxAge: 60,
+    });
+    return redirect;
   } catch (err) {
     return NextResponse.json({ error: err }, { status: 400 });
   }

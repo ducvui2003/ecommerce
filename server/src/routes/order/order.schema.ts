@@ -19,6 +19,7 @@ export const CreateOrderSchema = z.object({
 });
 
 type CreateOrderResType = {
+  orderId: number;
   paymentId: number;
   totalAmount: number;
   url: string;

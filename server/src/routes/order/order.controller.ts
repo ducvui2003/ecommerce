@@ -23,12 +23,14 @@ export class OrderController {
     @Ip() ip: string,
   ): Promise<CreateOrderResType | null> {
     const payment = await this.orderService.createOrder(userId, dto);
+    const orderId = payment.orderId;
     const paymentId = payment.id;
     const totalAmount = payment.totalAmount;
 
     if (dto.method === 'SEPAY') {
       const paymentService = new SepayPaymentService(paymentId, totalAmount);
       return {
+        orderId,
         paymentId,
         totalAmount,
         type: 'QR_CODE',
@@ -42,6 +44,7 @@ export class OrderController {
         ip,
       );
       return {
+        orderId,
         paymentId,
         totalAmount,
         type: 'REDIRECT',

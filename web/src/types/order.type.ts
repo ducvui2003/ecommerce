@@ -34,6 +34,7 @@ type CreateOrderReqType = {
 };
 
 type CreateOrderResType = {
+  orderId: number;
   paymentId: number;
   totalAmount: number;
   url: string;

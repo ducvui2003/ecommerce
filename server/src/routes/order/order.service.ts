@@ -38,6 +38,7 @@ export class OrderService {
   ): Promise<
     PaymentType & {
       totalAmount: number;
+      orderId: number;
     }
   > {
     // 1. Calculate price
@@ -116,6 +117,7 @@ export class OrderService {
       return {
         ...payment,
         totalAmount: totalAmount,
+        orderId: order.id,
       };
     });
   }
