@@ -1,4 +1,5 @@
 import http from '@/lib/http.client';
+import httpServer from '@/lib/http.server';
 import { ResponseApi } from '@/types/api.type';
 import {
   AddCartItemReqType,
@@ -10,12 +11,6 @@ const cartService = {
   getCart: async (): Promise<GetCartResType> => {
     const response = await http.get<ResponseApi<GetCartResType>>(
       '/api/v1/carts/current',
-    );
-    return response.payload.data;
-  },
-  getCartSelected: async (): Promise<GetCartResType> => {
-    const response = await http.get<ResponseApi<GetCartResType>>(
-      '/api/v1/carts/current/selected',
     );
     return response.payload.data;
   },

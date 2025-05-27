@@ -42,7 +42,7 @@ export class OrderService {
   > {
     // 1. Calculate price
     const cartItems = await this.sharedCartItemRepository.findCartItemByIdIn(
-      dto.orderItemIds,
+      dto.cartItemIds,
     );
 
     let totalAmount = 0;

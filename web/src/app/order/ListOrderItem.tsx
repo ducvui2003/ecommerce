@@ -1,23 +1,20 @@
-'use client';
 import { Card, CardContent } from '@/components/ui/card';
-import { useGetCartSelectedQuery } from '@/features/cart/cart.api';
 import Image from 'next/image';
-import { ReactNode } from 'react';
 import tinhdau2 from 'public/images/tinh-dau-2.jpg';
 import { currency } from '@/lib/utils';
+import { GetCartResType } from '@/types/cart.type';
 type ListOrderItemProps = {
-  children: ReactNode;
+  data: GetCartResType;
 };
 
-const ListOrderItem = () => {
-  const { data } = useGetCartSelectedQuery();
+const ListOrderItem = ({ data }: ListOrderItemProps) => {
   return (
     <div className={'w-full border p-5 shadow-xl'}>
       <div className={'text-primary my-4 text-2xl font-bold'}>
         Danh sách sản phẩm
       </div>
       <div className="flex flex-col gap-y-4">
-        {data?.cartItems.map((item) => {
+        {data.cartItems.map((item) => {
           return (
             <Card>
               <CardContent className="flex items-center gap-4 p-4">

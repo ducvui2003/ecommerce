@@ -22,7 +22,6 @@ export class OrderController {
     @Body() dto: CreateOrderDto,
     @Ip() ip: string,
   ): Promise<CreateOrderResType | null> {
-    console.log('ip', ip);
     const payment = await this.orderService.createOrder(userId, dto);
     const paymentId = payment.id;
     const totalAmount = payment.totalAmount;
@@ -40,7 +39,7 @@ export class OrderController {
       const paymentService = new VnpayPaymentService(
         paymentId,
         totalAmount,
-        '127.0.0.1',
+        ip,
       );
       return {
         paymentId,

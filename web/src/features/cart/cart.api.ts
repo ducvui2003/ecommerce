@@ -1,15 +1,10 @@
-import {
-  createApi,
-  fetchBaseQuery,
-  QueryReturnValue,
-} from '@reduxjs/toolkit/query/react';
 import cartService from '@/service/cart.service';
-import { ResponseApi } from '@/types/api.type';
 import {
   AddCartItemReqType,
   ChangeQuantityCartItemReqType,
   GetCartResType,
 } from '@/types/cart.type';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const cartApi = createApi({
   reducerPath: 'cart',
@@ -20,22 +15,6 @@ export const cartApi = createApi({
       async queryFn() {
         try {
           const data = await cartService.getCart();
-          return { data };
-        } catch (error: any) {
-          return {
-            error: {
-              status: error?.status || 500,
-              data: error?.message || 'Unknown error',
-            },
-          };
-        }
-      },
-      providesTags: ['Cart'],
-    }),
-    getCartSelected: builder.query<GetCartResType, void>({
-      async queryFn() {
-        try {
-          const data = await cartService.getCartSelected();
           return { data };
         } catch (error: any) {
           return {
@@ -131,5 +110,4 @@ export const {
   useToggleCartItemMutation,
   useChangeQuantityCartItemMutation,
   useDeleteCartItemMutation,
-  useGetCartSelectedQuery,
 } = cartApi;

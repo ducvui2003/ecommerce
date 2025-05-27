@@ -14,7 +14,7 @@ export const ReceiverSchema = z.object({
 export const CreateOrderSchema = z.object({
   feeShipping: z.coerce.number().nonnegative(),
   receiver: ReceiverSchema,
-  orderItemIds: z.array(z.string()).min(1),
+  cartItemIds: z.array(z.string()).min(1),
   method: z.enum([PaymentProvider.SEPAY, PaymentProvider.VNPAY]),
 });
 

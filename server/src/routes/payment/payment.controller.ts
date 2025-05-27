@@ -13,7 +13,6 @@ export class PaymentController {
   @UseGuards(AuthenticationGuard)
   @Auth([AuthType.APIKey])
   receiverWebhookSepay(@Body() body: WebhookSePayReq) {
-    console.log(body);
     this.paymentService.handleWebhookSepay(body);
   }
 
