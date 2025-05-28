@@ -47,19 +47,16 @@ const OrderForm = ({ cartItemIds }: OrderFormTypeProps) => {
         detail: values.detail,
       },
     };
-    orderService.setReqCreateOrder(data);
     orderService.createOrder(data).then((response) => {
-      orderService.setResCreateOrder(response).then(() => {
-        const { type, url } = response;
-        if (type === 'REDIRECT') {
-          window.location.href = url;
+      const { type, url } = response;
+      if (type === 'REDIRECT') {
+        window.location.href = url;
 
-          return;
-        }
-        if (type === 'QR_CODE') {
-          return;
-        }
-      });
+        return;
+      }
+      if (type === 'QR_CODE') {
+        return;
+      }
     });
   }
 

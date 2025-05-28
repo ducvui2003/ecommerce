@@ -37,3 +37,7 @@ export const ProductErrorMessage = {
     PRODUCT_DESCRIPTION_TOO_LONG: 'Product description is too long',
     PRODUCT_NAME_TOO_SHORT: 'Product name is too short',
 };
+
+export const ContactErrorMessage = {
+  CONTACT_INVALID: 'Contact information is invalid',
+}
