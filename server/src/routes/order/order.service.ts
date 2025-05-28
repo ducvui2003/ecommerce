@@ -47,14 +47,18 @@ export class OrderService {
     );
 
     let totalAmount = 0;
+    const recordPriceOrderItem: Record<number, number> = {};
     cartItems.forEach((item) => {
       const basePrice = item.product?.basePrice?.toNumber() ?? 0;
+      let price = 0;
       if (item.optionId) {
         const optionPrice = item.option?.price?.toNumber() ?? 0;
-        totalAmount = (basePrice + optionPrice) * item.quantity;
+        price = (basePrice + optionPrice) * item.quantity;
       } else {
-        totalAmount = basePrice * item.quantity;
+        price = basePrice * item.quantity;
       }
+      recordPriceOrderItem[item.id] = price;
+      totalAmount += price;
     });
 
     return this.prismaService.$transaction(async (tx) => {
@@ -80,19 +84,18 @@ export class OrderService {
         OrderItemType,
         'orderId' | 'price' | 'product' | 'quantity'
       >[] = cartItems.map((item) => {
-        const product: ProductType = products.find(
-          (i) => i.id === item.productId,
-        );
+        const product = products.find((i) => i.id === item.productId);
+
         return {
           orderId: order.id,
-          price: toDecimalSchema(totalAmount),
+          price: toDecimalSchema(recordPriceOrderItem[item.id] ?? 0),
           product: {
             id: product!.id,
             name: product!.name,
             category: product!.category.name,
             media: '',
             price: product!.basePrice,
-            supplier: product.supplier.name,
+            supplier: product!.supplier.name,
             options: item.option && {
               id: item.option.id,
               name: item.option.name,
@@ -102,7 +105,7 @@ export class OrderService {
           quantity: item.quantity,
         };
       });
-      this.orderRepository.createOrderItem(orderItems, tx);
+      await this.orderRepository.createOrderItem(orderItems, tx);
 
       // 3. Create Payment
       const payment = await this.sharedPaymentRepository.createPayment(

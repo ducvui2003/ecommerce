@@ -11,21 +11,6 @@ const orderService = {
     );
     return response.payload.data;
   },
-
-  setReqCreateOrder: async (req: CreateOrderReqType) => {
-    await fetch(`${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/payment`, {
-      method: 'POST',
-      body: JSON.stringify(req),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  },
-  setResCreateOrder: async (req: CreateOrderResType) => {
-    await fetch(`${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/payment`, {
-      method: 'PUT',
-      body: JSON.stringify(req),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  },
 };
 
 export default orderService;
