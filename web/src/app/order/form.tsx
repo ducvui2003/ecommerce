@@ -19,6 +19,15 @@ const OrderForm = ({ cartItemIds }: OrderFormTypeProps) => {
   const form = useForm<CreateOrderFormType>({
     resolver: zodResolver(CreateOrderFormSchema),
     defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      detail: '',
+      feeShipping: 0,
+      province: '',
+      district: '',
+      ward: '',
+      note: '',
       cartItemIds: cartItemIds,
     },
   });

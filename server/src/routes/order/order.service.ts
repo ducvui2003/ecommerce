@@ -114,6 +114,8 @@ export class OrderService {
         tx,
       );
 
+      // 4. Delete cart item
+
       return {
         ...payment,
         totalAmount: totalAmount,

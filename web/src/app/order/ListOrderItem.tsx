@@ -16,7 +16,7 @@ const ListOrderItem = ({ data }: ListOrderItemProps) => {
       <div className="flex flex-col gap-y-4">
         {data.cartItems.map((item) => {
           return (
-            <Card>
+            <Card key={item.id}>
               <CardContent className="flex items-center gap-4 p-4">
                 <Image
                   src={tinhdau2}
