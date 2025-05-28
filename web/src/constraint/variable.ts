@@ -15,3 +15,4 @@ export const LOCAL_STORAGE = {
 
 export const ALT = 'An Nhiem';
 export const DEFAULT_IMAGE = image;
+export const PAYMENT_COOKIE = 'payment';

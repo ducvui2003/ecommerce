@@ -20,7 +20,7 @@ import {
   transformItemsPaging,
 } from '@shared/helper.shared';
 import { ProductType } from '@shared/models/product.model';
-import { SharedResourceRepository } from '@shared/repositories/shared-repository.repository';
+import { SharedResourceRepository } from '@shared/repositories/shared-resource.repository';
 import { FileService } from '@shared/services/file/file.service';
 
 @Injectable()

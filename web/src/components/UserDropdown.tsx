@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import React, { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const UserDropdown = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -20,7 +20,7 @@ const UserDropdown = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="hover:cursor-pointer size-11 border border-gray-200">
+          <Avatar className="size-11 border border-gray-200 hover:cursor-pointer">
             <AvatarImage src="https://github.com" alt="@shadcn" />
             <AvatarFallback>
               <ClientIcon
@@ -39,7 +39,7 @@ const UserDropdown = () => {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem  className="hover:!text-white">
+            <DropdownMenuItem className="hover:!text-white">
               <Link href={'/register'} className="flex-1">
                 Đăng ký
               </Link>
@@ -53,13 +53,13 @@ const UserDropdown = () => {
             </DropdownMenuItem>
           </RequiredAuthClient>
           <RequiredAuthClient mode="hide">
-            <DropdownMenuItem  className="hover:!text-white">
+            <DropdownMenuItem className="hover:!text-white">
               <Link href={'/user/info'} className="flex-1" legacyBehavior>
                 Thông tin cá nhân
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="flex-1 bg-destructive text-white hover:cursor-pointer hover:!bg-red-700 hover:!text-white"
+              className="bg-destructive flex-1 text-white hover:cursor-pointer hover:!bg-red-700 hover:!text-white"
               onClick={() => setOpen(true)}
             >
               Đăng xuất

@@ -1,28 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { ProductDetailRespType } from '@/types/product.type';
-import ProductImages from './ProductImages';
-import ProductInfo from './ProductInfo';
-import WishlistButton from '@/components/button/WishlistButton';
-import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
-import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
-import ProductComment from '@/app/product/detail/[id]/ProductComment';
-import ProductRelated from '@/app/product/detail/[id]/ProductRelated';
-import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
 import notFound from '@/app/not-found';
+import ProductComment from '@/app/product/detail/[id]/ProductComment';
+import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
+import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
+import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
+import WishlistButton from '@/components/button/WishlistButton';
 import { Button } from '@/components/ui/button';
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import {
-  ControllerRenderProps,
-  FieldErrors,
-  FieldValues,
-  useForm,
-} from 'react-hook-form';
-import { AddCartItemReqType } from '@/types/cart.type';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AddCartItemSchema } from '@/types/schema/cart.schema';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -30,13 +14,25 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
 import { useAddCartItemMutation } from '@/features/cart/cart.api';
+import { cn } from '@/lib/utils';
+import { AddCartItemReqType } from '@/types/cart.type';
+import { ProductDetailRespType } from '@/types/product.type';
+import { AddCartItemSchema } from '@/types/schema/cart.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import React from 'react';
+import {
+  ControllerRenderProps,
+  FieldErrors,
+  FieldValues,
+  useForm,
+} from 'react-hook-form';
 import { toast } from 'sonner';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
-import { faHeart as faHeartOutline } from '@fortawesome/free-regular-svg-icons';
+import ProductImages from './ProductImages';
+import ProductInfo from './ProductInfo';
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
@@ -60,7 +56,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     defaultValues: {
       productId: product.id,
       quantity: 1,
-      hasOption: product.option.length > 0
+      hasOption: product.option.length > 0,
     },
   });
 
@@ -88,10 +84,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const onSummitAddCartItemForm = async (body: AddCartItemReqType) => {
-    const {hasOption, ...data} = body
+    const { hasOption, ...data } = body;
     try {
       const result = await addCartItem(data);
-      if (result.hasOwnProperty('data')){
+      if (result.hasOwnProperty('data')) {
         toast.success('Thêm sản phẩm vào giỏ hàng thành công');
       }
     } catch (error) {
@@ -126,14 +122,15 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             )}
           >
             <ProductInfo product={productInfoData} />
-            {
-              product.option.length > 0 &&
+            {product.option.length > 0 && (
               <FormField
                 control={addCartItemForm.control}
                 name="optionId"
                 render={({ field }: { field: FieldValues }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Dung tích</FormLabel>
+                    <FormLabel className="text-muted-foreground">
+                      Dung tích
+                    </FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={(value) => field.onChange(Number(value))}
@@ -141,7 +138,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       >
                         <FormItem className="mt-2 flex items-center space-y-0 space-x-3">
                           {product.option.map((option) => {
-                            const isSelected = String(option.id) === String(field.value);
+                            const isSelected =
+                              String(option.id) === String(field.value);
                             return (
                               <FormItem
                                 key={option.id}
@@ -168,7 +166,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   </FormItem>
                 )}
               />
-            }
+            )}
             <FormField
               control={addCartItemForm.control}
               name="quantity"
@@ -207,7 +205,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               )}
             />
             <div className="flex items-center gap-2">
-              <Button type="submit" className="gap-2 px-4 py-2 text-white disabled:opacity-50">
+              <Button
+                type="submit"
+                className="gap-2 px-4 py-2 text-white disabled:opacity-50"
+              >
                 <ShoppingCart />
                 <span>Thêm vào giỏ hàng</span>
               </Button>
@@ -221,7 +222,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
       <RatingSummary />
       <ProductComment />
-      <ProductRelation categoryId={product.category.id} />
     </div>
   );
 }

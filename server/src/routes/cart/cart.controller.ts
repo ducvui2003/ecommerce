@@ -20,8 +20,6 @@ import {
   AddCartItemReqDTO,
   ChangeQuantityCartItemReqDTO,
 } from '@route/cart/cart.dto';
-import { ZodValidationPipe } from 'nestjs-zod';
-import { ChangeQuantityCartItemBodySchema } from '@route/cart/cart.schema';
 
 @Controller('/api/v1/carts')
 export class CartController {
@@ -32,8 +30,15 @@ export class CartController {
   @Auth([AuthType.Bearer])
   @HttpCode(HttpStatus.OK)
   async getCart(@ActiveUser('id') userId: number) {
-    console.log(userId);
     return this.cartService.getCart(userId);
+  }
+
+  @Get('/current/selected')
+  @UseGuards(AuthenticationGuard)
+  @Auth([AuthType.Bearer])
+  @HttpCode(HttpStatus.OK)
+  async getCartSelected(@ActiveUser('id') userId: number) {
+    return this.cartService.getCartSelected(userId);
   }
 
   @Post('/current/items')
