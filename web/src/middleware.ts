@@ -53,5 +53,7 @@ export const config = {
     '/user/info',
     '/admin/:path*',
     '/seller/:path*',
+    '/order',
+    '/payment',
   ],
 };

@@ -1,10 +1,9 @@
 import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
-import { PaymentService } from './payment.service';
-import { WebhookPaymentBodyType } from '@route/payment/payment.schema';
-import { Auth } from '@shared/decorators/auth.decorator';
+import { UrlIPNVnPayDto, WebhookSePayReq } from '@route/payment/payment.dto';
+import { PaymentService } from '@route/payment/payment.service';
 import { AuthType } from '@shared/constants/auth.constant';
+import { Auth } from '@shared/decorators/auth.decorator';
 import { AuthenticationGuard } from '@shared/guards/authentication.guard';
-import { WebhookSePayReq } from '@route/payment/payment.dto';
 
 @Controller('/api/v1/payment')
 export class PaymentController {
@@ -14,6 +13,12 @@ export class PaymentController {
   @UseGuards(AuthenticationGuard)
   @Auth([AuthType.APIKey])
   receiverWebhookSepay(@Body() body: WebhookSePayReq) {
-    this.paymentService.receiver(body);
+    this.paymentService.handleWebhookSepay(body);
+  }
+
+  @Post('vn-pay-return')
+  public vnPayReturn(@Body() body: UrlIPNVnPayDto) {
+    console.log(body);
+    this.paymentService.handleUrlIPNVnPay(body);
   }
 }

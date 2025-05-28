@@ -1,10 +1,12 @@
 import middleWareAuth from '@/middlewares/auth.middleware';
-import middlewarePreventAfterAuth from '@/middlewares/preventAfterAuth';
-import middlewareRefreshToken from '@/middlewares/refresh-token.middleware';
+import middlewarePayment from '@/middlewares/payment.middleware';
+import middlewarePreventAfterAuth from '@/middlewares/preventAfterAuth.middleware';
+import middlewareRefreshToken from '@/middlewares/refreshToken.middleware';
 
 const middlewares = [
   middlewarePreventAfterAuth,
   middlewareRefreshToken,
+  middlewarePayment,
   middleWareAuth.authMiddlewareWithUser,
   middleWareAuth.authMiddlewareWithSeller,
   middleWareAuth.authMiddlewareWithAdmin,

@@ -1,10 +1,10 @@
-import { matchPath } from '@/lib/utils';
-import { Middleware } from '@/types/middleware.type';
-import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
-import authService from '@/service/auth.service';
 import { AUTH_SESSION_COOKIE } from '@/app/api/auth/session/const';
-import { getSession, setSession } from '@/lib/auth.helper';
 import { Session } from '@/app/api/auth/session/type';
+import { setSession } from '@/lib/auth.helper';
+import { matchPath } from '@/lib/utils';
+import authService from '@/service/auth.service';
+import { Middleware } from '@/types/middleware.type';
+import { NextRequest, NextResponse } from 'next/server';
 
 const routers: string[] = ['/login', '/register', '/forgot-password'];
 

@@ -4,7 +4,6 @@ import { z } from 'zod';
 export const ProductOrderItemModel = z.object({
   id: z.number(),
   name: z.string(),
-  description: z.string(),
   category: z.string(),
   supplier: z.string(),
   price: NumberToDecimalSchema,
@@ -13,7 +12,7 @@ export const ProductOrderItemModel = z.object({
     .object({
       id: z.number(),
       name: z.string(),
-      price: z.string(),
+      price: NumberToDecimalSchema,
     })
     .optional(),
 });
