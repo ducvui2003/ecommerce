@@ -51,3 +51,5 @@ export function transformItemsPaging<T, S>(
     items: page.items.map((item) => mapper(item)),
   };
 }
+
+export const toDecimalSchema = (n: number | string) => new Prisma.Decimal(n);

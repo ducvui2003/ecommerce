@@ -18,5 +18,6 @@ import { ProductManagerService } from '@route/product/product-manager.service';
       useClass: ProductRepositoryImpl,
     },
   ],
+  exports: ['PRODUCT_REPOSITORY'],
 })
 export class ProductModule {}

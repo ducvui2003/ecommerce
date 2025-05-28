@@ -1,3 +1,7 @@
+import {
+  SePaymentTransactionType,
+  VnPayPaymentTransactionType,
+} from '@shared/models/payment-transaction.model';
 import { ProductOrderItemModelType } from '@shared/models/product-order-item.model';
 import { ReceiverType } from '@shared/models/receiver.model';
 
@@ -6,6 +10,9 @@ declare global {
   namespace PrismaJson {
     type Receiver = ReceiverType;
     type ProductOrderItem = ProductOrderItemModelType;
+    type PaymentTransactionPayload =
+      | SePaymentTransactionType
+      | VnPayPaymentTransactionType;
   }
 }
 

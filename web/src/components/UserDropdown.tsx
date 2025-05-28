@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import React, { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const UserDropdown = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -19,41 +20,46 @@ const UserDropdown = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <ClientIcon
-            icon={'lucide:user'}
-            size={24}
-            className="transition-opacity hover:cursor-pointer hover:opacity-50"
-          />
+          <Avatar className="size-11 border border-gray-200 hover:cursor-pointer">
+            <AvatarImage src="https://github.com" alt="@shadcn" />
+            <AvatarFallback>
+              <ClientIcon
+                icon={'lucide:user'}
+                size={22}
+                className="transition-opacity hover:opacity-50"
+              />
+            </AvatarFallback>
+          </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
           <GuestOnlyClient>
-            <DropdownMenuItem>
+            <DropdownMenuItem className="hover:!text-white">
               <Link href={'/login'} className="flex-1">
                 Đăng nhập
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className="hover:!text-white">
               <Link href={'/register'} className="flex-1">
                 Đăng ký
               </Link>
             </DropdownMenuItem>
           </GuestOnlyClient>
           <RequiredAuthClient mode="hide" role={['ADMIN']}>
-            <DropdownMenuItem>
+            <DropdownMenuItem className="hover:!text-white">
               <Link href={'/admin/product'} className="flex-1">
                 Quản lý
               </Link>
             </DropdownMenuItem>
           </RequiredAuthClient>
           <RequiredAuthClient mode="hide">
-            <DropdownMenuItem>
+            <DropdownMenuItem className="hover:!text-white">
               <Link href={'/user/info'} className="flex-1" legacyBehavior>
                 Thông tin cá nhân
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="flex-1 bg-red-500 text-white hover:cursor-pointer hover:bg-red-700"
+              className="bg-destructive flex-1 text-white hover:cursor-pointer hover:!bg-red-700 hover:!text-white"
               onClick={() => setOpen(true)}
             >
               Đăng xuất
