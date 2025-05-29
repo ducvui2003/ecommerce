@@ -70,7 +70,7 @@ const ProductResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  resource: z.array(z.string()),
+  thumbnail: z.string().optional(),
 });
 
 const ProductDetailResSchema = ProductModel.pick({
@@ -87,7 +87,8 @@ const ProductDetailResSchema = ProductModel.pick({
   supplier: SupplierModel.pick({
     name: true,
   }),
-  resource: z.array(z.string()),
+  thumbnail: z.string().optional(),
+  resources: z.array(z.string()).optional(),
   option: z
     .array(
       OptionModel.pick({

@@ -29,7 +29,7 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
     size: 200,
     enableHiding: false,
     cell: ({ row }) => {
-      const { resource, name, id } = row.original;
+      const { thumbnail: resource, name, id } = row.original;
       return (
         <div className="flex gap-2">
           <div className="basis-[50px]">
