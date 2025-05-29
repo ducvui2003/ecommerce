@@ -51,7 +51,10 @@ export class ProductServiceImpl implements ProductService {
       }
       return ProductDetailResSchema.parse({
         ...product,
-        resource: product.productResource.map(({ resource }) => {
+        thumbnail:
+          product.thumbnail &&
+          this.fileService.getUrl(product.thumbnail.publicId),
+        resources: product.productResource.map(({ resource }) => {
           return this.fileService.getUrl(resource.publicId);
         }),
         option: product.option?.map((option, index) => {
@@ -76,10 +79,8 @@ export class ProductServiceImpl implements ProductService {
     return transformItemsPaging<ProductResType, ProductType>(page, (item) => {
       return ProductResSchema.parse({
         ...item,
-        resource:
-          item.productResource.map(({ resource }) => {
-            return this.fileService.getUrl(resource.publicId);
-          }) ?? [],
+        thumbnail:
+          item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
       });
     });
   }

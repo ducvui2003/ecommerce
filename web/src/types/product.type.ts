@@ -48,7 +48,8 @@ type ProductDetailRespType = {
   supplier: {
     name: string;
   };
-  resource: string[];
+  thumbnail: string;
+  resources?: string[];
   option: {
     id: number;
     name: string;

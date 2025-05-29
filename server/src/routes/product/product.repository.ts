@@ -19,6 +19,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       include: {
         supplier: true,
         category: true,
+        thumbnail: true,
         productResource: {
           include: {
             resource: true,
@@ -90,11 +91,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         include: {
           category: true,
           supplier: true,
-          productResource: {
-            include: {
-              resource: true,
-            },
-          },
+          thumbnail: true,
         },
         where: whereClause,
         orderBy: calculateOrderBy,
