@@ -3,10 +3,13 @@ import { ResourceType } from '@shared/models/resource.model';
 import { PrismaService } from '@shared/services/prisma.service';
 import { Pageable } from '@shared/types/request.type';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { Prisma } from '@prisma/client';
+import { SearchMediaReqDTO } from '@route/media/media.dto';
+import { SearchMediaReqType } from '@route/media/media.schema';
 
 export interface MediaRepository {
   getMedia<K extends keyof ResourceType>(
-    pageable: Pageable,
+    pageable: SearchMediaReqType,
     fields?: K[],
   ): Promise<Paging<Pick<ResourceType, K>>>;
 
@@ -19,10 +22,10 @@ export class PrismaMediaRepository implements MediaRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getMedia<K extends keyof ResourceType>(
-    pageable: Pageable,
+    pageable: SearchMediaReqType,
     fields?: K[],
   ): Promise<Paging<Pick<ResourceType, K>>> {
-    const { page, size } = pageable;
+    const { page, size, skipIds } = pageable;
     const select = fields?.reduce(
       (acc, field) => {
         acc[field] = true;
@@ -30,9 +33,15 @@ export class PrismaMediaRepository implements MediaRepository {
       },
       {} as Record<keyof ResourceType, true>,
     );
+    const where: Prisma.ResourceWhereInput = {
+      id: skipIds && {
+        notIn: skipIds,
+      },
+    };
     const [database, total] = await this.prismaService.$transaction([
       this.prismaService.resource.findMany({
         select: select,
+        where: where,
         skip: (page - 1) * size,
         take: size,
       }),

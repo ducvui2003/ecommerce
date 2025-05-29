@@ -17,12 +17,13 @@ const ProductCard = ({
   thumbnail,
   name,
   basePrice,
-  percentSale,
+  salePrice,
   star,
   numSell,
   className,
 }: ProductCardProps) => {
-  const price = getDiscountedPrice(basePrice, percentSale);
+  const percentSale =
+    salePrice && (((basePrice - salePrice) / basePrice) * 100).toFixed(1);
   return (
     <div
       className={cn(
@@ -53,9 +54,9 @@ const ProductCard = ({
 
         <div className="mt-2 mb-2 flex items-center gap-2">
           <span className="text-md font-bold text-red-600">
-            {currency(price)}
+            {currency(salePrice || basePrice)}
           </span>
-          {percentSale && (
+          {salePrice && (
             <span className="text-sm text-gray-400 line-through">
               {currency(basePrice)}
             </span>

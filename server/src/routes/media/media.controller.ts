@@ -12,6 +12,7 @@ import {
 import {
   ChangeVisibilityDTO,
   CreatedMediaDTO,
+  SearchMediaReqDTO,
   SignatureDTO,
 } from '@route/media/media.dto';
 import { MessageHttp } from '@shared/decorators/message.decorator';
@@ -37,7 +38,6 @@ export class MediaController {
   @MessageHttp('Create media')
   async createMedia(@Body() req: CreatedMediaDTO) {
     const response = await this.mediaService.createMedia(req);
-    console.log(response);
     return response;
   }
 
@@ -49,7 +49,7 @@ export class MediaController {
 
   @Get()
   @MessageHttp('Pageable media')
-  getListMedia(@Query() pageable: PageableDTO) {
+  getListMedia(@Query() pageable: SearchMediaReqDTO) {
     return this.mediaService.getList(pageable);
   }
 }

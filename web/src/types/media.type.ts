@@ -4,6 +4,10 @@ type MediaType = {
   publicId: string;
 };
 
+type MediaSearchParams = {
+  skipIds?: number[];
+};
+
 type MediaUploading = Omit<MediaType, 'url'> & {
   file?: File;
 };
@@ -58,4 +62,5 @@ export type {
   CreatedMediaResType,
   CloudinaryUploadResult,
   PagingMediaType,
+  MediaSearchParams,
 };
