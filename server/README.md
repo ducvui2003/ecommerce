@@ -57,7 +57,7 @@ npx prisma migrate dev
 - Change row in database manager migration to prisma know has a migration failed
 
 ```bash
-  npx prisma migrate resolved --rollback <migration_name>
+  npx prisma migrate resolve --rolled-back <migration_name>
 ```
 
 | migration_name is a name directory that contain migration file failed
