@@ -111,7 +111,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         <div>
           <ProductImages
-            images={[product.thumbnail, ...(product.resources ?? [])]}
+            images={[
+              ...(product.resources ?? []),
+              ...(product.thumbnail ? [product.thumbnail] : []),
+            ]}
           />
         </div>
 
