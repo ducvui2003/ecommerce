@@ -38,9 +38,10 @@ const DropdownSelect = <
         <Button variant="outline">Chọn</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
-        {data?.map((item) => {
+        {data?.map((item, index) => {
           return (
             <DropdownMenuCheckboxItem
+              key={index}
               onSelect={(e) => {
                 e.preventDefault();
               }}
