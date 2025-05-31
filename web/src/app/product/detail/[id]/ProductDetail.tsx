@@ -226,7 +226,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         <ProductDescription description={product.description} />
       </div>
       <RatingSummary />
-      <ProductComment />
     </div>
   );
 }
