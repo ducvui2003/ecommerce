@@ -38,7 +38,7 @@ type CreateOrderResType = {
 
 const OrderResSchema = z.object({
   id: z.number(),
-  totalAmount: z.number(),
+  totalAmount: DecimalToNumberSchema,
   status: z.string(),
   thumbnail: z.string(),
   quantity: z.number(),

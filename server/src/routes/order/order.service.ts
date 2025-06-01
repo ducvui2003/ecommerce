@@ -156,7 +156,9 @@ export class OrderService {
       userId,
       dto,
     );
-    return page;
+    return transformItemsPaging<OrderResType, OrderResType>(page, (item) => {
+      return OrderResSchema.parse(item);
+    });
   }
 
   async getDetail(
