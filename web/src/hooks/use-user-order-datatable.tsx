@@ -6,16 +6,20 @@ import {
   ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   PaginationState,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useUserOrderTable = (searchParams: OrderSearchParamsType) => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const [globalFilter, setGlobalFilter] = useState('');
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -24,6 +28,7 @@ export const useUserOrderTable = (searchParams: OrderSearchParamsType) => {
     ...searchParams,
     page: pageIndex + 1,
     size: pageSize,
+    sorts: sorting.map((item) => `${item.id}_${item.desc ? 'desc' : 'asc'}`),
   });
 
   const table = useReactTable({
@@ -37,7 +42,10 @@ export const useUserOrderTable = (searchParams: OrderSearchParamsType) => {
       pagination: { pageIndex, pageSize },
       globalFilter,
       columnFilters,
+      sorting,
     },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function'

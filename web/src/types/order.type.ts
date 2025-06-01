@@ -59,7 +59,7 @@ type OrderDetailResType = {
   id: number;
   status: string;
   totalAmount: number;
-  items: [];
+  items: OrderDetailItemType[];
   receiver: {
     name: string;
     phone: string;
@@ -72,7 +72,23 @@ type OrderDetailResType = {
   createdAt: Date;
 };
 
-type OrderSearchParamsType = {};
+type OrderDetailItemType = {
+  id: number;
+  name: string;
+  category: string;
+  supplier: string;
+  price: number;
+  media: string;
+  options?: {
+    id: number;
+    name: string;
+    price: number;
+  };
+};
+
+type OrderSearchParamsType = {
+  status?: string;
+};
 
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
 export { CreateOrderFormSchema };

@@ -39,12 +39,7 @@ type Metadata = {
 type PageReq<T = {}> = {
   page: number;
   size: number;
-  sorts?: Sort[];
+  sorts?: string[];
 } & T;
-
-type Sort = {
-  field: string;
-  sort: 'asc' | 'desc';
-};
 
 export type { ResponseApi, ResponseApiPaging, Paging, PageReq };

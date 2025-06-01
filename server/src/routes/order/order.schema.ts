@@ -37,24 +37,15 @@ const sortSchema = z
   );
 
 const SearchOrderReqSchema = PageableSchema.extend({
-  status: z
-    .enum([
-      OrderStatus.PENDING,
-      OrderStatus.PAID,
-      OrderStatus.DELIVERING,
-      OrderStatus.COMPLETE,
-      OrderStatus.CANCELED,
-    ])
-    .optional(),
-  sort: z
-    .array(sortSchema)
-    .default([`${SortBy.CreatedAt}_${OrderBy.Asc}`])
-    .transform((val) =>
-      val.map((sortString) => {
-        const { sortBy, orderBy } = sortString;
-        return { sortBy, orderBy };
-      }),
-    ),
+  status: z.nativeEnum(OrderStatus).optional(),
+  sorts: z
+    .preprocess((val) => {
+      // normalize to array
+      if (typeof val === 'string') return [val];
+      if (Array.isArray(val)) return val;
+      return []; // fallback
+    }, z.array(sortSchema))
+    .default([`${SortBy.CreatedAt}_${OrderBy.Asc}`]),
 });
 
 const CreateOrderSchema = z.object({

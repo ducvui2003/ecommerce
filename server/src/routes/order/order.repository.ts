@@ -1,11 +1,10 @@
-import { PrismaService } from '@shared/services/prisma.service';
-import { OrderType } from '@shared/models/order.model';
-import { Order, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { OrderItemType } from '@shared/models/order-item.model';
-import { OrderStatus } from '@shared/constants/order.constant';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { OrderResType, SearchOrderType } from '@route/order/order.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderItemType } from '@shared/models/order-item.model';
+import { OrderType } from '@shared/models/order.model';
+import { PrismaService } from '@shared/services/prisma.service';
 
 @Injectable()
 export class OrderRepository {
@@ -49,12 +48,12 @@ export class OrderRepository {
     userId: number,
     dto: SearchOrderType,
   ): Promise<Paging<OrderResType>> {
-    const { page, size, sort, status } = dto;
+    const { page, size, sorts: sort, status } = dto;
 
     const whereRaw: Prisma.Sql[] = [Prisma.sql`o.user_id = ${userId}`];
 
     if (status) {
-      whereRaw.push(Prisma.sql`o.status = ${status}`);
+      whereRaw.push(Prisma.sql`o.status = ${status}::"OrderStatus"`);
     }
 
     const whereClause: Prisma.OrderWhereInput = {
@@ -81,7 +80,8 @@ export class OrderRepository {
         );
       }
     });
-
+    const limit = size;
+    const offset = (page - 1) * limit;
     const [totalItems, items] = await this.prismaService.$transaction([
       this.prismaService.order.count({ where: whereClause }),
       this.prismaService.$queryRaw<OrderResType[]>(
@@ -94,10 +94,10 @@ export class OrderRepository {
                     ORDER BY oi2.created_at ASC
                     LIMIT 1
                   ) first_item ON true
-                  WHERE ${Prisma.join(whereRaw)} 
+                  WHERE ${Prisma.join(whereRaw, ' AND ')} 
                   GROUP BY o.id, o.total_amount, o.status, o.created_at, first_item.product 
                   ORDER BY ${Prisma.join(orderByRaw)}
-                  LIMIT ${size} OFFSET ${page * size};`,
+                  LIMIT ${limit} OFFSET ${offset};`,
       ),
     ]);
 

@@ -9,6 +9,7 @@ import {
 import {
   CreateOrderReqType,
   CreateOrderResType,
+  OrderDetailResType,
   OrderResType,
   OrderSearchParamsType,
 } from '@/types/order.type';
@@ -27,6 +28,12 @@ const orderService = {
     const query = toQueryString(req);
     const response = await http.get<ResponseApiPaging<OrderResType>>(
       `/api/v1/orders?${query}`,
+    );
+    return response.payload.data;
+  },
+  getOrderById: async (id: number): Promise<OrderDetailResType> => {
+    const response = await http.get<ResponseApi<OrderDetailResType>>(
+      `/api/v1/orders/${id}`,
     );
     return response.payload.data;
   },
