@@ -14,7 +14,11 @@ export class CommentService {
   constructor(@Inject() private readonly commentRepository: CommentRepository) {
   }
 
-  async getCommentByProductId(productId: number): Promise<CommentResponseDto[]> {
+  async getCommentByProductId(id: string): Promise<CommentResponseDto[]> {
+    const productId = Number(id);
+    if (isNaN(productId)) {
+      throw new BadRequestException('Product id must be a number');
+    }
     const comments: CommentResponseDto[] = await this.commentRepository.getComments(productId);
 
     if (!comments || comments.length === 0) {
@@ -74,6 +78,26 @@ export class CommentService {
       throw new InternalServerErrorException('Failed to delete comment');
     }
   }
+
+  async likeComment(commentId: string, userId: number): Promise<boolean> {
+    const comment = await this.commentRepository.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    const existingLike = await this.commentRepository.findLikeByUserAndComment(userId, commentId);
+
+    if (existingLike) {
+      await this.commentRepository.deleteLike(userId, commentId);
+      await this.commentRepository.decrementCommentLike(commentId);
+      return false;
+    }
+
+    await this.commentRepository.createLike(userId, commentId);
+    await this.commentRepository.incrementCommentLike(commentId);
+    return true;
+  }
+
 
 
 }

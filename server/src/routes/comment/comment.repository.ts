@@ -47,8 +47,6 @@ export class CommentRepository {
     });
   }
 
-
-
   findById(id: string) {
     return this.prismaService.comment.findUnique({
       where: {
@@ -56,6 +54,50 @@ export class CommentRepository {
       }
     });
   }
+
+  async findLikeByUserAndComment(userId: number, commentId: string) {
+    return this.prismaService.commentLike.findUnique({
+      where: {
+        userId_commentId: {
+          userId,
+          commentId,
+        },
+      },
+    });
+  }
+
+  async createLike(userId: number, commentId: string) {
+    return this.prismaService.commentLike.create({
+      data: { userId, commentId },
+    });
+  }
+
+  async deleteLike(userId: number, commentId: string) {
+    return this.prismaService.commentLike.delete({
+      where: {
+        userId_commentId: {
+          userId,
+          commentId,
+        },
+      },
+    });
+  }
+
+  async incrementCommentLike(commentId: string) {
+    return this.prismaService.comment.update({
+      where: { id: commentId },
+      data: { like: { increment: 1 } },
+    });
+  }
+
+  async decrementCommentLike(commentId: string) {
+    return this.prismaService.comment.update({
+      where: { id: commentId },
+      data: { like: { decrement: 1 } },
+    });
+  }
+
+
 
   mapToCommentResponseDto(comment: Comment): CommentResponseDto {
     return {

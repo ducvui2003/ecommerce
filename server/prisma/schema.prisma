@@ -493,6 +493,15 @@ model Comment {
   @@map("comments")
 }
 
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId])
+}
+
 model Policy {
   id      Int             @id @default(autoincrement())
   title   String
