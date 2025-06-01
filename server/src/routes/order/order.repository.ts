@@ -49,9 +49,39 @@ export class OrderRepository {
     userId: number,
     dto: SearchOrderType,
   ): Promise<Paging<OrderResType>> {
-    const { page, size } = dto;
+    const { page, size, sort, status } = dto;
 
-    const whereClause: Prisma.OrderWhereInput = {};
+    const whereRaw: Prisma.Sql[] = [Prisma.sql`o.user_id = ${userId}`];
+
+    if (status) {
+      whereRaw.push(Prisma.sql`o.status = ${status}`);
+    }
+
+    const whereClause: Prisma.OrderWhereInput = {
+      status: status
+        ? {
+            equals: status,
+          }
+        : undefined,
+    };
+
+    const calculateOrderBy: Prisma.OrderOrderByWithRelationInput = {};
+    const orderByRaw: Prisma.Sql[] = [];
+    sort.forEach((item) => {
+      if (item.sortBy === 'createdAt') {
+        calculateOrderBy.createdAt = item.orderBy;
+        orderByRaw.push(
+          Prisma.sql`o.created_at ${Prisma.raw(item.orderBy.toUpperCase())}`,
+        );
+      }
+      if (item.sortBy === 'price') {
+        calculateOrderBy.totalAmount = item.orderBy;
+        orderByRaw.push(
+          Prisma.sql`o.total_amount ${Prisma.raw(item.orderBy.toUpperCase())}`,
+        );
+      }
+    });
+
     const [totalItems, items] = await this.prismaService.$transaction([
       this.prismaService.order.count({ where: whereClause }),
       this.prismaService.$queryRaw<OrderResType[]>(
@@ -64,8 +94,9 @@ export class OrderRepository {
                     ORDER BY oi2.created_at ASC
                     LIMIT 1
                   ) first_item ON true
-                  WHERE user_id = ${userId} 
+                  WHERE ${Prisma.join(whereRaw)} 
                   GROUP BY o.id, o.total_amount, o.status, o.created_at, first_item.product 
+                  ORDER BY ${Prisma.join(orderByRaw)}
                   LIMIT ${size} OFFSET ${page * size};`,
       ),
     ]);

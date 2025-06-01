@@ -104,7 +104,7 @@ export class OrderService {
         'orderId' | 'price' | 'product' | 'quantity'
       >[] = cartItems.map((item) => {
         const product = products.find((i) => i.id === item.productId);
-
+        console.log(item.option);
         return {
           orderId: order.id,
           price: toDecimalSchema(recordPriceOrderItem[item.id] ?? 0),
@@ -115,13 +115,15 @@ export class OrderService {
             media: product!.thumbnail?.publicId
               ? this.fileService.getUrl(product!.thumbnail.publicId)
               : '',
-            price: product!.basePrice,
+            price: product!.basePrice.toNumber(),
             supplier: product!.supplier.name,
-            options: item.option && {
-              id: item.option.id,
-              name: item.option.name,
-              price: item.option.price,
-            },
+            options: item.option
+              ? {
+                  id: item.option.id,
+                  name: item.option.name,
+                  price: item.option.price.toNumber(),
+                }
+              : undefined,
           },
           quantity: item.quantity,
         };

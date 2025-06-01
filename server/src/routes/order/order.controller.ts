@@ -78,6 +78,8 @@ export class OrderController {
     @ActiveUser('id') userId: number,
     @Query() search: SearchOrderDto,
   ): Promise<Paging<OrderResType>> {
+    console.log(search);
+
     return this.orderService.search(userId, search);
   }
 
