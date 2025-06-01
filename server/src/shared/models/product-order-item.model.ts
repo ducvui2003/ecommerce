@@ -14,6 +14,7 @@ export const ProductOrderItemModel = z.object({
       name: z.string(),
       price: z.number(),
     })
+    .nullable()
     .optional(),
 });
 export type ProductOrderItemModelType = z.infer<typeof ProductOrderItemModel>;

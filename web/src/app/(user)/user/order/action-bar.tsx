@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { statusOrder, StatusOrderType } from '@/constraint/variable';
 import { OrderResType, OrderSearchParamsType } from '@/types/order.type';
 import { Table } from '@tanstack/react-table';
 
@@ -16,19 +17,11 @@ type ActionsBarProps = {
   onSearch: (search: OrderSearchParamsType) => void;
 };
 
-const statusOrder = {
-  PENDING: 'Đang chờ thanh toán',
-  PAID: 'Đã thanh toán',
-  DELIVERING: 'Đang vận chuyển',
-  COMPLETE: 'Thành công',
-  CANCELED: 'Hủy đơn hàng',
-};
-
 const ActionBar = ({ currentValue, onSearch, table }: ActionsBarProps) => {
   const handleSelectStatus = (value: string) => {
     onSearch({
       ...currentValue,
-      status: value === 'undefined' ? undefined : value,
+      status: value === 'undefined' ? undefined : (value as StatusOrderType),
     });
   };
 

@@ -1,6 +1,10 @@
 import orderService from '@/service/order.service';
 import { PageReq, Paging } from '@/types/api.type';
-import { OrderResType, OrderSearchParamsType } from '@/types/order.type';
+import {
+  OrderDetailResType,
+  OrderResType,
+  OrderSearchParamsType,
+} from '@/types/order.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const orderApi = createApi({
@@ -48,7 +52,22 @@ export const orderApi = createApi({
         return final;
       },
     }),
+    getOrderDetail: builder.query<OrderDetailResType, number>({
+      async queryFn(orderId) {
+        try {
+          const data = await orderService.getOrderById(orderId);
+          return { data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetOrderTableQuery } = orderApi;
+export const { useGetOrderTableQuery, useGetOrderDetailQuery } = orderApi;

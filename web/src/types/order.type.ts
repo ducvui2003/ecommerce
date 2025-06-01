@@ -1,3 +1,4 @@
+import { StatusOrderType } from '@/constraint/variable';
 import { PageReq } from '@/types/api.type';
 import { z } from 'zod';
 
@@ -49,7 +50,7 @@ type CreateOrderCookie = {
 
 type OrderResType = {
   id: number;
-  status: string;
+  status: StatusOrderType;
   totalAmount: number;
   quantity: number;
   createdAt: Date;
@@ -57,7 +58,7 @@ type OrderResType = {
 
 type OrderDetailResType = {
   id: number;
-  status: string;
+  status: StatusOrderType;
   totalAmount: number;
   items: OrderDetailItemType[];
   receiver: {
@@ -84,10 +85,11 @@ type OrderDetailItemType = {
     name: string;
     price: number;
   };
+  quantity: number;
 };
 
 type OrderSearchParamsType = {
-  status?: string;
+  status?: StatusOrderType;
 };
 
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
@@ -100,4 +102,5 @@ export type {
   OrderResType,
   OrderDetailResType,
   OrderSearchParamsType,
+  OrderDetailItemType,
 };
