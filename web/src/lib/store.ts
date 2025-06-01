@@ -10,6 +10,7 @@ import { cartApi } from '@/features/cart/cart.api';
 import { promotionApi } from '@/features/promotion/promotion.api';
 import addressReducer from '@/features/address/address.slice';
 import { contactApi } from '@/features/contact/contact.api';
+import { orderApi } from '@/features/order/order.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -24,6 +25,7 @@ export const makeStore = () => {
       [cartApi.reducerPath]: cartApi.reducer,
       [promotionApi.reducerPath]: promotionApi.reducer,
       [contactApi.reducerPath]: contactApi.reducer,
+      [orderApi.reducerPath]: orderApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
@@ -33,7 +35,8 @@ export const makeStore = () => {
         .concat(productManagerApi.middleware)
         .concat(cartApi.middleware)
         .concat(promotionApi.middleware)
-        .concat(contactApi.middleware);
+        .concat(contactApi.middleware)
+        .concat(orderApi.middleware);
     },
   });
 

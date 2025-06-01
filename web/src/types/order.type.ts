@@ -1,3 +1,4 @@
+import { PageReq } from '@/types/api.type';
 import { z } from 'zod';
 
 const string = z.string().trim().min(1, 'Không được để trống trường này');
@@ -46,6 +47,33 @@ type CreateOrderCookie = {
   res?: CreateOrderResType;
 };
 
+type OrderResType = {
+  id: number;
+  status: string;
+  totalAmount: number;
+  quantity: number;
+  createdAt: Date;
+};
+
+type OrderDetailResType = {
+  id: number;
+  status: string;
+  totalAmount: number;
+  items: [];
+  receiver: {
+    name: string;
+    phone: string;
+    email: string;
+    province: string;
+    district: string;
+    ward: string;
+    detail: string;
+  };
+  createdAt: Date;
+};
+
+type OrderSearchParamsType = {};
+
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
 export { CreateOrderFormSchema };
 export type {
@@ -53,4 +81,7 @@ export type {
   CreateOrderReqType,
   CreateOrderResType,
   CreateOrderCookie,
+  OrderResType,
+  OrderDetailResType,
+  OrderSearchParamsType,
 };
