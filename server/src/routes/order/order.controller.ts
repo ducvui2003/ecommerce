@@ -85,7 +85,7 @@ export class OrderController {
 
   @Get('/:id')
   @UseGuards(AuthenticationGuard)
-  @MessageHttp('Paging order for customer')
+  @MessageHttp('Get order detail for customer')
   @Auth([AuthType.Bearer])
   getDetail(
     @ActiveUser('id') userId: number,
