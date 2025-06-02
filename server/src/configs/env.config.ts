@@ -46,6 +46,8 @@ const envSchema = z.object({
 
   SEPAY_BANK: z.string(),
   SEPAY_ACCOUNT_NUMBER: z.string(),
+
+  LOG_PRISMA_SQL: z.coerce.boolean().optional().default(false),
 });
 
 const configServer = envSchema.safeParse(process.env);

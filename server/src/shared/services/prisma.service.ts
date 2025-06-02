@@ -1,3 +1,4 @@
+import envConfig from '@config/env.config';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
@@ -17,11 +18,12 @@ export class PrismaService
     });
   }
   async onModuleInit() {
-    this.$on('query', (e) => {
-      console.log('Query: ' + e.query);
-      console.log('Params: ' + e.params);
-      console.log('Duration: ' + e.duration + 'ms');
-    });
+    if (envConfig.LOG_PRISMA_SQL)
+      this.$on('query', (e) => {
+        console.log('Query: ' + e.query);
+        console.log('Params: ' + e.params);
+        console.log('Duration: ' + e.duration + 'ms');
+      });
 
     await this.$connect();
   }
