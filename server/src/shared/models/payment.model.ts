@@ -1,4 +1,4 @@
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@shared/constants/payment.constant';
 import { TimestampFields } from '@shared/models/base.model';
 import { z } from 'zod';
 

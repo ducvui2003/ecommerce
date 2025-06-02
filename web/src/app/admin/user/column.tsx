@@ -19,6 +19,7 @@ const userColumns: ColumnDef<GetUserResType>[] = [
   {
     accessorKey: 'id',
     header: '#',
+    size: 50,
   },
   {
     accessorKey: 'email',

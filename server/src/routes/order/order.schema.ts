@@ -4,6 +4,7 @@ import { OrderBy, orderBySchema } from '@shared/constants/search.constant';
 import { DecimalToNumberSchema } from '@shared/models/base.model';
 import { OrderItemModel } from '@shared/models/order-item.model';
 import { OrderModel } from '@shared/models/order.model';
+import { PaymentModel } from '@shared/models/payment.model';
 import { ProductOrderItemModel } from '@shared/models/product-order-item.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
@@ -79,11 +80,18 @@ const OrderDetailResSchema = OrderModel.pick({
   createdAt: true,
 }).extend({
   totalAmount: DecimalToNumberSchema,
+  feeShipping: DecimalToNumberSchema,
   items: z.array(
     OrderItemModel.pick({
       quantity: true,
     }).merge(ProductOrderItemModel),
   ),
+  payment: PaymentModel.pick({
+    provider: true,
+    createdAt: true,
+    updatedAt: true,
+    status: true,
+  }),
 });
 
 type CreateOrderType = z.infer<typeof CreateOrderSchema>;

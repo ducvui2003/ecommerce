@@ -3,10 +3,9 @@ import ClientIcon from '@/components/ClientIcon';
 import { Button } from '@/components/ui/button';
 import { setIsDetailSheet, setOrderId } from '@/features/order/order.slice';
 import { useAppDispatch } from '@/hooks/use-store';
-import { formatDate } from '@/lib/utils';
+import { currency, formatDate } from '@/lib/utils';
 import { OrderResType } from '@/types/order.type';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
 
 type OrderStatus = 'Chờ xử lý' | 'Đang vận chuyển' | 'Hoàn thành';
 
@@ -32,7 +31,7 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
         </div>
       );
     },
-    cell: ({ row, column }) => {
+    cell: ({ row }) => {
       const value: Date = row.getValue('createdAt');
 
       return <div className="font-medium">{formatDate(value)}</div>;
@@ -41,6 +40,10 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
   {
     accessorKey: 'totalAmount',
     header: 'Tổng tiền (VND)',
+    cell: ({ row }) => {
+      const value = row.getValue('totalAmount') as number;
+      return <span>{currency(value)}</span>;
+    },
   },
   {
     accessorKey: 'quantity',

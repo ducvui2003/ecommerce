@@ -71,6 +71,12 @@ type OrderDetailResType = {
     detail: string;
   };
   createdAt: Date;
+  payment: {
+    provider: string;
+    status: string;
+    createdAt: Date;
+    updatedAt?: Date;
+  };
 };
 
 type OrderDetailItemType = {

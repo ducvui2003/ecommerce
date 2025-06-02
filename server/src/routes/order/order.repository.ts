@@ -85,7 +85,7 @@ export class OrderRepository {
     const [totalItems, items] = await this.prismaService.$transaction([
       this.prismaService.order.count({ where: whereClause }),
       this.prismaService.$queryRaw<OrderResType[]>(
-        Prisma.sql`SELECT o.id, o.total_amount AS "totalAmount", o.status, o.created_at as "createdAt", COUNT(oi.id)::INT as "quantity", first_item.product ->> 'media' AS "thumbnail"
+        Prisma.sql`SELECT o.id, o.total_amount AS "totalAmount", o.status, o.created_at as "createdAt", SUM(oi.quantity)::INT as "quantity", first_item.product ->> 'media' AS "thumbnail"
                   FROM orders o JOIN order_items oi ON o.id = oi.order_id 
                   JOIN LATERAL (
                     SELECT oi2.product
@@ -115,6 +115,7 @@ export class OrderRepository {
     return this.prismaService.order.findFirstOrThrow({
       include: {
         orderItem: true,
+        payment: true,
       },
       where: {
         userId: userId,

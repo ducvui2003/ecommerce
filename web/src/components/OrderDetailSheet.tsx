@@ -1,4 +1,5 @@
 'use client';
+import ClientIcon from '@/components/ClientIcon';
 import ListView from '@/components/ListView';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -9,6 +10,11 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { DEFAULT_IMAGE, statusOrder } from '@/constraint/variable';
 import { useGetOrderDetailQuery } from '@/features/order/order.api';
 import { setIsDetailSheet } from '@/features/order/order.slice';
@@ -28,7 +34,7 @@ const OrderDetailSheet = () => {
     skip: !orderId,
   });
 
-  if (!data) return <Skeleton className="h-[300px]" />;
+  if (!data) return null;
 
   return (
     <Sheet
@@ -37,16 +43,14 @@ const OrderDetailSheet = () => {
     >
       <SheetContent className="sm:w-[50vw]">
         <SheetHeader>
-          <SheetTitle>Order #{data.id}</SheetTitle>
-          <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </SheetDescription>
+          <SheetTitle>Đơn hàng #{data.id}</SheetTitle>
+          <SheetDescription></SheetDescription>
         </SheetHeader>
-        <section className="px-4 [&>*]:py-4">
+        <section className="px-4 [&>*]:mb-4 [&>*]:py-2">
           <OrderItemList items={data.items} />
           <OrderMetadata {...data} />
           <OrderReceiver {...data.receiver} />
+          <OrderPayment {...data.payment} />
         </section>
       </SheetContent>
     </Sheet>
@@ -58,7 +62,6 @@ type OrderItemListProps = { items: OrderDetailItemType[] };
 const OrderItemList = ({ items }: OrderItemListProps) => {
   return (
     <div>
-      <h2 className="text-lg">Danh sách sản phẩm</h2>
       <ListView<OrderDetailItemType>
         data={items}
         className="flex-col gap-3"
@@ -89,14 +92,16 @@ const OrderItem = ({
       <Image
         src={media || DEFAULT_IMAGE}
         alt={name}
-        className="size-[100px] rounded-md shadow-md"
+        className="size-[70px] rounded-md shadow-md"
       />
       <div>
-        <span>
+        <span className="text-sm">
           {category} - <Badge> {supplier}</Badge>
         </span>
 
-        <h3 className="text-md w-[300px] truncate text-ellipsis">{name}</h3>
+        <h3 className="w-[300px] truncate py-1 text-base text-ellipsis">
+          {name}
+        </h3>
 
         {options && <span className="text-sm">{options.name}</span>}
       </div>
@@ -116,6 +121,8 @@ const OrderMetadata = ({
 }: OrderMetadataProps) => {
   return (
     <div className="grid grid-cols-2 gap-4 border-t-2">
+      <div>Tổng tiền</div>
+      <div>{currency(totalAmount)}</div>
       <div className="text-base text-gray-700">Ngày đặt hàng</div>
       <div>{formatDate(createdAt)}</div>
       <div className="text-base text-gray-700">Trạng thái đơn hàng</div>
@@ -136,21 +143,49 @@ const OrderReceiver = ({
   ward,
 }: OrderReceiverProps) => {
   return (
-    <div className="grid grid-cols-2 gap-4 border-t-2">
-      <div className="text-base text-gray-700">Tên khách hàng</div>
-      <div>{name}</div>
-      <div className="text-base text-gray-700">Email</div>
-      <div>{email}</div>
-      <div className="text-base text-gray-700">Số điện thoại</div>
-      <div>{phone}</div>
-      <div className="text-base text-gray-700">Tỉnh/Thành phố</div>
-      <div>{province}</div>
-      <div className="text-base text-gray-700">Quận/Huyện</div>
-      <div>{district}</div>
-      <div className="text-base text-gray-700">Xã/Phường</div>
-      <div>{ward}</div>
-      <div className="text-base text-gray-700">Số nhà</div>
-      <div>{detail}</div>
+    <div className="border-accent flex items-start gap-3 rounded-md border-2 px-2 shadow-md">
+      <ClientIcon icon={'mynaui:location'} />
+      <div className="">
+        <span className="flex items-end gap-3 text-base">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-accent text-lg">{name}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <span>{email}</span>
+            </TooltipContent>
+          </Tooltip>
+          <span className="text-gray-700">{phone}</span>
+        </span>
+        <div className="text-base text-gray-700">
+          {detail}, {ward}, {district}, {province}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+type OrderPaymentProps = OrderDetailResType['payment'];
+
+const OrderPayment = ({
+  createdAt,
+  provider,
+  status,
+  updatedAt,
+}: OrderPaymentProps) => {
+  return (
+    <div className="bg-secondary flex items-start gap-3 rounded-md px-2 shadow-md">
+      <ClientIcon icon={'tdesign:money'} className="text-green-300" size={30} />
+
+      <div className="flex flex-1 flex-col gap-2">
+        <span className="flex justify-between">
+          Thanh toán thông qua {provider} <Badge>{status}</Badge>
+        </span>
+        <div>Tạo giao dịch lúc {formatDate(createdAt, 'LONG')}</div>
+        {updatedAt && (
+          <div>Cập nhập giao dịch lúc {formatDate(updatedAt, 'LONG')}</div>
+        )}
+      </div>
     </div>
   );
 };
@@ -159,13 +194,7 @@ type OrderSummaryProps = {
   data: OrderDetailResType;
 };
 const OrderSummary = ({ data }: OrderSummaryProps) => {
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      <div>Created At</div>
-      <div>{formatDate(data.createdAt)}</div>
-      <div></div>
-    </div>
-  );
+  return <div className="grid grid-cols-2 gap-2"></div>;
 };
 
 export default OrderDetailSheet;
