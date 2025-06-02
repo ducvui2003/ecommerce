@@ -19,4 +19,3 @@ export const PageableSchema = z.object({
     .default('10'),
 });
 export type Pageable = z.infer<typeof PageableSchema>;
-export class PageableDTO extends createZodDto(PageableSchema) {}

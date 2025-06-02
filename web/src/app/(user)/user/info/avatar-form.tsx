@@ -19,7 +19,6 @@ const AvatarForm = ({ avatar }: AvatarFormProps) => {
   const [currentAvatar, setCurrentAvatar] = useState<string | StaticImport>(
     avatar ?? image,
   );
-  console.log(currentAvatar);
 
   const handleClick = () => {
     fileInputRef.current?.click();

@@ -23,7 +23,7 @@ export const OrderModel = z.object({
 
   createdAt: z.coerce.date(),
 
-  payment: PaymentModel.optional(),
+  payment: PaymentModel.nullable().optional(),
 });
 
 export type OrderType = z.infer<typeof OrderModel>;
