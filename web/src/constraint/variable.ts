@@ -16,3 +16,17 @@ export const LOCAL_STORAGE = {
 export const ALT = 'An Nhiem';
 export const DEFAULT_IMAGE = image;
 export const PAYMENT_COOKIE = 'payment';
+
+export type StatusOrderType =
+  | 'PENDING'
+  | 'PAID'
+  | 'DELIVERING'
+  | 'COMPLETE'
+  | 'CANCELED';
+export const statusOrder: Record<StatusOrderType, string> = {
+  PENDING: 'Đang chờ thanh toán',
+  PAID: 'Đã thanh toán',
+  DELIVERING: 'Đang vận chuyển',
+  COMPLETE: 'Thành công',
+  CANCELED: 'Hủy đơn hàng',
+};

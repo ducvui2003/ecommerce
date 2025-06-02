@@ -26,7 +26,10 @@ export class PrismaPaymentRepository implements PaymentRepository {
     });
   }
 
-  updatePayment(paymentId: number, status: PaymentStatusType) {
+  updatePayment(
+    paymentId: number,
+    status: PaymentStatusType,
+  ): Promise<PaymentType> {
     return this.prismaService.payment.update({
       data: {
         status: status,

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 
 import ActionBar from '@/app/admin/product/action-bar';
-import { useProductTable } from '@/hooks/use-product-datatable';
+import { useProductTable } from '@/hooks/use-manager-product-datatable';
 import { SearchParams } from '@/types/product.type';
 import { useState } from 'react';
 

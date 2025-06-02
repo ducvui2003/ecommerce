@@ -1,3 +1,5 @@
+import { StatusOrderType } from '@/constraint/variable';
+import { PageReq } from '@/types/api.type';
 import { z } from 'zod';
 
 const string = z.string().trim().min(1, 'Không được để trống trường này');
@@ -46,6 +48,56 @@ type CreateOrderCookie = {
   res?: CreateOrderResType;
 };
 
+type OrderResType = {
+  id: number;
+  status: StatusOrderType;
+  totalAmount: number;
+  quantity: number;
+  createdAt: Date;
+};
+
+type OrderDetailResType = {
+  id: number;
+  status: StatusOrderType;
+  totalAmount: number;
+  items: OrderDetailItemType[];
+  receiver: {
+    name: string;
+    phone: string;
+    email: string;
+    province: string;
+    district: string;
+    ward: string;
+    detail: string;
+  };
+  createdAt: Date;
+  payment: {
+    provider: string;
+    status: string;
+    createdAt: Date;
+    updatedAt?: Date;
+  };
+};
+
+type OrderDetailItemType = {
+  id: number;
+  name: string;
+  category: string;
+  supplier: string;
+  price: number;
+  media: string;
+  options?: {
+    id: number;
+    name: string;
+    price: number;
+  };
+  quantity: number;
+};
+
+type OrderSearchParamsType = {
+  status?: StatusOrderType;
+};
+
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
 export { CreateOrderFormSchema };
 export type {
@@ -53,4 +105,8 @@ export type {
   CreateOrderReqType,
   CreateOrderResType,
   CreateOrderCookie,
+  OrderResType,
+  OrderDetailResType,
+  OrderSearchParamsType,
+  OrderDetailItemType,
 };

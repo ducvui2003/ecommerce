@@ -6,18 +6,15 @@ import {
   HttpStatus,
   Inject,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import {
-  ChangeVisibilityDTO,
   CreatedMediaDTO,
   SearchMediaReqDTO,
   SignatureDTO,
 } from '@route/media/media.dto';
 import { MessageHttp } from '@shared/decorators/message.decorator';
 import { FileService } from '@shared/services/file/file.service';
-import { PageableDTO } from '@shared/types/request.type';
 import { MediaService } from './media.service';
 
 @Controller('/api/v1/media')
