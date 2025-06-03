@@ -57,4 +57,15 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-docker/*
+docker/docker-compose.yml
+docker/changes/2025_03_29/.dockerignore
+docker/changes/2025_03_29/Dockerfile
+docker/changes/2025_03_29/image.png
+docker/changes/2025_03_29/README.md
+docker/env/server.production.env
+docker/env/web.production.env
+docker/init/postgres/01__schema.sql
+docker/init/postgres/02__data.sql
+docker/resources/.env.example
+docker/resources/docker-compose-opt.yml
+docker/resources/docker-compose.yml
