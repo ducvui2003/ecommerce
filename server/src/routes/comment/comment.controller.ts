@@ -23,18 +23,21 @@ import { ActiveUser } from '@shared/decorators/active-user.decorator';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 
 @Controller('/api/v1/comment')
-export class CommentController {
+  export class CommentController {
   constructor(@Inject() private readonly commentService: CommentService) {}
 
   @Get(':id')
   @MessageHttp('Get all comments for product')
   async getComments(
     @Param('id') id: string,
-    @Query('page') page: number = 1,
-    @Query('size') size: number = 10,
+    @Query('page') pageRaw: string,
+    @Query('size') sizeRaw: string,
   ): Promise<Paging<CommentResponseDto>> {
+    const page = parseInt(pageRaw, 10) || 1;
+    const size = parseInt(sizeRaw, 10) || 10;
     return this.commentService.getCommentByProductId(id, page, size);
   }
+
 
   @Post()
   @UseGuards(AuthenticationGuard)
