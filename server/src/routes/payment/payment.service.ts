@@ -81,7 +81,8 @@ export class PaymentService {
         'SUCCESS',
       );
       // 3. Update status in Order
-      this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
+      if (payment.orderId)
+        this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
     } else {
       await this.paymentRepository.updatePayment(paymentId, 'FAILED');
     }

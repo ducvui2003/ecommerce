@@ -1,4 +1,4 @@
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@shared/constants/payment.constant';
 import { TimestampFields } from '@shared/models/base.model';
 import { z } from 'zod';
 
@@ -9,7 +9,7 @@ const PaymentProvider = {
 
 const PaymentModel = TimestampFields.extend({
   id: z.number(),
-  orderId: z.number(),
+  orderId: z.number().nullable(),
   status: z
     .enum([PaymentStatus.FAILED, PaymentStatus.PENDING, PaymentStatus.SUCCESS])
     .default(PaymentStatus.PENDING),

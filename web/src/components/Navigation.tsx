@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
 import Link from 'next/link';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 
 type NavigationLinkType = {
   title: string;
@@ -29,8 +29,22 @@ export const components: NavigationType[] = [
     href: '/',
   },
   {
-    title: 'Danh mục',
-    child: [],
+    title: 'Sản phẩm',
+    href: '/product',
+    child: [
+      {
+        title: 'Tinh dầu',
+        href: '/product?categoryName=Tinh+d%E1%BA%A7u',
+      },
+      {
+        title: 'Lọ đựng tinh dầu',
+        href: '/product?categoryName=L%E1%BB%8D+%C4%91%E1%BB%B1ng+tinh+d%E1%BA%A7u',
+      },
+      {
+        title: 'Máy xông tinh dầu',
+        href: '/product?categoryName=M%C3%A1y+x%C3%B4ng+tinh+d%E1%BA%A7u',
+      },
+    ],
   },
   {
     title: 'Về chúng tôi',
@@ -52,31 +66,7 @@ type NavigationProps = {
 
 const Navigation = ({ components }: NavigationProps) => {
   const triggerRef = useRef<HTMLButtonElement[]>([]);
-  const viewPortRef = useRef<HTMLDivElement>(null);
 
-  components[1].child = [
-    {
-      title: 'aaa',
-      href: 'aaa',
-    },
-    {
-      title: 'bbb',
-      href: 'bbb',
-    },
-    {
-      title: 'ccc',
-      href: 'ccc',
-    },
-    {
-      title: 'ddd',
-      href: 'ddd',
-    },
-  ];
-
-  // useEffect(() => {
-  //   console.log('viewPortRef', viewPortRef.current);
-  //   console.log('navRefs', triggerRef.current);
-  // }, [triggerRef.current, viewPortRef.current]);
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-x-6 font-medium">
@@ -86,7 +76,10 @@ const Navigation = ({ components }: NavigationProps) => {
               {!component.child ? (
                 <Link href={component.href!} legacyBehavior passHref>
                   <NavigationMenuLink
-                    className={(navigationMenuTriggerStyle(),'text-lg hover:text-primary mx-2')}
+                    className={
+                      (navigationMenuTriggerStyle(),
+                      'hover:text-primary mx-2 text-lg')
+                    }
                   >
                     {component.title}
                   </NavigationMenuLink>
@@ -94,7 +87,7 @@ const Navigation = ({ components }: NavigationProps) => {
               ) : (
                 <React.Fragment key={uuid()}>
                   <NavigationMenuTrigger
-                    className="text-lg data-[state=open]:hover:text-primary data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent focus:bg-transparent hover:bg-transparent p-0"
+                    className="data-[state=open]:hover:text-primary p-0 text-lg hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent"
                     ref={(ref) => {
                       if (ref) {
                         triggerRef.current[index] = ref;
@@ -104,12 +97,17 @@ const Navigation = ({ components }: NavigationProps) => {
                     {component.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                       {component.child.map((item, index) => {
                         return (
                           <li key={index}>
                             <Link href={item.href} legacyBehavior passHref>
-                              <NavigationMenuLink className={(navigationMenuTriggerStyle(), 'text-base hover:text-primary mx-2')}>
+                              <NavigationMenuLink
+                                className={
+                                  (navigationMenuTriggerStyle(),
+                                  'hover:text-primary mx-2 text-base')
+                                }
+                              >
                                 {item.title}
                               </NavigationMenuLink>
                             </Link>

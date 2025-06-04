@@ -10,8 +10,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import React, { useState } from 'react';
-import { Button } from '@headlessui/react';
 import LogoutFrame from '@/components/LogoutFrame';
+import { Button } from '@/components/ui/button';
 
 const pathMap: Record<string, string> = {
   'user/info': 'Cài đặt/Thông tin cá nhân',

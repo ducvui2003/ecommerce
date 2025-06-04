@@ -1,10 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  FILE_SERVICE,
   SHARED_CART_ITEM_REPOSITORY,
   SHARED_PAYMENT_REPOSITORY,
   SHARED_PRODUCT_REPOSITORY,
 } from '@shared/constants/dependency.constant';
-import { toDecimalSchema } from '@shared/helper.shared';
+import {
+  isNotFoundError,
+  toDecimalSchema,
+  transformItemsPaging,
+} from '@shared/helper.shared';
 import { OrderItemType } from '@shared/models/order-item.model';
 import { SharedCartItemRepository } from '@shared/repositories/shared-cart-item.repository';
 import { PrismaService } from '@shared/services/prisma.service';
@@ -12,10 +17,22 @@ import { OrderRepository } from './order.repository';
 import { SharedPrismaPaymentRepository } from '@shared/repositories/shared-payment.repository';
 import { SharedProductRepository } from '@shared/repositories/shared-product.repository';
 import { ProductType } from '@shared/models/product.model';
-import { CreateOrderType } from '@route/order/order.schema';
+import {
+  CreateOrderType,
+  OrderDetailResSchema,
+  OrderDetailResType,
+  OrderResSchema,
+  OrderResType,
+  SearchOrderType,
+} from '@route/order/order.schema';
 
 import { PaymentType } from '@shared/models/payment.model';
 import { OrderStatus } from '@shared/constants/order.constant';
+import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderType } from '@shared/models/order.model';
+import { FileService } from '@shared/services/file/file.service';
+import { ProductNotFoundException } from '@shared/exceptions/product.exception';
+import { OrderNotFound } from '@route/order/order.error';
 
 @Injectable()
 export class OrderService {
@@ -30,6 +47,8 @@ export class OrderService {
     private readonly sharedPaymentRepository: SharedPrismaPaymentRepository,
     @Inject(SHARED_PRODUCT_REPOSITORY)
     private readonly sharedProductRepository: SharedProductRepository,
+    @Inject(FILE_SERVICE)
+    private readonly fileService: FileService,
   ) {}
 
   async createOrder(
@@ -85,7 +104,6 @@ export class OrderService {
         'orderId' | 'price' | 'product' | 'quantity'
       >[] = cartItems.map((item) => {
         const product = products.find((i) => i.id === item.productId);
-
         return {
           orderId: order.id,
           price: toDecimalSchema(recordPriceOrderItem[item.id] ?? 0),
@@ -93,14 +111,18 @@ export class OrderService {
             id: product!.id,
             name: product!.name,
             category: product!.category.name,
-            media: '',
-            price: product!.basePrice,
+            media: product!.thumbnail?.publicId
+              ? this.fileService.getUrl(product!.thumbnail.publicId)
+              : '',
+            price: product!.basePrice.toNumber(),
             supplier: product!.supplier.name,
-            options: item.option && {
-              id: item.option.id,
-              name: item.option.name,
-              price: item.option.price,
-            },
+            options: item.option
+              ? {
+                  id: item.option.id,
+                  name: item.option.name,
+                  price: item.option.price.toNumber(),
+                }
+              : undefined,
           },
           quantity: item.quantity,
         };
@@ -125,5 +147,44 @@ export class OrderService {
         orderId: order.id,
       };
     });
+  }
+
+  async search(
+    userId: number,
+    dto: SearchOrderType,
+  ): Promise<Paging<OrderResType>> {
+    const page: Paging<OrderResType> = await this.orderRepository.search(
+      userId,
+      dto,
+    );
+    return transformItemsPaging<OrderResType, OrderResType>(page, (item) => {
+      return OrderResSchema.parse(item);
+    });
+  }
+
+  async getDetail(
+    userId: number,
+    orderId: number,
+  ): Promise<OrderDetailResType> {
+    try {
+      const data: OrderType = await this.orderRepository.getDetail(
+        userId,
+        orderId,
+      );
+      const dataParse = {
+        ...data,
+        items:
+          data.orderItem?.map((item) => {
+            return {
+              ...item.product,
+              quantity: item.quantity,
+            };
+          }) ?? [],
+      };
+      return OrderDetailResSchema.parse(dataParse);
+    } catch (e) {
+      if (isNotFoundError(e)) throw OrderNotFound;
+      throw e;
+    }
   }
 }

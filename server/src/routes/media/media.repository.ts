@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ResourceType } from '@shared/models/resource.model';
 import { PrismaService } from '@shared/services/prisma.service';
-import { Pageable } from '@shared/types/request.type';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { Prisma } from '@prisma/client';
-import { SearchMediaReqDTO } from '@route/media/media.dto';
 import { SearchMediaReqType } from '@route/media/media.schema';
 
 export interface MediaRepository {

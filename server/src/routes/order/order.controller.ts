@@ -1,6 +1,21 @@
-import { Body, Controller, Inject, Ip, Post, UseGuards } from '@nestjs/common';
-import { CreateOrderDto } from '@route/order/order.dto';
-import { CreateOrderResType } from '@route/order/order.schema';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Ip,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { CreateOrderDto, SearchOrderDto } from '@route/order/order.dto';
+import {
+  CreateOrderResType,
+  OrderDetailResType,
+  OrderResType,
+} from '@route/order/order.schema';
 import { AuthType } from '@shared/constants/auth.constant';
 import { ActiveUser } from '@shared/decorators/active-user.decorator';
 import { Auth } from '@shared/decorators/auth.decorator';
@@ -9,6 +24,7 @@ import { AuthenticationGuard } from '@shared/guards/authentication.guard';
 import { SepayPaymentService } from '@shared/services/payment/sepay.service';
 import { VnpayPaymentService } from '@shared/services/payment/vnpay.service';
 import { OrderService } from './order.service';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 @Controller('/api/v1/orders')
 export class OrderController {
   constructor(@Inject() private readonly orderService: OrderService) {}
@@ -52,5 +68,29 @@ export class OrderController {
       };
     }
     return null;
+  }
+
+  @Get()
+  @UseGuards(AuthenticationGuard)
+  @MessageHttp('Paging order for customer')
+  @Auth([AuthType.Bearer])
+  search(
+    @ActiveUser('id') userId: number,
+    @Query() search: SearchOrderDto,
+  ): Promise<Paging<OrderResType>> {
+    console.log(search);
+
+    return this.orderService.search(userId, search);
+  }
+
+  @Get('/:id')
+  @UseGuards(AuthenticationGuard)
+  @MessageHttp('Get order detail for customer')
+  @Auth([AuthType.Bearer])
+  getDetail(
+    @ActiveUser('id') userId: number,
+    @Param('id', ParseIntPipe) orderId: number,
+  ): Promise<OrderDetailResType> {
+    return this.orderService.getDetail(userId, orderId);
   }
 }
