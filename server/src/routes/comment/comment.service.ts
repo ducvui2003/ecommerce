@@ -7,26 +7,50 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CommentRepository } from './comment.repository';
-import { CommentResponseDto, CommentUpdateDto, CreateCommentDto } from '@route/comment/comment.dto';
+import {
+  CommentResponseDto,
+  CommentUpdateDto,
+  CreateCommentDto,
+} from '@route/comment/comment.dto';
+import { Paging } from '@shared/common/interfaces/paging.interface';
+import { PrismaUserRepository } from '@route/user/user.repository';
 
 @Injectable()
 export class CommentService {
-  constructor(@Inject() private readonly commentRepository: CommentRepository) {
-  }
+  constructor(
+    @Inject() private readonly commentRepository: CommentRepository,
+    @Inject('USER_REPOSITORY') private readonly userRepository: PrismaUserRepository,
+  ) {}
 
-  async getCommentByProductId(id: string): Promise<CommentResponseDto[]> {
+  async getCommentByProductId(id: string, page: number, size: number): Promise<Paging<CommentResponseDto>> {
     const productId = Number(id);
     if (isNaN(productId)) {
       throw new BadRequestException('Product id must be a number');
     }
-    const comments: CommentResponseDto[] = await this.commentRepository.getComments(productId);
+    const result = await this.commentRepository.getComments({
+      productId,
+      page: page,
+      size: size,
+    });
 
-    if (!comments || comments.length === 0) {
+    if (!result.items || result.items.length === 0) {
       throw new NotFoundException('No comments found for this product');
     }
 
-    return comments;
+    const enrichedItems: CommentResponseDto[] = [];
 
+    for (const comment of result.items) {
+      const user = await this.userRepository.getInfo(comment.userId);
+      enrichedItems.push({
+        ...comment,
+        username: user.name || 'Ẩn danh',
+      });
+    }
+
+    return {
+      ...result,
+      items: enrichedItems,
+    };
   }
 
   async createComment(data: CreateCommentDto, userId: number) {
@@ -34,7 +58,9 @@ export class CommentService {
       throw new BadRequestException('content not empty');
     }
     if (data.parentId) {
-      const parentComment = await this.commentRepository.findById(data.parentId);
+      const parentComment = await this.commentRepository.findById(
+        data.parentId,
+      );
       if (!parentComment) {
         throw new BadRequestException('Parent comment not found');
       }
@@ -85,7 +111,10 @@ export class CommentService {
       throw new NotFoundException('Comment not found');
     }
 
-    const existingLike = await this.commentRepository.findLikeByUserAndComment(userId, commentId);
+    const existingLike = await this.commentRepository.findLikeByUserAndComment(
+      userId,
+      commentId,
+    );
 
     if (existingLike) {
       await this.commentRepository.deleteLike(userId, commentId);
@@ -97,7 +126,4 @@ export class CommentService {
     await this.commentRepository.incrementCommentLike(commentId);
     return true;
   }
-
-
-
 }

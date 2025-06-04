@@ -12,6 +12,7 @@ import addressReducer from '@/features/address/address.slice';
 import { contactApi } from '@/features/contact/contact.api';
 import { orderApi } from '@/features/order/order.api';
 import orderReducer from '@/features/order/order.slice';
+import { commentApi } from '@/features/comment/comment.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -28,6 +29,7 @@ export const makeStore = () => {
       [promotionApi.reducerPath]: promotionApi.reducer,
       [contactApi.reducerPath]: contactApi.reducer,
       [orderApi.reducerPath]: orderApi.reducer,
+      [commentApi.reducerPath]: commentApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
@@ -38,7 +40,8 @@ export const makeStore = () => {
         .concat(cartApi.middleware)
         .concat(promotionApi.middleware)
         .concat(contactApi.middleware)
-        .concat(orderApi.middleware);
+        .concat(orderApi.middleware)
+        .concat(commentApi.middleware);
     },
   });
 

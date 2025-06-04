@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import z from 'zod';
 
-export const CommentSchema= z.object({
+export const CommentSchema = z.object({
   content: z.string().min(1).max(500),
   parentId: z.string().uuid().optional(),
   likes: z.number().default(0),
@@ -18,12 +18,9 @@ export const CommentResponseSchema = z.object({
   likes: z.number(),
   parentId: z.string().uuid().optional(),
   updatedAt: z.date(),
-  userId: z.number(),
-  username: z.string().optional(),
+  username: z.string(),
 });
 
-export const GetCommentSchema = z.object({
-  productId: z.number(),
-  page: z.number().min(1).default(1),
-  size: z.number().min(1).max(100).default(10),
-});
+export type CommentRequest = z.infer<typeof CommentSchema>;
+export type CommentUpdateRequest = z.infer<typeof CommentUpdateSchema>;
+export type CommentResponse = z.infer<typeof CommentResponseSchema>;

@@ -1,42 +1,73 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/services/prisma.service';
-import { CommentResponseDto, CreateCommentDto } from '@route/comment/comment.dto';
+import {
+  CommentResponseDto,
+  CreateCommentDto, GetCommentDto,
+} from '@route/comment/comment.dto';
 import { Comment } from '@prisma/client';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 
 @Injectable()
 export class CommentRepository {
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async getComments(dto: GetCommentDto): Promise<Paging<CommentResponseDto>> {
+    const { productId, page, size } = dto;
+
+    const whereClause = {
+      productId,
+      deletedAt: null,
+    };
+
+    const [totalItems, comments] = await this.prismaService.$transaction([
+      this.prismaService.comment.count({ where: whereClause }),
+      this.prismaService.comment.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * size,
+        take: size,
+      }),
+    ]);
+
+    const items = this.mapListToCommentResponseDto(comments);
+
+    return {
+      items,
+      pagination: {
+        page,
+        limit: size,
+        totalPages: Math.ceil(totalItems / size),
+        totalItems,
+      },
+    };
   }
 
-  async getComments(productId: number): Promise<CommentResponseDto[]> {
-    const comments = await this.prismaService.comment.findMany({
-      where: {
-        productId: productId,
-        deletedAt: null
-      }
-    });
-    return this.mapListToCommentResponseDto(comments);
-  }
 
-    async createComment(data: CreateCommentDto, userId: number): Promise<CommentResponseDto> {
-    const comment = await  this.prismaService.comment.create({
+  async createComment(
+    data: CreateCommentDto,
+    userId: number,
+  ): Promise<CommentResponseDto> {
+    const comment = await this.prismaService.comment.create({
       data: {
         content: data.content,
         userId: userId,
         like: data.likes,
         productId: data.product,
-        parentId: data?.parentId
-      }
+        parentId: data?.parentId,
+      },
     });
-    return this.mapToCommentResponseDto(comment)
+    return this.mapToCommentResponseDto(comment);
   }
 
-  async updateComment(id: string, content: string) : Promise<CommentResponseDto> {
+  async updateComment(
+    id: string,
+    content: string,
+  ): Promise<CommentResponseDto> {
     const comment = await this.prismaService.comment.update({
       where: { id },
       data: {
-        content
-      }
+        content,
+      },
     });
     return this.mapToCommentResponseDto(comment);
   }
@@ -50,8 +81,8 @@ export class CommentRepository {
   findById(id: string) {
     return this.prismaService.comment.findUnique({
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
   }
 
@@ -97,8 +128,6 @@ export class CommentRepository {
     });
   }
 
-
-
   mapToCommentResponseDto(comment: Comment): CommentResponseDto {
     return {
       id: comment.id,
@@ -106,11 +135,11 @@ export class CommentRepository {
       parentId: comment.parentId ?? undefined,
       updatedAt: comment.updatedAt ?? comment.createdAt,
       likes: comment.like,
+      userId : comment.userId,
     };
   }
+
   mapListToCommentResponseDto(comments: Comment[]): CommentResponseDto[] {
     return comments.map((comment) => this.mapToCommentResponseDto(comment));
   }
-
-
 }
