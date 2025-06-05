@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
 import Link from 'next/link';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 
 type NavigationLinkType = {
   title: string;
@@ -29,9 +29,24 @@ export const components: NavigationType[] = [
     href: '/',
   },
   {
-    title: 'Danh mục',
-    child: [],
+    title: 'Sản phẩm',
+    href: '/product',
+    child: [
+      {
+        title: 'Tinh dầu',
+        href: '/product?categoryName=Tinh+d%E1%BA%A7u',
+      },
+      {
+        title: 'Lọ đựng tinh dầu',
+        href: '/product?categoryName=L%E1%BB%8D+%C4%91%E1%BB%B1ng+tinh+d%E1%BA%A7u',
+      },
+      {
+        title: 'Máy xông tinh dầu',
+        href: '/product?categoryName=M%C3%A1y+x%C3%B4ng+tinh+d%E1%BA%A7u',
+      },
+    ],
   },
+
   {
     title: 'Về chúng tôi',
     href: '/about',
@@ -52,31 +67,7 @@ type NavigationProps = {
 
 const Navigation = ({ components }: NavigationProps) => {
   const triggerRef = useRef<HTMLButtonElement[]>([]);
-  const viewPortRef = useRef<HTMLDivElement>(null);
 
-  components[1].child = [
-    {
-      title: 'aaa',
-      href: 'aaa',
-    },
-    {
-      title: 'bbb',
-      href: 'bbb',
-    },
-    {
-      title: 'ccc',
-      href: 'ccc',
-    },
-    {
-      title: 'ddd',
-      href: 'ddd',
-    },
-  ];
-
-  // useEffect(() => {
-  //   console.log('viewPortRef', viewPortRef.current);
-  //   console.log('navRefs', triggerRef.current);
-  // }, [triggerRef.current, viewPortRef.current]);
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-x-6 font-medium">

@@ -32,6 +32,7 @@ const CreateProductBodySchema = ProductModel.pick({
 }).extend({
   basePrice: NumberToDecimalSchema,
   salePrice: NumberToDecimalSchema,
+  thumbnailId: z.coerce.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(CreateOptionBodySchema).optional(),
@@ -73,7 +74,7 @@ const ProductManagerResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
   category: z.string(),
   supplier: z.string(),
-  resource: z.string().optional(),
+  thumbnail: z.string().optional(),
 });
 
 const ProductDetailManagerResSchema = ProductModel.pick({
@@ -88,6 +89,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
+  thumbnail: ResourceResSchema,
   resources: z.array(ResourceResSchema),
   options: z.array(OptionResSchema).optional(),
 });
@@ -100,6 +102,7 @@ const UpdateProductBodySchema = ProductModel.pick({
 }).extend({
   basePrice: NumberToDecimalSchema,
   salePrice: NumberToDecimalSchema,
+  thumbnailId: z.coerce.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(UpdateOptionBodySchema).optional(),

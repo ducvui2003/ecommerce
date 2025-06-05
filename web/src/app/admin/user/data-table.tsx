@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useUserTable } from '@/hooks/use-user-datatable';
+import { useUserTable } from '@/hooks/use-manager-user-datatable';
 import { setKey } from '@/lib/utils';
 import { SearchQueyReqType, UserStatus } from '@/types/user.type';
 import { ChangeEvent, useEffect, useState } from 'react';

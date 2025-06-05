@@ -52,6 +52,7 @@ const BaseProductForm = ({
       supplierId: 0,
       categoryId: 0,
       description: '',
+      thumbnail: undefined,
       resources: [],
       options: [],
       isDeleted: false,
@@ -79,6 +80,19 @@ const BaseProductForm = ({
     }) ?? [],
   );
 
+  const initValueThumbnail = (): MediaType | null => {
+    console.log('init value');
+    const data = form.getValues('thumbnail');
+    if (data) {
+      return {
+        id: data.id.toString(),
+        publicId: data.publicId,
+        url: data.url,
+      };
+    }
+    return null;
+  };
+
   const { isSubmitting } = form.formState;
 
   const onSubmit = (values: BaseProductFormType) => {
@@ -91,23 +105,43 @@ const BaseProductForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="border-accent rounded-md border-2 p-2">
-                  <FormLabel className="mb-2 block text-lg">
-                    Tên sản phẩm
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Vui lòng không để trống" {...field} />
-                  </FormControl>
-                  <span className="h-[25px]">
-                    <FormMessage />
-                  </span>
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-4">
+              <Media
+                multiple={false}
+                previewMode
+                initialValue={initValueThumbnail() ?? undefined}
+                className="size-[150px] basis-[150px]"
+                expose={(resources) => {
+                  form.setValue(
+                    'thumbnail',
+                    resources?.[0]
+                      ? {
+                          id: parseInt(resources[0].id),
+                          publicId: resources[0].publicId,
+                          url: resources[0].url ?? '',
+                        }
+                      : undefined,
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="border-accent flex-1 rounded-md border-2 p-2">
+                    <FormLabel className="mb-2 block text-lg">
+                      Tên sản phẩm
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Vui lòng không để trống" {...field} />
+                    </FormControl>
+                    <span className="h-[25px]">
+                      <FormMessage />
+                    </span>
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="description"
@@ -146,6 +180,7 @@ const BaseProductForm = ({
                 append={
                   <Media
                     multiple
+                    initialValue={medias}
                     expose={(mediaState) => {
                       form.setValue(
                         'resources',
@@ -157,7 +192,7 @@ const BaseProductForm = ({
                           };
                         }),
                       );
-                      setMedias(mediaState);
+                      setMedias([...mediaState]);
                     }}
                     className="size-[100px]"
                   />

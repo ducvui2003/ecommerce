@@ -10,12 +10,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ProductManagerResType } from '@route/product/product-manager.schema';
 import { ProductManagerService } from '@route/product/product-manager.service';
 import {
   CreateProductBodyDto,
   SearchProductDto,
   UpdateProductBodyDto,
 } from '@route/product/product.dto';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 import { AuthType } from '@shared/constants/auth.constant';
 import { Auth } from '@shared/decorators/auth.decorator';
 import { MessageHttp } from '@shared/decorators/message.decorator';
@@ -30,8 +32,9 @@ export class ProductManagerController {
   @UseGuards(AuthenticationGuard)
   @MessageHttp('Paging product for manager')
   @Auth([AuthType.Bearer])
-  searchProducts(@Query() query: SearchProductDto) {
-    console.log(query);
+  searchProducts(
+    @Query() query: SearchProductDto,
+  ): Promise<Paging<ProductManagerResType>> {
     return this.productManagerService.search(query);
   }
 

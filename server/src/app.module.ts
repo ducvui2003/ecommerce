@@ -23,6 +23,8 @@ import { CartModule } from '@route/cart/cart.module';
 import { PromotionModule } from '@route/promotion/promotion.module';
 import { CategoryModule } from './routes/category/category.module';
 import { SupplierModule } from './routes/supplier/supplier.module';
+import { OrderModule } from '@route/order/order.module';
+import { ContactModule } from '@route/contact/contact.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { SupplierModule } from './routes/supplier/supplier.module';
     PromotionModule,
     CategoryModule,
     SupplierModule,
+    OrderModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [

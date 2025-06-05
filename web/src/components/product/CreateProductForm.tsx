@@ -3,6 +3,7 @@ import BaseProductForm from '@/components/product/BaseProductForm';
 import { useCreateProductMutation } from '@/features/manager/product/product.api';
 import {
   BaseProductFormType,
+  CreateProductBodySchema,
   CreateProductBodyType,
 } from '@/types/product.type';
 import { useRouter } from 'next/navigation';
@@ -12,14 +13,15 @@ const CreateProductForm = () => {
   const router = useRouter();
   const [create] = useCreateProductMutation();
   const handleSubmit = (values: BaseProductFormType) => {
-    const req: CreateProductBodyType = {
+    const req: CreateProductBodyType = CreateProductBodySchema.parse({
       ...values,
+      thumbnailId: values.thumbnail?.id,
       resourceIds: values.resources?.map((item) => item.id),
       options: values.options?.map((item) => ({
         ...item,
         resourceId: item.resource?.id,
       })),
-    };
+    });
     create(req)
       .unwrap()
       .then((response) => {

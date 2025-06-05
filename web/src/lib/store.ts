@@ -8,13 +8,18 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { cartApi } from '@/features/cart/cart.api';
 import { promotionApi } from '@/features/promotion/promotion.api';
-import { productApi } from '@/features/product/product.api';
+import addressReducer from '@/features/address/address.slice';
+import { contactApi } from '@/features/contact/contact.api';
+import { orderApi } from '@/features/order/order.api';
+import orderReducer from '@/features/order/order.slice';
 
 export const makeStore = () => {
   const store = configureStore({
     reducer: {
       authSlice: authReducer,
       mediaSlice: mediaReducer,
+      addressSlice: addressReducer,
+      orderSlice: orderReducer,
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
@@ -22,6 +27,8 @@ export const makeStore = () => {
       [productApi.reducerPath]: productApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,
       [promotionApi.reducerPath]: promotionApi.reducer,
+      [contactApi.reducerPath]: contactApi.reducer,
+      [orderApi.reducerPath]: orderApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
@@ -31,7 +38,9 @@ export const makeStore = () => {
         .concat(productManagerApi.middleware)
         .concat(productApi.middleware)
         .concat(cartApi.middleware)
-        .concat(promotionApi.middleware);
+        .concat(promotionApi.middleware)
+        .concat(contactApi.middleware)
+        .concat(orderApi.middleware);
     },
   });
 

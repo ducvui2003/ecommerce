@@ -24,6 +24,8 @@ export const ProductModel = MetadataFields.extend({
       createdAt: z.date(),
     }),
   ),
+  thumbnailId: z.number().nullable().optional(),
+  thumbnail: ResourceModel.nullable().optional(),
   option: z.array(OptionModel).optional(),
   category: CategoryModel,
   supplier: SupplierModel,

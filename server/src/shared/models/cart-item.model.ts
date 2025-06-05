@@ -11,9 +11,9 @@ export const CartItemModel = TimestampFields.extend({
   product: ProductModel.optional(),
   cartId: z.number().int().positive(),
   cart: CartModel.optional(),
-  optionId: z.number().int().positive().optional(),
-  option: OptionModel.optional(),
-  selected: z.boolean().default(true)
-})
+  optionId: z.number().int().positive().nullable().optional(),
+  option: OptionModel.nullable().optional(),
+  selected: z.boolean().default(true),
+});
 
 export type CartItemType = z.infer<typeof CartItemModel>;

@@ -1,17 +1,23 @@
+import { SePaymentTransactionModel } from '@shared/models/payment-transaction.model';
 import { z } from 'zod';
 
-export const WebhookPaymentBodySchema = z.object({
-  id: z.number(),
-  gateway: z.string(),
-  transactionDate: z.coerce.date(),
-  accountNumber: z.string(),
-  code: z.string().nullable(),
-  content: z.string(),
-  transferType: z.enum(['in', 'out']),
-  transferAmount: z.number(),
-  accumulated: z.number(),
-  subAccount: z.string().nullable(),
-  referenceCode: z.string().nullable(),
-  description: z.string().nullable(),
-});
+export const WebhookPaymentBodySchema = SePaymentTransactionModel;
+
 export type WebhookPaymentBodyType = z.infer<typeof WebhookPaymentBodySchema>;
+
+export const UrlIPNVnPayBodySchema = z.object({
+  responseCode: z.coerce.string(),
+  txnRef: z.string(),
+  tnnCode: z.string(),
+  amount: z.coerce.number(),
+  bankCode: z.string(),
+  bankTranNo: z.string(),
+  cardType: z.string(),
+  payDate: z.coerce.date(),
+  orderInfo: z.string(),
+  transactionNo: z.string(),
+  transactionStatus: z.string(),
+  secureHash: z.string(),
+});
+
+export type UrlIPNVnPayType = z.infer<typeof UrlIPNVnPayBodySchema>;

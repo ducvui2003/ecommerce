@@ -1,28 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { ProductDetailRespType } from '@/types/product.type';
-import ProductImages from './ProductImages';
-import ProductInfo from './ProductInfo';
-import WishlistButton from '@/components/button/WishlistButton';
-import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
-import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
-import ProductComment from '@/app/product/detail/[id]/ProductComment';
-import ProductRelated from '@/app/product/detail/[id]/ProductRelated';
-import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
 import notFound from '@/app/not-found';
+import ProductComment from '@/app/product/detail/[id]/ProductComment';
+import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
+import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
+import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
+import WishlistButton from '@/components/button/WishlistButton';
 import { Button } from '@/components/ui/button';
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import {
-  ControllerRenderProps,
-  FieldErrors,
-  FieldValues,
-  useForm,
-} from 'react-hook-form';
-import { AddCartItemReqType } from '@/types/cart.type';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AddCartItemSchema } from '@/types/schema/cart.schema';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -30,13 +14,25 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
 import { useAddCartItemMutation } from '@/features/cart/cart.api';
+import { cn } from '@/lib/utils';
+import { AddCartItemReqType } from '@/types/cart.type';
+import { ProductDetailRespType } from '@/types/product.type';
+import { AddCartItemSchema } from '@/types/schema/cart.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import React from 'react';
+import {
+  ControllerRenderProps,
+  FieldErrors,
+  FieldValues,
+  useForm,
+} from 'react-hook-form';
 import { toast } from 'sonner';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
-import { faHeart as faHeartOutline } from '@fortawesome/free-regular-svg-icons';
+import ProductImages from './ProductImages';
+import ProductInfo from './ProductInfo';
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
@@ -114,7 +110,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         <div>
-          <ProductImages images={product.resource} />
+          <ProductImages
+            images={[
+              ...(product.resources ?? []),
+              ...(product.thumbnail ? [product.thumbnail] : []),
+            ]}
+          />
         </div>
 
         <Form {...addCartItemForm}>
@@ -221,7 +222,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
       <RatingSummary />
       <ProductComment />
-      {/*<ProductRelation categoryId={product.category.id} />*/}
     </div>
   );
 }

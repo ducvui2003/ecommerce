@@ -164,8 +164,8 @@ export default function CartPage() {
                 className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Chọn tất cả (
-                {cart?.cartItems.filter((item) => item.selected).length ?? 0} sản
-                phẩm)
+                {cart?.cartItems.filter((item) => item.selected).length ?? 0}{' '}
+                sản phẩm)
               </Label>
             </div>
             {

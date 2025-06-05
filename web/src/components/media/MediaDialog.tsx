@@ -14,14 +14,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  useGetPagingMediaQuery,
-  useLazyGetPagingMediaQuery,
-} from '@/features/media/media.api';
+import { useLazyGetPagingMediaQuery } from '@/features/media/media.api';
 import { nanoId, uuid } from '@/lib/utils';
 import mediaService from '@/service/media.service';
-import { PageReq } from '@/types/api.type';
 import { MediaType, MediaUploading } from '@/types/media.type';
 import {
   memo,
@@ -41,45 +36,46 @@ type MediaDialogProps = {
 
 const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
   const [filesUploading, setFilesUploading] = useState<MediaUploading[]>([]);
-
+  const DEFAULT_SIZE = useRef<number>(8);
   const {
     selectedImages,
     selectImages,
     openDialog,
-    setOpenDialog,
+    handleCloseDialog,
     previewMode,
     setPreview,
   } = useMediaContext();
-  const mediasRef = useRef<MediaType[]>(selectedImages ?? []);
-  const viewRef = useRef<HTMLDivElement | null>(null);
-  const [paging, setPaging] = useState<PageReq<{}>>({
-    page: 1,
-    size: 3,
+  const [medias, setMedias] = useState<MediaType[]>(() => {
+    console.log('setstate', selectImages);
+    return selectedImages ?? [];
   });
+  const viewRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    console.log('selectedImages', selectedImages);
+  }, [selectedImages]);
 
   const [trigger] = useLazyGetPagingMediaQuery();
 
-  const loadFunc = useCallback(
-    async (
-      page: number,
-    ): Promise<{ data: (MediaType | MediaUploading)[]; more: boolean }> => {
-      const result = await trigger({
-        page: page,
-        size: paging.size,
-      }).unwrap();
-      return {
-        data: result.items.map((item) => {
-          return {
-            id: item.id.toString(),
-            publicId: item.publicId,
-            url: item.url,
-          };
-        }),
-        more: result.pagination.page < result.pagination.totalPages,
-      };
-    },
-    [trigger],
-  );
+  const loadFunc = async (
+    page: number,
+  ): Promise<{ data: (MediaType | MediaUploading)[]; more: boolean }> => {
+    const result = await trigger({
+      page: page,
+      size: DEFAULT_SIZE.current,
+      skipIds: selectedImages.map((item) => Number(item.id)),
+    }).unwrap();
+    return {
+      data: result.items.map((item) => {
+        return {
+          id: item.id.toString(),
+          publicId: item.publicId,
+          url: item.url,
+        };
+      }),
+      more: result.pagination.page < result.pagination.totalPages,
+    };
+  };
 
   const handleUpload = useCallback(
     async (
@@ -186,39 +182,34 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
 
   const handleSelect = (checked: boolean, media: MediaType) => {
     if (checked) {
-      mediasRef.current.push({
-        id: media.id,
-        publicId: media.publicId,
-        url: media.url,
-      });
+      setMedias((prev) => [
+        ...prev,
+        {
+          id: media.id,
+          publicId: media.publicId,
+          url: media.url,
+        },
+      ]);
     } else {
-      mediasRef.current = [
-        ...mediasRef.current.filter((item) => item.id != media.id),
-      ];
+      setMedias((prev) => [...prev.filter((item) => item.id != media.id)]);
     }
   };
 
   const handleSubmit = () => {
-    if (!multiple && mediasRef.current.length > 1) {
+    if (!multiple && medias.length > 1) {
       toast.message('Vui lòng chọn 1 ảnh');
       return;
     }
-    selectImages(mediasRef.current);
+    selectImages(medias);
     if (previewMode) {
-      setPreview(mediasRef.current[0]);
+      setPreview(medias[0]);
     }
-    expose?.(mediasRef.current);
-    setOpenDialog?.(false);
+    expose?.(medias);
+    handleCloseDialog();
   };
 
-  useEffect(() => {
-    if (openDialog) {
-      mediasRef.current = [...selectedImages];
-    }
-  }, [open, selectedImages]);
-
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+    <Dialog open={openDialog} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[70vw]">
         <DialogHeader>
           <DialogTitle>Chọn file</DialogTitle>
@@ -239,6 +230,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
         >
           <ScrollArea className="h-[40vh]" ref={viewRef}>
             <InfiniteScrollList<MediaType | MediaUploading>
+              initialValue={selectedImages}
               loadFunc={loadFunc}
               className="grid grid-cols-5 gap-4"
               refViewport={viewRef}
@@ -248,7 +240,7 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
                     {...item}
                     key={`${item.id}-${index}`}
                     name={item.publicId}
-                    checked={mediasRef.current.some((i) => i.id === item.id)}
+                    checked={medias.some((i) => i.id === item.id)}
                     onChecked={(checked) => handleSelect(checked, item)}
                   />
                 );
@@ -257,30 +249,6 @@ const MediaDialog = ({ multiple, expose }: MediaDialogProps) => {
               fallback={<div>No item</div>}
             />
           </ScrollArea>
-          {/* <ListView<MediaType | MediaUploading>
-            display="grid"
-            className="grid-cols-5 gap-4"
-            loading={isFetching}
-            data={[
-              ...filesUploading,
-              ...(data?.items.map((item) => ({
-                id: item.id.toString(),
-                publicId: item.publicId,
-                url: item.url,
-              })) ?? []),
-            ]}
-            render={(item, _) => {
-              return (
-                <MediaViewerCard
-                  {...item}
-                  name={item.publicId}
-                  key={item.id}
-                  checked={mediasRef.current.some((i) => i.id === item.id)}
-                  onChecked={(checked) => handleSelect(checked, item)}
-                />
-              );
-            }}
-          /> */}
           <div className="flex gap-2">
             <Button type="button" onClick={handleSubmit}>
               Ok

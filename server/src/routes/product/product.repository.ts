@@ -19,6 +19,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       include: {
         supplier: true,
         category: true,
+        thumbnail: true,
         productResource: {
           include: {
             resource: true,
@@ -90,6 +91,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         include: {
           category: true,
           supplier: true,
+          thumbnail: true,
           productResource: {
             include: {
               resource: true,
@@ -125,7 +127,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           description: dto.description,
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
-
+          thumbnailId: dto.thumbnailId,
           option: {
             create: dto.options?.map((item) => ({
               name: item.name,
@@ -178,6 +180,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           description: dto.description,
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
+          thumbnailId: dto.thumbnailId,
         },
         where: {
           id: id,

@@ -1,15 +1,10 @@
-import {
-  createApi,
-  fetchBaseQuery,
-  QueryReturnValue,
-} from '@reduxjs/toolkit/query/react';
 import cartService from '@/service/cart.service';
-import { ResponseApi } from '@/types/api.type';
 import {
   AddCartItemReqType,
   ChangeQuantityCartItemReqType,
   GetCartResType,
 } from '@/types/cart.type';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const cartApi = createApi({
   reducerPath: 'cartApi',

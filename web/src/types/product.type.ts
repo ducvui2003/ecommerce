@@ -18,7 +18,7 @@ type ProductCardType = {
   thumbnail?: string;
   name: string;
   basePrice: number;
-  percentSale?: number;
+  salePrice?: number;
   star: number;
   numSell: number;
 };
@@ -27,10 +27,9 @@ type ProductResType = {
   id: number;
   name: string;
   description: string;
-  resource: string[];
+  thumbnail?: string;
   basePrice: number;
-  salePrice: number;
-  percentSale?: number;
+  salePrice?: number;
   star: number;
   numSell: number;
 };
@@ -48,7 +47,8 @@ type ProductDetailRespType = {
   supplier: {
     name: string;
   };
-  resource: string[];
+  thumbnail?: string;
+  resources?: string[];
   option: {
     id: number;
     name: string;
@@ -99,6 +99,7 @@ const BaseProductFormSchema = z.object({
   supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
   basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  thumbnail: BaseResourceForm.optional(),
   resources: z.array(BaseResourceForm).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(BaseOptionForm).optional(),
@@ -113,6 +114,7 @@ const CreateProductBodySchema = z.object({
   supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
   basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  thumbnailId: z.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(CreateOptionBodySchema).optional(),
@@ -125,6 +127,7 @@ const UpdateProductBodySchema = z.object({
   supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
   basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  thumbnail: z.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
   options: z.array(BaseOptionForm).optional(),
@@ -141,7 +144,7 @@ type ProductManagerResType = {
   salePrice: number;
   category: number;
   supplier: number;
-  resource: string;
+  thumbnail?: string;
 };
 
 type ResourceResSchema = {

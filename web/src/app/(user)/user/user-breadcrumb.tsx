@@ -10,14 +10,14 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import React, { useState } from 'react';
-import { Button } from '@headlessui/react';
 import LogoutFrame from '@/components/LogoutFrame';
+import { Button } from '@/components/ui/button';
 
 const pathMap: Record<string, string> = {
   'user/info': 'Cài đặt/Thông tin cá nhân',
   'user/security': 'Cài đặt/Bảo mật',
+  'user/order': 'Cài đặt/Đơn hàng',
 };
-
 
 const UserBreadcrumb = () => {
   const pathname = usePathname(); // e.g., "/user/info"
@@ -32,7 +32,7 @@ const UserBreadcrumb = () => {
   return (
     <div
       className={
-        'z-10 flex max-h-1/12 p-2 w-full items-center border-b-2 border-gray-200 bg-white justify-between'
+        'z-10 flex max-h-1/12 w-full items-center justify-between border-b-2 border-gray-200 bg-white p-2'
       }
     >
       <Breadcrumb>
@@ -61,9 +61,14 @@ const UserBreadcrumb = () => {
           })}
         </BreadcrumbList>
       </Breadcrumb>
-      <Button className={'bg-primary mr-3 rounded-xl text-white  p-3 text-[16px] hover:bg-secondary cursor-pointer'}
-              onClick={() => setOpen(true)}
-      >Đăng xuất</Button>
+      <Button
+        className={
+          'bg-primary hover:bg-secondary mr-3 cursor-pointer rounded-xl p-3 text-[16px] text-white'
+        }
+        onClick={() => setOpen(true)}
+      >
+        Đăng xuất
+      </Button>
       <LogoutFrame open={open} setOpen={setOpen} />
     </div>
   );

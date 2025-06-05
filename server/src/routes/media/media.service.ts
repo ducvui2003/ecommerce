@@ -1,4 +1,5 @@
 import { Inject, Injectable, Req } from '@nestjs/common';
+import { SearchMediaReqDTO } from '@route/media/media.dto';
 import { MediaRepository } from '@route/media/media.repository';
 import {
   ChangeVisibilityType,
@@ -36,7 +37,7 @@ export class MediaService {
   //   });
   // }
 
-  async getList(pageable: Pageable) {
+  async getList(pageable: SearchMediaReqDTO) {
     const data = await this.mediaRepository.getMedia(pageable, [
       'id',
       'format',

@@ -20,7 +20,7 @@ import {
   transformItemsPaging,
 } from '@shared/helper.shared';
 import { ProductType } from '@shared/models/product.model';
-import { SharedResourceRepository } from '@shared/repositories/shared-repository.repository';
+import { SharedResourceRepository } from '@shared/repositories/shared-resource.repository';
 import { FileService } from '@shared/services/file/file.service';
 
 @Injectable()
@@ -48,9 +48,9 @@ export class ProductManagerService {
       (item) => {
         return ProductManagerResSchema.parse({
           ...item,
-          resource: this.fileService.getUrl(
-            item.productResource?.[0]?.resource.publicId,
-          ),
+          thumbnail:
+            item?.thumbnail?.publicId &&
+            this.fileService.getUrl(item.thumbnail.publicId),
           supplier: item.supplier.name,
           category: item.category.name,
         });
@@ -65,6 +65,11 @@ export class ProductManagerService {
       const temp = await this.getOptionDetail(product);
       return ProductDetailManagerResSchema.parse({
         ...product,
+        thumbnail: product.thumbnail && {
+          id: product.thumbnail.id,
+          publicId: product.thumbnail.publicId,
+          url: this.fileService.getUrl(product.thumbnail.publicId),
+        },
         resources: product.productResource.map(({ resource }) => {
           return {
             id: resource.id,

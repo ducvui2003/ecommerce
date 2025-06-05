@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card';
+import ProductCard from '@/components/ProductCard';
 import {
   Carousel,
   CarouselContent,
@@ -6,9 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import ProductCard from '@/components/ProductCard';
 import productService from '@/service/product.service';
-import { ProductCardType } from '@/types/product.type';
 
 type ProductRelationProps = {
   categoryId: number;

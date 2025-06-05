@@ -12,30 +12,27 @@ type MediaButtonProps = {
 };
 
 const MediaButton = ({ className }: MediaButtonProps) => {
-  const { setOpenDialog, preview } = useMediaContext();
+  const { handleOpenDialog, preview, previewMode } = useMediaContext();
   return (
-    <div>
-      {preview ? (
+    <>
+      {previewMode && preview?.url ? (
         <MediaCard
-          url={preview.url ?? ''}
-          onClick={() => setOpenDialog(true)}
-          className="size-[100px] hover:cursor-pointer"
+          url={preview.url}
+          onClick={() => handleOpenDialog()}
+          className={cn('size-[100px] hover:cursor-pointer', className)}
         />
       ) : (
         <div
-          onClick={() => setOpenDialog(true)}
+          onClick={() => handleOpenDialog()}
           className={cn(
             'border-accent grid aspect-square size-[80px] items-center rounded-xl border-2 bg-gray-200 hover:cursor-pointer hover:bg-gray-300',
             className,
           )}
         >
-          <ClientIcon
-            icon={'mdi:image-add-outline'}
-            className={cn(preview && 'hidden')}
-          />
+          <ClientIcon icon={'mdi:image-add-outline'} />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
