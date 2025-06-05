@@ -63,17 +63,17 @@ export default function CartPage() {
 
   const [inputQuantities, setInputQuantities] = useState<{ [key: string]: string }>({});
 
-  const temporaryTotalPrice = useMemo<number>(
-    (): number =>
-      cart?.cartItems
-        .filter((item) => item.selected)
-        .reduce((accumulator, currentItem) =>
-            accumulator + currentItem.quantity * (
-              Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option?.price ?? 0)
-            ), 0,
-        )!,
-    [cart],
-  );
+  // const temporaryTotalPrice = useMemo<number>(
+  //   (): number =>
+  //     cart?.cartItems
+  //       .filter((item) => item.selected)
+  //       .reduce((accumulator, currentItem) =>
+  //           accumulator + currentItem.quantity * (
+  //             Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option?.price ?? 0)
+  //           ), 0,
+  //       )!,
+  //   [cart],
+  // );
 
   const handleToggleCartItem = async (cartItemId: string | 'all') => {
     try {
@@ -88,7 +88,7 @@ export default function CartPage() {
     body: ChangeQuantityCartItemReqType,
   ) => {
     try {
-      const result = await changeQuantityCartItem({ cartItemId, body });
+      await changeQuantityCartItem({ cartItemId, body });
     } catch (error) {
       return;
     }
@@ -186,7 +186,7 @@ export default function CartPage() {
                           alt={item.product.name}
                           width={96}
                           height={96}
-                          src="/images/product.png"
+                          src={item.thumbnail}
                           className="object-contain"
                         />
                       </div>
@@ -290,7 +290,7 @@ export default function CartPage() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <p className="text-muted-foreground">Tổng tiền</p>
-                <p>{currency(temporaryTotalPrice ?? 0)}</p>
+                <p>{currency(cart?.temporaryTotalPrice!)}</p>
               </div>
               <Separator />
               <div className="flex justify-between">
@@ -301,16 +301,15 @@ export default function CartPage() {
               <div className="flex justify-between">
                 <p className="font-semibold">Cần thanh toán</p>
                 <p className="text-primary font-semibold">
-                  {currency(temporaryTotalPrice ?? 0)}
+                  {currency(cart?.temporaryTotalPrice!)}
                 </p>
               </div>
             </div>
             <Button
-              type="submit"
-              disabled={temporaryTotalPrice === 0 || !cart || cart.cartItems.length === 0}
+              disabled={cart?.temporaryTotalPrice! === 0 || !cart || cart.cartItems.length === 0}
               className="w-full py-5 text-base"
             >
-              Tiến hành đặt hàng
+              <Link href='/order'>Tiến hành đặt hàng</Link>
             </Button>
           </div>
 

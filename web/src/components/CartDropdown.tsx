@@ -43,9 +43,9 @@ const CartDropdown = () => {
               <div className="p-4">
                 {
                   data.cartItems.map((cartItem) => (
-                    <>
+                    <React.Fragment key={cartItem.id}>
                       <div key={cartItem.id} className="grid grid-cols-4 w-full">
-                        <Image src="/images/product.png" className="border border-muted rounded-md" width={64}
+                        <Image src={cartItem.thumbnail} className="border border-muted rounded-md" width={64}
                                height={64} alt={cartItem.product.name} />
                         <div className="col-span-3 flex flex-col">
                           <div className="space-y-1">
@@ -69,7 +69,7 @@ const CartDropdown = () => {
                         </div>
                       </div>
                       <Separator className="mb-6 mt-4 w-full" />
-                    </>
+                    </React.Fragment>
                   ))
                 }
                 <Button className="w-full py-5 text-base">

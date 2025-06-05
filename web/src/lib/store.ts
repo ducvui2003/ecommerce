@@ -12,6 +12,7 @@ import addressReducer from '@/features/address/address.slice';
 import { contactApi } from '@/features/contact/contact.api';
 import { orderApi } from '@/features/order/order.api';
 import orderReducer from '@/features/order/order.slice';
+import { productApi } from '@/features/product/product.api';
 
 export const makeStore = () => {
   const store = configureStore({
