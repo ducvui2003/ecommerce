@@ -17,7 +17,7 @@ export const CommentResponseSchema = z.object({
   content: z.string(),
   likes: z.number(),
   parentId: z.string().uuid().optional(),
-  updatedAt: z.date(),
+  createAt: z.date(),
   userId: z.number(),
   username: z.string().optional(),
 });

@@ -57,6 +57,23 @@ export const commentApi = createApi({
       },
       invalidatesTags: ['Comment'],
     }),
+    likeComment: builder.mutation<void, { commentId: string }>({
+      async queryFn({ commentId }) {
+        try {
+          const response = await commentService.likeComment(commentId);
+          return { data: response };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.payload || error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      invalidatesTags: ['Comment'],
+    }),
+
   }),
 });
 
@@ -64,4 +81,5 @@ export const {
   useGetCommentsByProductQuery,
   useCreateCommentMutation,
   useUpdateCommentMutation,
+  useLikeCommentMutation,
 } = commentApi;

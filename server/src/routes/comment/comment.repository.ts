@@ -133,7 +133,7 @@ export class CommentRepository {
       id: comment.id,
       content: comment.content,
       parentId: comment.parentId ?? undefined,
-      updatedAt: comment.updatedAt ?? comment.createdAt,
+      createAt: comment.createdAt,
       likes: comment.like,
       userId : comment.userId,
     };

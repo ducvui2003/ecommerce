@@ -54,9 +54,9 @@ const commentService = {
 
 
   likeComment: async (commentId: string): Promise<void> => {
-    await httpClient.put<ResponseApi<null>>(
+    await httpClient.put<ResponseApi<void>>(
       `api/v1/comment/${commentId}/like`,
-      undefined,
+      false,
       undefined,
     );
   }
