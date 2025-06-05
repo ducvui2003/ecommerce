@@ -20,6 +20,7 @@ export class ProductController {
   @Get('/search')
   searchProducts(@Query() query: SearchProductDto) {
     console.log(query);
+
     return this.productService.search(query);
   }
 

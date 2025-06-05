@@ -54,7 +54,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-export default function Page() {
+export default function CartPage() {
   const { data: cart, isSuccess } = useGetCartQuery();
   const { data: promotions } = useGetActivePromotionsQuery();
   const [toggleCartItem] = useToggleCartItemMutation();

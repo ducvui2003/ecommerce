@@ -34,11 +34,11 @@ export const components: NavigationType[] = [
   },
   {
     title: 'Về chúng tôi',
-    href: '/about-us',
+    href: '/about',
   },
   {
     title: 'Liên hệ',
-    href: '/contact-us',
+    href: '/contact',
   },
   {
     title: 'Tư vấn',

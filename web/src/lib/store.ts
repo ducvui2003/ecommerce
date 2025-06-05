@@ -8,6 +8,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { cartApi } from '@/features/cart/cart.api';
 import { promotionApi } from '@/features/promotion/promotion.api';
+import { productApi } from '@/features/product/product.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -18,6 +19,7 @@ export const makeStore = () => {
       [mediaApi.reducerPath]: mediaApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [productManagerApi.reducerPath]: productManagerApi.reducer,
+      [productApi.reducerPath]: productApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,
       [promotionApi.reducerPath]: promotionApi.reducer,
     },
@@ -27,6 +29,7 @@ export const makeStore = () => {
         .concat(mediaApi.middleware)
         .concat(userApi.middleware)
         .concat(productManagerApi.middleware)
+        .concat(productApi.middleware)
         .concat(cartApi.middleware)
         .concat(promotionApi.middleware);
     },

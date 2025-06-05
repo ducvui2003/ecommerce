@@ -12,7 +12,7 @@ import {
 } from '@/types/cart.type';
 
 export const cartApi = createApi({
-  reducerPath: 'cart',
+  reducerPath: 'cartApi',
   tagTypes: ['Cart'],
   baseQuery: () => ({ data: {} }),
   endpoints: (builder) => ({

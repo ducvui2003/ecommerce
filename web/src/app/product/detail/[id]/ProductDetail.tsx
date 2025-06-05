@@ -221,7 +221,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
       <RatingSummary />
       <ProductComment />
-      <ProductRelation categoryId={product.category.id} />
+      {/*<ProductRelation categoryId={product.category.id} />*/}
     </div>
   );
 }
