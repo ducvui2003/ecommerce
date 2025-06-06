@@ -101,14 +101,14 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
     size: 100,
     cell: ({ row }) => {
       const {
-        method,
+        provider,
       }: {
-        method: PaymentProvider;
+        provider: PaymentProvider;
       } = row.getValue('payment');
-      if (method === 'VNPAY') {
+      if (provider === 'VNPAY') {
         return <Image src={vnpay} alt="" width={30} height={30} />;
       }
-      if (method === 'SEPAY') {
+      if (provider === 'SEPAY') {
         return <Image src={sepay} alt="" width={30} height={30} />;
       }
       return <div>null</div>;

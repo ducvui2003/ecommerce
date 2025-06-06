@@ -11,7 +11,7 @@ import { OrderResType } from '@route/order/order-manager.schema';
 export class OrderManagerController {
   constructor(@Inject() private readonly orderService: OrderManagerService) {}
 
-  @Get()
+  @Get('search')
   @UseGuards(AuthenticationGuard)
   @MessageHttp('Paging order for admin')
   @Auth([AuthType.Bearer])

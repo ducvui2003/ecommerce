@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
   OrderRepositoryType,
-  OrderResType,
   SearchOrderType,
 } from '@route/order/order-manager.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
@@ -99,13 +98,6 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
       Prisma.sql`SELECT COUNT(DISTINCT o.id)::INT as count
                 FROM orders o
                 JOIN order_items oi ON o.id = oi.order_id 
-                JOIN LATERAL (
-                SELECT oi2.product
-                FROM order_items oi2
-                WHERE oi2.order_id = o.id
-                ORDER BY oi2.created_at ASC
-                LIMIT 1
-                ) first_item ON true
                 JOIN users u ON o.user_id = u.id 
                 ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
             `,
