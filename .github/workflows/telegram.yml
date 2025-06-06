@@ -2,11 +2,9 @@ name: Notify Telegram
 
 on:
   workflow_run:
-    workflows: ["Development", "Production"]
+    workflows: ["server-ci", "web-ci"]
     types:
       - completed
-      - in_progress
-      - requested
 
 jobs:
   notify:
