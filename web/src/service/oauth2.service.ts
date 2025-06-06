@@ -1,4 +1,5 @@
 import http from '@/lib/http.client';
+import httpServer from '@/lib/http.server';
 import userService from '@/service/user.service';
 import { ResponseApi } from '@/types/api.type';
 import { LoginResType, Role } from '@/types/auth.type';
@@ -9,10 +10,13 @@ const oauth2Api = {
     accessToken: string,
     provider: 'google' | 'facebook',
   ): Promise<User> => {
-    const res = await http.post<ResponseApi<LoginResType>>('/api/oauth2', {
-      accessToken,
-      provider,
-    });
+    const res = await httpServer.post<ResponseApi<LoginResType>>(
+      '/api/oauth2',
+      {
+        accessToken,
+        provider,
+      },
+    );
     const body = res.payload.data;
 
     const userInfo = await userService.getInfo(body.accessToken);

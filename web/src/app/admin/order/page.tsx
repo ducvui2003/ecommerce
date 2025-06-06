@@ -1,3 +1,4 @@
+import { DataTable } from '@/app/admin/order/data-table';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -6,7 +7,12 @@ export const metadata: Metadata = {
 };
 
 const OrderAdminPage = () => {
-  return <div>Quan ly don hang</div>;
+  return (
+    <section>
+      <h2>Quan ly don hang</h2>
+      <DataTable />
+    </section>
+  );
 };
 
 export default OrderAdminPage;

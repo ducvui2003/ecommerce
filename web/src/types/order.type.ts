@@ -1,4 +1,8 @@
-import { StatusOrderType } from '@/constraint/variable';
+import {
+  PaymentProvider,
+  PaymentStatus,
+  StatusOrderType,
+} from '@/constraint/variable';
 import { PageReq } from '@/types/api.type';
 import { z } from 'zod';
 
@@ -99,6 +103,28 @@ type OrderSearchParamsType = {
 };
 
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
+
+type OrderManagerSearchParamsType = {};
+
+type OrderManagerResType = {
+  id: number;
+  status: StatusOrderType;
+  totalAmount: number;
+  quantity: number;
+  createdAt: Date;
+  receiver: {
+    id: string;
+    name: string;
+    phone: string;
+    email: string;
+  };
+  payment: {
+    id: string;
+    provider: PaymentProvider;
+    status: PaymentStatus;
+  };
+};
+
 export { CreateOrderFormSchema };
 export type {
   CreateOrderFormType,
@@ -109,4 +135,6 @@ export type {
   OrderDetailResType,
   OrderSearchParamsType,
   OrderDetailItemType,
+  OrderManagerResType,
+  OrderManagerSearchParamsType,
 };

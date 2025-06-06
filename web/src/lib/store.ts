@@ -12,6 +12,7 @@ import addressReducer from '@/features/address/address.slice';
 import { contactApi } from '@/features/contact/contact.api';
 import { orderApi } from '@/features/order/order.api';
 import orderReducer from '@/features/order/order.slice';
+import { orderManagerApi } from '@/features/manager/order/order.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -22,12 +23,13 @@ export const makeStore = () => {
       orderSlice: orderReducer,
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
-      [userApi.reducerPath]: userApi.reducer,
-      [productManagerApi.reducerPath]: productManagerApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,
       [promotionApi.reducerPath]: promotionApi.reducer,
       [contactApi.reducerPath]: contactApi.reducer,
       [orderApi.reducerPath]: orderApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
+      [productManagerApi.reducerPath]: productManagerApi.reducer,
+      [orderManagerApi.reducerPath]: orderManagerApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
@@ -38,7 +40,8 @@ export const makeStore = () => {
         .concat(cartApi.middleware)
         .concat(promotionApi.middleware)
         .concat(contactApi.middleware)
-        .concat(orderApi.middleware);
+        .concat(orderApi.middleware)
+        .concat(orderManagerApi.middleware);
     },
   });
 

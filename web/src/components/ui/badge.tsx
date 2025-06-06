@@ -4,6 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Role } from '@/types/auth.type';
 import { UserStatus } from '@/types/user.type';
+import { PaymentStatus, StatusOrderType } from '@/constraint/variable';
 
 const badgeVariants = cva<{
   variant: {
@@ -14,6 +15,8 @@ const badgeVariants = cva<{
   };
   userRole: Record<Role, string>;
   userStatus: Record<UserStatus, string>;
+  orderStatus: Record<StatusOrderType, string>;
+  paymentStatus: Record<PaymentStatus, string>;
 }>(
   'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
@@ -37,6 +40,18 @@ const badgeVariants = cva<{
         INACTIVE: 'bg-yellow-500 text-white',
         BLOCKED: 'bg-gray-600 text-white',
       },
+      orderStatus: {
+        PENDING: 'bg-yellow-500 text-white',
+        PAID: 'bg-green-500 text-white',
+        DELIVERING: 'bg-blue-500 text-white',
+        COMPLETE: 'bg-green-600 text-white',
+        CANCELED: 'bg-red-500 text-white',
+      },
+      paymentStatus: {
+        PENDING: 'bg-yellow-500 text-white',
+        SUCCESS: 'bg-green-500 text-white',
+        FAILED: 'bg-red-500 text-white',
+      },
     },
     defaultVariants: {
       variant: 'default',
@@ -52,13 +67,21 @@ function Badge({
   className,
   userRole: roleUser,
   userStatus,
+  orderStatus,
+  paymentStatus,
   variant,
   ...props
 }: BadgeProps) {
   return (
     <div
       className={cn(
-        badgeVariants({ variant, userRole: roleUser, userStatus }),
+        badgeVariants({
+          variant,
+          userRole: roleUser,
+          userStatus,
+          orderStatus,
+          paymentStatus,
+        }),
         className,
       )}
       {...props}

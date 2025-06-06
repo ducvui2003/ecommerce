@@ -32,7 +32,7 @@ import { Paging } from '@shared/common/interfaces/paging.interface';
 import { OrderType } from '@shared/models/order.model';
 import { FileService } from '@shared/services/file/file.service';
 import { OrderNotFound } from '@route/order/order.error';
-import { ORDER_REPOSITORY } from '@route/order/order.constrant';
+import { ORDER_REPOSITORY } from '@route/order/order.constant';
 
 @Injectable()
 export class OrderService {

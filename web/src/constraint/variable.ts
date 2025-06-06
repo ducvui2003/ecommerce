@@ -23,10 +23,24 @@ export type StatusOrderType =
   | 'DELIVERING'
   | 'COMPLETE'
   | 'CANCELED';
+
 export const statusOrder: Record<StatusOrderType, string> = {
   PENDING: 'Đang chờ thanh toán',
   PAID: 'Đã thanh toán',
   DELIVERING: 'Đang vận chuyển',
   COMPLETE: 'Thành công',
   CANCELED: 'Hủy đơn hàng',
+};
+
+export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED';
+export const paymentStatus: Record<PaymentStatus, string> = {
+  PENDING: 'Đang chờ thanh toán',
+  SUCCESS: 'Thanh toán thành công',
+  FAILED: 'Thanh toán thất bại',
+};
+
+export type PaymentProvider = 'SEPAY' | 'VNPAY';
+export const paymentProvider: Record<PaymentProvider, string> = {
+  SEPAY: 'SEPAY',
+  VNPAY: 'VNPAY',
 };
