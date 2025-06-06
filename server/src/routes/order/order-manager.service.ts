@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { OrderResSchema, OrderResType } from '@route/order/order.schema';
 import {
   FILE_SERVICE,
   SHARED_CART_ITEM_REPOSITORY,
@@ -13,10 +12,15 @@ import { SharedProductRepository } from '@shared/repositories/shared-product.rep
 import { PrismaService } from '@shared/services/prisma.service';
 
 import { OrderManagerRepository } from '@route/order/order-manager.repository';
-import { SearchOrderType } from '@route/order/order-manager.schema';
-import { ORDER_MANAGER_REPOSITORY } from '@route/order/order.constrant';
+import {
+  OrderRepositoryType,
+  OrderResSchema,
+  OrderResType,
+  SearchOrderType,
+} from '@route/order/order-manager.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { FileService } from '@shared/services/file/file.service';
+import { ORDER_MANAGER_REPOSITORY } from '@route/order/order.constant';
 
 @Injectable()
 export class OrderManagerService {
@@ -36,9 +40,28 @@ export class OrderManagerService {
   ) {}
 
   async search(dto: SearchOrderType): Promise<Paging<OrderResType>> {
-    const page: Paging<OrderResType> = await this.orderRepository.search(dto);
-    return transformItemsPaging<OrderResType, OrderResType>(page, (item) => {
-      return OrderResSchema.parse(item);
-    });
+    const page: Paging<OrderRepositoryType> =
+      await this.orderRepository.search(dto);
+    return transformItemsPaging<OrderResType, OrderRepositoryType>(
+      page,
+      (item) => {
+        const parse: OrderResType = {
+          ...item,
+          receiver: {
+            name: item.receiverName,
+            phone: item.receiverPhone,
+            email: item.receiverEmail,
+          },
+          payment: {
+            id: item.paymentId,
+            provider: item.paymentProvider,
+            status: item.paymentStatus,
+            createdAt: item.paymentCreatedAt,
+          },
+        };
+        console.log('parse', parse);
+        return OrderResSchema.parse(parse);
+      },
+    );
   }
 }

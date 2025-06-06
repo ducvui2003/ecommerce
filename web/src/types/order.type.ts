@@ -113,7 +113,6 @@ type OrderManagerResType = {
   quantity: number;
   createdAt: Date;
   receiver: {
-    id: string;
     name: string;
     phone: string;
     email: string;

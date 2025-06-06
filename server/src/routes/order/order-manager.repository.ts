@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { SearchOrderType } from '@route/order/order-manager.schema';
-import { OrderResType } from '@route/order/order.schema';
+import {
+  OrderRepositoryType,
+  OrderResType,
+  SearchOrderType,
+} from '@route/order/order-manager.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface OrderManagerRepository {
-  search(dto: SearchOrderType): Promise<Paging<OrderResType>>;
+  search(dto: SearchOrderType): Promise<Paging<OrderRepositoryType>>;
 }
 
 @Injectable()
 export class OrderManagerPrismaRepository implements OrderManagerRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async search(dto: SearchOrderType): Promise<Paging<OrderResType>> {
+  async search(dto: SearchOrderType): Promise<Paging<OrderRepositoryType>> {
     const {
       page,
       size,
@@ -72,21 +75,24 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
     const limit = size;
     const offset = (page - 1) * limit;
 
-    const items = await this.prismaService.$queryRaw<OrderResType[]>(
-      Prisma.sql`SELECT o.id, o.total_amount AS "totalAmount", o.status, o.created_at as "createdAt", SUM(oi.quantity)::INT as "quantity", first_item.product ->> 'media' AS "thumbnail"
-                    FROM orders o JOIN order_items oi ON o.id = oi.order_id 
-                    JOIN LATERAL (
-                    SELECT oi2.product
-                    FROM order_items oi2
-                    WHERE oi2.order_id = o.id
-                    ORDER BY oi2.created_at ASC
-                    LIMIT 1
-                    ) first_item ON true
-                    JOIN users u ON o.user_id = u.id 
-                    ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
-                    GROUP BY o.id, o.total_amount, o.status, o.created_at, first_item.product 
-                    ${orderByRaw.length ? Prisma.sql`ORDER BY ${Prisma.join(orderByRaw)}` : Prisma.empty}
-                    LIMIT ${limit} OFFSET ${offset};`,
+    const items = await this.prismaService.$queryRaw<OrderRepositoryType[]>(
+      Prisma.sql`SELECT o.id, 
+                  o.total_amount AS "totalAmount", 
+                  o.status, o.created_at as "createdAt", 
+                  SUM(oi.quantity)::INT as "quantity",
+                  o.receiver ->> 'name' as "receiverName",
+                  o.receiver ->> 'phone' as "receiverPhone",
+                  o.receiver ->> 'email' as "receiverEmail",
+                  p.id AS "paymentId",
+                  p.provider AS "paymentProvider",
+                  p.status AS "paymentStatus",
+                  p.created_at as "paymentCreatedAt" 
+
+                  FROM orders o JOIN order_items oi ON o.id = oi.order_id 
+                  JOIN payment p ON p.order_id = o.id
+                  ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
+                  GROUP BY o.id, o.total_amount, o.status, o.created_at, p.id, p.provider, p.status, p.created_at 
+                  LIMIT ${limit} OFFSET ${offset};`,
     );
 
     const resultCount = await this.prismaService.$queryRaw<{ count: number }>(

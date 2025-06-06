@@ -7,7 +7,7 @@ import { OrderManagerController } from '@route/order/order-manager.controller';
 import {
   ORDER_MANAGER_REPOSITORY,
   ORDER_REPOSITORY,
-} from '@route/order/order.constrant';
+} from '@route/order/order.constant';
 import { OrderManagerService } from '@route/order/order-manager.service';
 import { OrderManagerPrismaRepository } from '@route/order/order-manager.repository';
 
