@@ -1,11 +1,14 @@
-import { currency } from '@/lib/utils';
+import { cn, currency } from '@/lib/utils';
 import { ProductCardType } from '@/types/product.type';
 import Image from 'next/image';
 import React from 'react';
 import { StarRating } from '@/components/StartRating';
 import Link from '@/components/Link';
+import { DEFAULT_IMAGE } from '@/constraint/variable';
 
-type ProductCardProps = ProductCardType;
+type ProductCardProps = ProductCardType & {
+  className?: string;
+};
 const getDiscountedPrice = (base: number, percent?: number) => {
   return percent ? base - (base * percent) / 100 : base;
 };
@@ -14,16 +17,23 @@ const ProductCard = ({
   thumbnail,
   name,
   basePrice,
-  percentSale,
+  salePrice,
   star,
   numSell,
+  className,
 }: ProductCardProps) => {
-  const price = getDiscountedPrice(basePrice, percentSale);
+  const percentSale =
+    salePrice && (((basePrice - salePrice) / basePrice) * 100).toFixed(1);
   return (
-    <div className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
+    <div
+      className={cn(
+        'relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md',
+        className,
+      )}
+    >
       <div className="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
         <Image
-          src={thumbnail ?? '/images/product.png'}
+          src={thumbnail ?? DEFAULT_IMAGE}
           alt={name}
           fill
           className="rounded-xl object-cover"
@@ -44,9 +54,9 @@ const ProductCard = ({
 
         <div className="mt-2 mb-2 flex items-center gap-2">
           <span className="text-md font-bold text-red-600">
-            {currency(price)}
+            {currency(salePrice || basePrice)}
           </span>
-          {percentSale && (
+          {salePrice && (
             <span className="text-sm text-gray-400 line-through">
               {currency(basePrice)}
             </span>

@@ -3,8 +3,8 @@ import { Session } from '@/app/api/auth/session/type';
 import { LOCAL_STORAGE } from '@/constraint/variable';
 import { setAuthState } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-store';
-import { setAccessToken } from '@/lib/http.client';
 import { ReactNode, useEffect, useState } from 'react';
+import { setAccessToken } from '@/lib/http.client';
 import { toast } from 'sonner';
 
 type ClientProviderProps = {

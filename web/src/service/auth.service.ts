@@ -14,12 +14,7 @@ import {
   Role,
   VerifyOTPReqType,
 } from '@/types/auth.type';
-import {
-  ForgotPasswordFormType,
-  LoginFormType,
-  RegisterFormType,
-  SendOTPFormType,
-} from '@/types/schema/auth.schema';
+import { RegisterFormType } from '@/types/schema/auth.schema';
 import { User } from '@/types/user.type';
 
 const authService = {
@@ -38,7 +33,7 @@ const authService = {
       email: userInfo.email,
       name: userInfo.name,
       role: userInfo.role as Role,
-      image: userInfo.avatar,
+      avatar: userInfo.avatar,
       accessToken: body.accessToken,
       refreshToken: body.refreshToken,
       expiresAt: body.exp,
@@ -104,7 +99,7 @@ const authService = {
       email: userInfo.email,
       name: userInfo.name,
       role: userInfo.role as Role,
-      image: userInfo.avatar,
+      avatar: userInfo.avatar,
       accessToken: data.data.accessToken,
       refreshToken: data.data.refreshToken,
       expiresAt: data.data.exp,

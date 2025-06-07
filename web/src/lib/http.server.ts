@@ -65,7 +65,6 @@ const request = async <Response>(
   const fullUrl = url.startsWith('/')
     ? `${baseUrl}${url} `
     : `${baseUrl}/${url}`;
-
   const res = await fetch(fullUrl, {
     ...options,
     headers: {

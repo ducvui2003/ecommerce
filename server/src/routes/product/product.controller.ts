@@ -7,8 +7,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { SearchProductDto } from '@route/product/product.dto';
-import { ProductDetailResType } from '@route/product/product.schema';
+import {
+  ProductDetailResType,
+  ProductResType,
+} from '@route/product/product.schema';
 import { ProductServiceImpl } from '@route/product/product.service';
+import { Paging } from '@shared/common/interfaces/paging.interface';
 
 @Controller('/api/v1/products')
 export class ProductController {
@@ -18,7 +22,9 @@ export class ProductController {
   ) {}
 
   @Get('/search')
-  searchProducts(@Query() query: SearchProductDto) {
+  searchProducts(
+    @Query() query: SearchProductDto,
+  ): Promise<Paging<ProductResType>> {
     return this.productService.search(query);
   }
 

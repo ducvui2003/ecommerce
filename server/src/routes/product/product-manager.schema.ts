@@ -15,6 +15,15 @@ const CreateOptionBodySchema = OptionModel.pick({
   price: NumberToDecimalSchema,
 });
 
+const UpdateOptionBodySchema = OptionModel.pick({
+  name: true,
+  resourceId: true,
+  stock: true,
+}).extend({
+  id: z.number().nullable(),
+  price: NumberToDecimalSchema,
+});
+
 const CreateProductBodySchema = ProductModel.pick({
   name: true,
   description: true,
@@ -23,9 +32,10 @@ const CreateProductBodySchema = ProductModel.pick({
 }).extend({
   basePrice: NumberToDecimalSchema,
   salePrice: NumberToDecimalSchema,
+  thumbnailId: z.coerce.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
-  options: z.array(CreateOptionBodySchema),
+  options: z.array(CreateOptionBodySchema).optional(),
 });
 
 const CreateProductResSchema = ProductModel.pick({
@@ -37,8 +47,11 @@ const CreateProductResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
 });
 
+const UpdateProductResSchema = CreateProductResSchema;
+
 const ResourceResSchema = ResourceModel.pick({
   id: true,
+  publicId: true,
 }).extend({
   url: z.string(),
 });
@@ -46,7 +59,9 @@ const ResourceResSchema = ResourceModel.pick({
 const OptionResSchema = OptionModel.pick({
   id: true,
   name: true,
+  stock: true,
 }).extend({
+  price: DecimalToNumberSchema,
   resource: ResourceResSchema,
 });
 
@@ -59,7 +74,7 @@ const ProductManagerResSchema = ProductModel.pick({
   salePrice: DecimalToNumberSchema,
   category: z.string(),
   supplier: z.string(),
-  resource: z.string(),
+  thumbnail: z.string().optional(),
 });
 
 const ProductDetailManagerResSchema = ProductModel.pick({
@@ -70,14 +85,16 @@ const ProductDetailManagerResSchema = ProductModel.pick({
   supplierId: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  resource: z.array(ResourceResSchema),
+  thumbnail: ResourceResSchema,
+  resources: z.array(ResourceResSchema),
   options: z.array(OptionResSchema).optional(),
 });
 
-const UpdateProductResSchema = ProductModel.pick({
+const UpdateProductBodySchema = ProductModel.pick({
   name: true,
   description: true,
   categoryId: true,
@@ -85,15 +102,17 @@ const UpdateProductResSchema = ProductModel.pick({
 }).extend({
   basePrice: NumberToDecimalSchema,
   salePrice: NumberToDecimalSchema,
+  thumbnailId: z.coerce.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
-  options: z.array(CreateOptionBodySchema),
+  options: z.array(UpdateOptionBodySchema).optional(),
 });
 
 type ProductDetailManagerResType = z.infer<
   typeof ProductDetailManagerResSchema
 >;
 type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
+type UpdateProductBodyType = z.infer<typeof UpdateProductBodySchema>;
 type CreateProductResType = z.infer<typeof CreateProductResSchema>;
 type ProductManagerResType = z.infer<typeof ProductManagerResSchema>;
 type UpdateProductResType = z.infer<typeof UpdateProductResSchema>;
@@ -102,6 +121,7 @@ export {
   ProductManagerResSchema,
   CreateProductBodySchema,
   CreateProductResSchema,
+  UpdateProductBodySchema,
   UpdateProductResSchema,
 };
 export type {
@@ -110,4 +130,5 @@ export type {
   CreateProductBodyType,
   CreateProductResType,
   UpdateProductResType,
+  UpdateProductBodyType,
 };

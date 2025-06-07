@@ -2,7 +2,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { z } from 'zod';
 
 const TimestampFields = z.object({
-  createdAt: z.date(),
+  createdAt: z.date().optional(),
   updatedAt: z.date().nullable(),
 });
 

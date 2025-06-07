@@ -19,8 +19,13 @@ import { AppExceptionFilter } from '@shared/filters/app.exception.filter';
 import { MediaModule } from './routes/media/media.module';
 import { ProductModule } from './routes/product/product.module';
 import { PaymentModule } from './routes/payment/payment.module';
+import { CartModule } from '@route/cart/cart.module';
+import { PromotionModule } from '@route/promotion/promotion.module';
 import { CategoryModule } from './routes/category/category.module';
 import { SupplierModule } from './routes/supplier/supplier.module';
+import { OrderModule } from '@route/order/order.module';
+import { ContactModule } from '@route/contact/contact.module';
+import { CommentModule } from '@route/comment/comment.module';
 
 @Module({
   imports: [
@@ -33,8 +38,13 @@ import { SupplierModule } from './routes/supplier/supplier.module';
     MediaModule,
     ProductModule,
     PaymentModule,
+    CartModule,
+    PromotionModule,
     CategoryModule,
     SupplierModule,
+    OrderModule,
+    ContactModule,
+    CommentModule
   ],
   controllers: [AppController],
   providers: [

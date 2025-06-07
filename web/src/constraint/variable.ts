@@ -12,3 +12,33 @@ export const LOCAL_STORAGE = {
 } as const;
 
 export const ALT = 'An Nhiem';
+export const DEFAULT_IMAGE = '/images/product.png';
+export const PAYMENT_COOKIE = 'payment';
+
+export type StatusOrderType =
+  | 'PENDING'
+  | 'PAID'
+  | 'DELIVERING'
+  | 'COMPLETE'
+  | 'CANCELED';
+
+export const statusOrder: Record<StatusOrderType, string> = {
+  PENDING: 'Chưa thanh toán',
+  PAID: 'Đã thanh toán',
+  DELIVERING: 'Đang vận chuyển',
+  COMPLETE: 'Thành công',
+  CANCELED: 'Hủy đơn hàng',
+};
+
+export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED';
+export const paymentStatus: Record<PaymentStatus, string> = {
+  PENDING: 'Đang chờ thanh toán',
+  SUCCESS: 'Thanh toán thành công',
+  FAILED: 'Thanh toán thất bại',
+};
+
+export type PaymentProvider = 'SEPAY' | 'VNPAY';
+export const paymentProvider: Record<PaymentProvider, string> = {
+  SEPAY: 'SEPAY',
+  VNPAY: 'VNPAY',
+};

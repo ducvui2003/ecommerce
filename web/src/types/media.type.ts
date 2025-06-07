@@ -1,7 +1,11 @@
 type MediaType = {
   id: string;
   url?: string;
-  name: string;
+  publicId: string;
+};
+
+type MediaSearchParams = {
+  skipIds?: number[];
 };
 
 type MediaUploading = Omit<MediaType, 'url'> & {
@@ -58,4 +62,5 @@ export type {
   CreatedMediaResType,
   CloudinaryUploadResult,
   PagingMediaType,
+  MediaSearchParams,
 };

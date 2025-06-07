@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useUserTable } from '@/hooks/use-user-datatable';
+import { useUserTable } from '@/hooks/use-manager-user-datatable';
 import { setKey } from '@/lib/utils';
 import { SearchQueyReqType, UserStatus } from '@/types/user.type';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -79,7 +79,7 @@ export function DataTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    Không có khách hàng nào phù hợp với bộ lọc hiện tại
                   </TableCell>
                 </TableRow>
               )}

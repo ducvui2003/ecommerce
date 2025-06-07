@@ -7,6 +7,12 @@ import productService from '@/service/product.service';
 import { PageReq } from '@/types/api.type';
 import { ProductCardType, SearchParams } from '@/types/product.type';
 
+export async function generateMetadata() {
+  return {
+    title: 'Danh sách sản phẩm',
+  };
+}
+
 type ProductPageProps = {
   searchParams: Promise<Partial<PageReq<SearchParams>>>;
 };
@@ -24,7 +30,6 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
 
   const data: ProductCardType[] = response.items.map((item) => ({
     ...item,
-    thumbnail: item.resource[0],
   }));
 
   const { limit, page, totalItems = 0, totalPages } = response.pagination;

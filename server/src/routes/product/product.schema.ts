@@ -1,4 +1,5 @@
 import { OrderBy, SortBy } from '@shared/constants/product.constant';
+import { orderBySchema } from '@shared/constants/search.constant';
 import { DecimalToNumberSchema } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { OptionModel } from '@shared/models/option.model';
@@ -7,7 +8,6 @@ import { SupplierModel } from '@shared/models/supplier.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
 
-const orderBySchema = z.enum([OrderBy.Asc, OrderBy.Desc]);
 const sortBySchema = z.enum([SortBy.CreatedAt, SortBy.Price, SortBy.Id]);
 
 const sortSchema = z
@@ -36,6 +36,14 @@ const SearchProductReqSchema = PageableSchema.extend({
 
       return Array.isArray(val) ? val : [val];
     }),
+  categoryName: z
+    .union([z.string(), z.array(z.string())])
+    .transform((val: string | string[] | undefined) => {
+      if (val === undefined) return [];
+
+      return Array.isArray(val) ? val : [val];
+    })
+    .optional(),
   supplierId: z
     .union([z.coerce.number(), z.array(z.coerce.number())])
     .optional()
@@ -62,7 +70,7 @@ const ProductResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
-  resource: z.array(z.string()),
+  thumbnail: z.string().optional(),
 });
 
 const ProductDetailResSchema = ProductModel.pick({
@@ -73,12 +81,14 @@ const ProductDetailResSchema = ProductModel.pick({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
   category: CategoryModel.pick({
+    id: true,
     name: true,
   }),
   supplier: SupplierModel.pick({
     name: true,
   }),
-  resource: z.array(z.string()),
+  thumbnail: z.string().optional(),
+  resources: z.array(z.string()).optional(),
   option: z
     .array(
       OptionModel.pick({

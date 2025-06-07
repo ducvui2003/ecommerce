@@ -10,7 +10,7 @@ RUN apk add --no-cache curl openssl3
 COPY package.json package-lock.json ./ 
 
 # Clean and install dependencies (including dev dependencies)
-RUN npm ci 
+RUN npm ci --force
 
 # Copy the source code (has docker ignore)
 COPY . .

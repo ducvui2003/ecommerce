@@ -1,4 +1,5 @@
 import http from '@/lib/http.client';
+import { toQueryString } from '@/lib/utils';
 import {
   ResponseApi,
   ResponseApiPaging,
@@ -9,6 +10,7 @@ import {
   CloudinaryUploadResult,
   CreatedMediaResType,
   CreateMediaReqType,
+  MediaSearchParams,
   PagingMediaType,
   UploadSignature,
   UploadSignatureResult,
@@ -17,7 +19,7 @@ import {
 const urlUpload = 'https://api.cloudinary.com/v1_1/yourstyle/auto/upload';
 
 const mediaService = {
-  sign: async (data: UploadSignature[]) => {
+  sign: async (data: UploadSignature[]): Promise<UploadSignatureResult> => {
     const res = await http.post<ResponseApi<UploadSignatureResult>>(
       '/api/v1/media/signature',
       data,
@@ -72,11 +74,10 @@ const mediaService = {
     return res.payload.data;
   },
 
-  getMedia: async (req: PageReq): Promise<Paging<PagingMediaType>> => {
-    const query = new URLSearchParams({
-      size: req.size.toString(),
-      page: req.page.toString(),
-    });
+  getMedia: async (
+    req: PageReq<MediaSearchParams>,
+  ): Promise<Paging<PagingMediaType>> => {
+    const query = toQueryString(req);
 
     const res = await http.get<ResponseApiPaging<PagingMediaType>>(
       `/api/v1/media?${query.toString()}`,

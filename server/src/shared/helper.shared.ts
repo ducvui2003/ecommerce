@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { randomInt } from 'crypto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { CommentResponseDto } from '@route/comment/comment.dto';
 
 export function isUniqueConstraintError(
   error: any,
@@ -51,3 +52,5 @@ export function transformItemsPaging<T, S>(
     items: page.items.map((item) => mapper(item)),
   };
 }
+
+export const toDecimalSchema = (n: number | string) => new Prisma.Decimal(n);

@@ -2,7 +2,6 @@ import getServerSession from '@/components/auth/getServerSession';
 import ManagerDropdown from '@/components/ManagerDropdown';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import avatar from 'public/images/logo-transparent.png';
 
 type HeaderManagerProps = {
   className?: string;
@@ -16,7 +15,13 @@ const HeaderManager = async ({ className }: HeaderManagerProps) => {
       className={cn('bg-accent flex justify-between px-4 py-2', className)}
     >
       <div className="bg-secondary grid place-items-center rounded-full p-2">
-        <Image src={avatar} className="size-[60px] rounded-full" alt="" />
+        <Image
+          src={'/images/logo-transparent.png'}
+          className="size-[60px] rounded-full"
+          alt=""
+          width={60}
+          height={60}
+        />
       </div>
       <article
         className={cn(

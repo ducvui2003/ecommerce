@@ -42,6 +42,7 @@ const MediaViewerCard = ({
         type="checkbox"
         defaultChecked={checked}
         onChange={handleChecked}
+        data-media-id={id}
         className="absolute top-1 right-1 size-5"
       />
       <img src={url} className="size-full rounded-xl bg-white object-center" />

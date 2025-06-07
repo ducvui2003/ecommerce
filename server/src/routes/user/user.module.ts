@@ -16,5 +16,6 @@ import { USER_REPOSITORY } from '@route/user/user.const';
       useClass: PrismaUserRepository,
     },
   ],
+  exports: [USER_REPOSITORY],
 })
 export class UserModule {}

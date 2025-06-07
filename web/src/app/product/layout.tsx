@@ -8,7 +8,9 @@ const ProductLayout = ({
 }>) => {
   return (
     <>
-      <HeaderWrapper container>{children}</HeaderWrapper>
+      <HeaderWrapper container footer>
+        {children}
+      </HeaderWrapper>
     </>
   );
 };

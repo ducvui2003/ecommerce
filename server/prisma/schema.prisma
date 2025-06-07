@@ -43,7 +43,6 @@ enum OrderStatus {
   PENDING
   PAID
   DELIVERING
-  DELIVERED
   CANCELED
   COMPLETE
 }
@@ -52,6 +51,11 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+}
+
+enum PaymentProvider {
+  VNPAY
+  SEPAY
 }
 
 /**
@@ -182,15 +186,16 @@ model Product {
   basePrice   Decimal @map("base_price") @db.Decimal(10, 2)
   salePrice   Decimal @map("sale_price") @db.Decimal(10, 2)
 
-  categoryId Int      @map("category_id")
-  category   Category @relation(fields: [categoryId], references: [id])
-  supplierId Int      @map("supplier_id")
-  supplier   Supplier @relation(fields: [supplierId], references: [id])
-
-  cartItem CartItem[]
-  review   Review[]
-  wishlist Wishlist[]
-  comment  Comment[]
+  categoryId  Int        @map("category_id")
+  category    Category   @relation(fields: [categoryId], references: [id])
+  supplierId  Int        @map("supplier_id")
+  supplier    Supplier   @relation(fields: [supplierId], references: [id])
+  thumbnailId Int?       @map("thumbnail_id")
+  thumbnail   Resource?  @relation(fields: [thumbnailId], references: [id])
+  cartItem    CartItem[]
+  review      Review[]
+  wishlist    Wishlist[]
+  comment     Comment[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -249,6 +254,7 @@ model Resource {
 
   productResource ProductResource[]
   option          Option[]
+  Product         Product[]
 
   @@map("resources")
 }
@@ -275,7 +281,6 @@ model Cart {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
   @@map("carts")
 }
@@ -284,7 +289,7 @@ model CartItem {
   id        String    @id @default(uuid())
   productId Int       @map("product_id")
   product   Product   @relation(fields: [productId], references: [id])
-  selected  Boolean   @map("selected")
+  selected  Boolean   @default(true) @map("selected")
   quantity  Int       @default(1)
   optionId  Int?      @map("option_id")
   option    Option?   @relation(fields: [optionId], references: [id])
@@ -292,8 +297,9 @@ model CartItem {
   cart      Cart      @relation(fields: [cartId], references: [id], name: "CartToCartItem")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
+  @@unique([cartId, productId, optionId])
+  @@unique([cartId, productId])
   @@map("cart_items")
 }
 
@@ -313,7 +319,6 @@ model Order {
 
   createdAt DateTime @default(now()) @map("created_at")
   payment   Payment?
-  paymentId Int?
 
   @@map("orders")
 }
@@ -324,7 +329,7 @@ model OrderItem {
   price    Decimal
 
   orderId Int   @map("order_id")
-  order   Order @relation(fields: [orderId], references: [id])
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   /// [ProductOrderItem]
   product Json
@@ -336,30 +341,26 @@ model OrderItem {
 }
 
 model Payment {
-  id        Int           @id @default(autoincrement())
-  orderId   Int           @unique @map("order_id")
-  order     Order         @relation(fields: [orderId], references: [id])
+  id        Int             @id @default(autoincrement())
+  orderId   Int?            @unique @map("order_id")
+  order     Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   status    PaymentStatus
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime?     @updatedAt @map("updated_at")
+  provider  PaymentProvider
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime?       @updatedAt @map("updated_at")
 
   @@map("payment")
 }
 
 model PaymentTransaction {
-  id                 Int       @id @default(autoincrement())
-  gateway            String?   @db.VarChar(100)
-  transactionDate    DateTime? @map("transaction_date")
-  accountNumber      String?   @map("account_number") @db.VarChar(100)
-  subAccount         String?   @map("sub_account") @db.VarChar(250)
-  amountIn           Decimal   @default(0.00) @map("amount_in") @db.Decimal(20, 2)
-  amountOut          Decimal   @default(0.00) @map("amount_out") @db.Decimal(20, 2)
-  accumulated        Decimal   @default(0.00) @db.Decimal(20, 2)
-  code               String?   @db.VarChar(250)
-  transactionContent String?   @map("transaction_content")
-  referenceNumber    String?   @map("reference_number") @db.VarChar(255)
-  body               String?
-  createdAt          DateTime  @default(now()) @map("created_at")
+  id                Int     @id @default(autoincrement())
+  paymentId         Int?    @map("payment_id")
+  providerPaymentId String  @map("provider_payment_id")
+  amount            Decimal @db.Decimal(20, 2)
+
+  /// [PaymentTransactionPayload]
+  payload   Json
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("payment_transaction")
 }
@@ -445,10 +446,12 @@ model Wishlist {
   @@map("wishlists")
 }
 
-model CustomerService {
+model Contact {
   id      Int            @id @default(autoincrement())
   title   String
   email   String
+  phone   String
+  name    String
   message String
   status  CustomerStatus @default(PENDING)
 
@@ -456,7 +459,7 @@ model CustomerService {
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@map("customer_services")
+  @@map("contacts")
 }
 
 model Notification {
@@ -473,10 +476,10 @@ model Notification {
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
+  id       String  @id @default(uuid())
   content  String
   like     Int
-  parentId Int?   @map("parent_id")
+  parentId String? @map("parent_id")
 
   userId    Int     @map("user_id")
   user      User    @relation(fields: [userId], references: [id])
@@ -488,6 +491,15 @@ model Comment {
   deletedAt DateTime? @map("deleted_at")
 
   @@map("comments")
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId])
 }
 
 model Policy {

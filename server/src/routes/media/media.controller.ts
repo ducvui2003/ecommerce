@@ -6,17 +6,15 @@ import {
   HttpStatus,
   Inject,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import {
-  ChangeVisibilityDTO,
   CreatedMediaDTO,
+  SearchMediaReqDTO,
   SignatureDTO,
 } from '@route/media/media.dto';
 import { MessageHttp } from '@shared/decorators/message.decorator';
 import { FileService } from '@shared/services/file/file.service';
-import { PageableDTO } from '@shared/types/request.type';
 import { MediaService } from './media.service';
 
 @Controller('/api/v1/media')
@@ -37,7 +35,6 @@ export class MediaController {
   @MessageHttp('Create media')
   async createMedia(@Body() req: CreatedMediaDTO) {
     const response = await this.mediaService.createMedia(req);
-    console.log(response);
     return response;
   }
 
@@ -49,7 +46,7 @@ export class MediaController {
 
   @Get()
   @MessageHttp('Pageable media')
-  getListMedia(@Query() pageable: PageableDTO) {
+  getListMedia(@Query() pageable: SearchMediaReqDTO) {
     return this.mediaService.getList(pageable);
   }
 }
