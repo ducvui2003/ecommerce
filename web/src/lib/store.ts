@@ -13,6 +13,7 @@ import { contactApi } from '@/features/contact/contact.api';
 import { orderApi } from '@/features/order/order.api';
 import orderReducer from '@/features/order/order.slice';
 import { orderManagerApi } from '@/features/manager/order/order.api';
+import orderManagerReducer from '@/features/manager/order/order.slice';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -21,6 +22,7 @@ export const makeStore = () => {
       mediaSlice: mediaReducer,
       addressSlice: addressReducer,
       orderSlice: orderReducer,
+      orderManagerSlice: orderManagerReducer,
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,

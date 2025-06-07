@@ -1,3 +1,4 @@
+import { StatusOrderType } from '@/constraint/variable';
 import orderManagerService from '@/service/manager/order-manager.service';
 import userManagerService from '@/service/manager/user-manager.service';
 import { PageReq, Paging, ResponseApiPaging } from '@/types/api.type';
@@ -16,7 +17,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 export const orderManagerApi = createApi({
   reducerPath: 'orderManagerApi', // name field of redux state
   baseQuery: () => ({ data: {} }),
-  tagTypes: ['OrderManager'],
+  tagTypes: ['OrderManager', 'OrderManagerUpdate', ''],
 
   endpoints: (builder) => ({
     getOrderTable: builder.query<
@@ -77,21 +78,11 @@ export const orderManagerApi = createApi({
       providesTags: (_, __, id) => [{ type: 'OrderManager', id }],
     }),
 
-    changeStatus: builder.mutation<
-      number,
-      {
-        id: number;
-        status: Exclude<UserStatus, 'INACTIVE'>;
-      }
-    >({
-      async queryFn({ id, status }) {
+    getOrderStatusAllowChange: builder.query<StatusOrderType[], number>({
+      async queryFn(id) {
         try {
-          let response;
-          if (status === 'ACTIVE')
-            response = await userManagerService.unblock(id);
-          else response = await userManagerService.block(id);
-          console.log(response);
-          return { data: response.statusCode };
+          const result = await orderManagerService.getOrderStatus(id);
+          return { data: result ?? [] };
         } catch (error: any) {
           return {
             error: {
@@ -101,8 +92,40 @@ export const orderManagerApi = createApi({
           };
         }
       },
-      invalidatesTags: (_, __, { id }) => {
-        return [{ type: 'OrderManager', id: id }];
+      providesTags(result, error, id) {
+        if (error) return [];
+        return [{ type: 'OrderManager' as const, id }];
+      },
+    }),
+
+    changeStatus: builder.mutation<
+      void,
+      {
+        id: number;
+        status: StatusOrderType;
+      }
+    >({
+      async queryFn({ id, status }) {
+        try {
+          await orderManagerService.changeOrderStatus(id, status);
+          return { data: undefined };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      invalidatesTags: (result, error, { id }) => {
+        if (error) {
+          return [{ type: '' }];
+        }
+        return [
+          { type: 'OrderManager', id: 'LIST' }, // invalidate whole table list
+          { type: 'OrderManagerUpdate', id }, // invalidate status allow change for the order
+        ];
       },
     }),
   }),
@@ -111,4 +134,5 @@ export const {
   useGetOrderTableQuery,
   useGetOrderDetailQuery,
   useChangeStatusMutation,
+  useGetOrderStatusAllowChangeQuery,
 } = orderManagerApi;

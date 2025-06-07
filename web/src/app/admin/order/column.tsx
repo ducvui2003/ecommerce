@@ -7,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -22,6 +21,8 @@ import { OrderManagerResType } from '@/types/order.type';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
+import { useAppDispatch } from '@/hooks/use-store';
+import DialogChangeStatus from '@/app/admin/order/action';
 
 const orderColumns: ColumnDef<OrderManagerResType>[] = [
   {
@@ -153,29 +154,8 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
     size: 20,
     cell: ({ row }) => {
       const { id } = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(id.toString())}
-            >
-              Copy ID
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href={`/admin/order/${id}`} className="flex-1">
-                Xem chi tiết đơn hàng
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Cập nhập trạng thái đơn hàng</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      const status = row.getValue('status') as StatusOrderType;
+      return <DialogChangeStatus id={id} status={status} />;
     },
   },
 ];

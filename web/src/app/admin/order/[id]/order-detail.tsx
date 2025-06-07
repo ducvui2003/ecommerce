@@ -81,6 +81,8 @@ const OrderItemList = ({ items }: OrderItemListProps) => {
                 src={media || DEFAULT_IMAGE}
                 alt={name}
                 className="size-[70px] rounded-md shadow-md"
+                width={70}
+                height={70}
               />
               <div>
                 <span className="text-sm">

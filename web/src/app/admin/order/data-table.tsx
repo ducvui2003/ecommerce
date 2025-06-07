@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { useOrderTable } from '@/hooks/use-manager-order-datatable';
 import { OrderManagerSearchParamsType } from '@/types/order.type';
 import ActionBar from '@/app/admin/order/action-bar';
+import DialogOrderStatus from '@/components/DialogOrderStatus';
 
 export function DataTable() {
   const [search, setSearch] = useState<OrderManagerSearchParamsType>({});
@@ -81,6 +82,7 @@ export function DataTable() {
           <DataTablePagination table={table} />
         </div>
       </div>
+      <DialogOrderStatus />
     </div>
   );
 }

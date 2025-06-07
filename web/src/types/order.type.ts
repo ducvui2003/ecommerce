@@ -1,6 +1,7 @@
 import {
   PaymentProvider,
   PaymentStatus,
+  statusOrder,
   StatusOrderType,
 } from '@/constraint/variable';
 import { z } from 'zod';
@@ -112,11 +113,22 @@ const OrderSearchParamsManagerSchema = z.object({
   paymentStatus: z.array(z.string()).optional(),
 });
 
+const validStatusKeys = Object.keys(statusOrder) as [
+  StatusOrderType,
+  ...StatusOrderType[],
+];
+
+const OrderChangeStatusSchema = z.object({
+  status: z.enum(validStatusKeys),
+});
+
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
 
 type OrderManagerSearchParamsType = z.infer<
   typeof OrderSearchParamsManagerSchema
 >;
+
+type OrderChangeStatusType = z.infer<typeof OrderChangeStatusSchema>;
 
 type OrderManagerResType = {
   id: number;
@@ -136,7 +148,11 @@ type OrderManagerResType = {
   };
 };
 
-export { CreateOrderFormSchema, OrderSearchParamsManagerSchema };
+export {
+  CreateOrderFormSchema,
+  OrderSearchParamsManagerSchema,
+  OrderChangeStatusSchema,
+};
 export type {
   CreateOrderFormType,
   CreateOrderReqType,
@@ -148,4 +164,5 @@ export type {
   OrderDetailItemType,
   OrderManagerResType,
   OrderManagerSearchParamsType,
+  OrderChangeStatusType,
 };
