@@ -5,7 +5,7 @@ on:
     workflows: ["server-ci", "web-ci"]
     types:
       - completed
-
+  workflow_dispatch:
 jobs:
   notify:
     runs-on: ubuntu-latest
