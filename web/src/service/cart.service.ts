@@ -1,11 +1,7 @@
 import http from '@/lib/http.client';
 import httpServer from '@/lib/http.server';
 import { ResponseApi } from '@/types/api.type';
-import {
-  AddCartItemReqType,
-  ChangeQuantityCartItemReqType,
-  GetCartResType,
-} from '@/types/cart.type';
+import { AddCartItemReqType, ChangeQuantityCartItemReqType, GetCartResType } from '@/types/cart.type';
 
 const cartService = {
   getCart: async (): Promise<GetCartResType> => {
@@ -19,12 +15,16 @@ const cartService = {
   changeQuantityCartItem: async (
     cartItemId: string,
     body: ChangeQuantityCartItemReqType,
-  ) => await http.put<void>(`/api/v1/carts/current/items/${cartItemId}`, body),
-  toggleCartItem: async (cartItemId: string | 'all') =>
-    await http.put<void>(
-      `/api/v1/carts/current/toggle/items/${cartItemId}`,
-      null,
-    ),
+  ) => await http.put<void>(
+    `/api/v1/carts/current/items/${cartItemId}`,
+    body,
+  ),
+  toggleCartItem: async (
+    cartItemId: string | 'all'
+  ) => await http.put<void>(
+    `/api/v1/carts/current/toggle/items/${cartItemId}`,
+    null,
+  ),
   deleteCartItem: async (cartItemId: string) =>
     await http.delete<void>(`/api/v1/carts/current/items/${cartItemId}`, null),
 };

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import image from '/public/images/notfound.png';
 import { ALT, HOME_PAGE } from '@/constraint/variable';
 import { Button } from '@/components/ui/button';
 import Link from '@/components/Link';
@@ -8,9 +7,11 @@ const NotFound = () => {
   return (
     <div className="relative h-screen overflow-hidden">
       <Image
-        src={image}
+        src={'/images/notfound.png'}
         alt={ALT}
         className="w-full object-contain object-center"
+        fill
+        sizes="100vw"
       />
       <Button
         size={'lg'}

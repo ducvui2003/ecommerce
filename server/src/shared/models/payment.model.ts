@@ -1,11 +1,9 @@
-import { PaymentStatus } from '@shared/constants/payment.constant';
+import {
+  PaymentProvider,
+  PaymentStatus,
+} from '@shared/constants/payment.constant';
 import { TimestampFields } from '@shared/models/base.model';
 import { z } from 'zod';
-
-const PaymentProvider = {
-  SEPAY: 'SEPAY',
-  VNPAY: 'VNPAY',
-} as const;
 
 const PaymentModel = TimestampFields.extend({
   id: z.number(),

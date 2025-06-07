@@ -15,6 +15,14 @@ export const VNPAY: Readonly<Record<string, string>> = {
   FAILED_CODE: '07',
 };
 
+export const PaymentProvider = {
+  SEPAY: 'SEPAY',
+  VNPAY: 'VNPAY',
+} as const;
+
 export type PaymentStatusType =
   (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
+export type PaymentProviderType =
+  (typeof PaymentProvider)[keyof typeof PaymentProvider];
 export const PREFIX_PAYMENT_CODE = 'HD';

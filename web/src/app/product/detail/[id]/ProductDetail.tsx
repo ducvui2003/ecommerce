@@ -54,7 +54,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     defaultValues: {
       productId: product.id,
       quantity: 1,
-      hasOption: product.option.length > 0,
+      hasOption: product.option.length > 0
     },
   });
 
@@ -82,10 +82,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const onSummitAddCartItemForm = async (body: AddCartItemReqType) => {
-    const { hasOption, ...data } = body;
+    const {hasOption, ...data} = body
     try {
       const result = await addCartItem(data);
-      if (result.hasOwnProperty('data')) {
+      if (result.hasOwnProperty('data')){
         toast.success('Thêm sản phẩm vào giỏ hàng thành công');
       }
     } catch (error) {
@@ -125,15 +125,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             )}
           >
             <ProductInfo product={productInfoData} />
-            {product.option.length > 0 && (
+            {
+              product.option.length > 0 &&
               <FormField
                 control={addCartItemForm.control}
                 name="optionId"
                 render={({ field }: { field: FieldValues }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">
-                      Dung tích
-                    </FormLabel>
+                    <FormLabel className="text-muted-foreground">Dung tích</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={(value) => field.onChange(Number(value))}
@@ -141,8 +140,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       >
                         <FormItem className="mt-2 flex items-center space-y-0 space-x-3">
                           {product.option.map((option) => {
-                            const isSelected =
-                              String(option.id) === String(field.value);
+                            const isSelected = String(option.id) === String(field.value);
                             return (
                               <FormItem
                                 key={option.id}
@@ -169,7 +167,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   </FormItem>
                 )}
               />
-            )}
+            }
             <FormField
               control={addCartItemForm.control}
               name="quantity"
@@ -208,10 +206,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               )}
             />
             <div className="flex items-center gap-2">
-              <Button
-                type="submit"
-                className="gap-2 px-4 py-2 text-white disabled:opacity-50"
-              >
+              <Button type="submit" className="gap-2 px-4 py-2 text-white disabled:opacity-50">
                 <ShoppingCart />
                 <span>Thêm vào giỏ hàng</span>
               </Button>

@@ -4,10 +4,12 @@ import { AddCartItemSchema, ChangeQuantityCartItemSchema } from '@/types/schema/
 type GetCartResType = {
   id: number,
   userId: number,
+  temporaryTotalPrice: number,
   cartItems: {
     id: string,
     quantity: number,
     selected: boolean,
+    thumbnail: string,
     product: {
       id: number,
       name: string,

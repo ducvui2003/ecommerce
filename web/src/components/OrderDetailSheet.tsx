@@ -190,11 +190,4 @@ const OrderPayment = ({
   );
 };
 
-type OrderSummaryProps = {
-  data: OrderDetailResType;
-};
-const OrderSummary = ({ data }: OrderSummaryProps) => {
-  return <div className="grid grid-cols-2 gap-2"></div>;
-};
-
 export default OrderDetailSheet;

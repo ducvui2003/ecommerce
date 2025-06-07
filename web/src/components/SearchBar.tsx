@@ -1,20 +1,25 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React, { useState } from 'react';
+import React, {  useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import {
+  Command,
   CommandDialog,
-  CommandEmpty,
+  CommandEmpty, CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
 import Link from 'next/link';
+import { useSearchProductQuery } from '@/features/product/product.api';
 
-const SearchBar = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  const [open, setOpen] = useState(false)
+const SearchBar =  ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+
+  const { data, isLoading } = useSearchProductQuery(inputValue);
 
   return (
     <div className="w-full">
@@ -35,15 +40,43 @@ const SearchBar = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
         <Search className="text-muted-foreground focus-within:bg-primary focus-within:p-6" />
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Tìm kiếm sản phẩm..." />
+        <CommandInput
+          placeholder="Tìm kiếm sản phẩm..."
+          value={inputValue}
+          onValueChange={(name) => setInputValue(name)}
+        />
         <CommandList>
-          <CommandEmpty>Không tìm thấy sản phẩm phù hợp!</CommandEmpty>
-          <CommandItem asChild className='cursor-pointer data-[selected=true]:bg-transparent data-[selected=true]:hover:bg-primary data-[selected=true]:hover:text-white'>
-            <Link href={`/product/detail/`}>Example</Link>
-          </CommandItem>
-          <CommandItem asChild className='cursor-pointer data-[selected=true]:bg-transparent data-[selected=true]:hover:bg-primary data-[selected=true]:hover:text-white'>
-            <Link href={`/product/detail/`}>Example</Link>
-          </CommandItem>
+          {!inputValue && <CommandEmpty>Kết quả tìm kiếm của bạn sẽ hiện thị tại đây</CommandEmpty>}
+          {(inputValue && isLoading) && <CommandEmpty>Đang tìm kiếm ...</CommandEmpty>}
+          {
+            (inputValue && !isLoading) &&
+            (
+              data?.items.length === 0 ?
+                <CommandEmpty>Không tìm thấy sản phẩm phù hợp</CommandEmpty> :
+                <CommandGroup>
+                  {
+                    data?.items.map((item) => (
+                      <CommandItem
+                        key={item.id}
+                        asChild
+                        value={item.name}
+                        className="cursor-pointer data-[selected=true]:bg-transparent data-[selected=true]:hover:bg-primary data-[selected=true]:hover:text-white"
+                      >
+                        <Link
+                          href={`/product/detail/${item.id}`}
+                          onClick={() => {
+                            setOpen(false)
+                            setInputValue('');
+                          }}
+                        >
+                          {item.name}
+                        </Link>
+                      </CommandItem>
+                    ))
+                  }
+                </CommandGroup>
+            )
+          }
         </CommandList>
       </CommandDialog>
     </div>

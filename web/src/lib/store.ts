@@ -13,6 +13,9 @@ import { contactApi } from '@/features/contact/contact.api';
 import { orderApi } from '@/features/order/order.api';
 import orderReducer from '@/features/order/order.slice';
 import { commentApi } from '@/features/comment/comment.api';
+import { orderManagerApi } from '@/features/manager/order/order.api';
+import orderManagerReducer from '@/features/manager/order/order.slice';
+import { productApi } from '@/features/product/product.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -21,15 +24,18 @@ export const makeStore = () => {
       mediaSlice: mediaReducer,
       addressSlice: addressReducer,
       orderSlice: orderReducer,
+      orderManagerSlice: orderManagerReducer,
       [addressApi.reducerPath]: addressApi.reducer,
       [mediaApi.reducerPath]: mediaApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [productManagerApi.reducerPath]: productManagerApi.reducer,
+      [productApi.reducerPath]: productApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,
       [promotionApi.reducerPath]: promotionApi.reducer,
       [contactApi.reducerPath]: contactApi.reducer,
       [orderApi.reducerPath]: orderApi.reducer,
       [commentApi.reducerPath]: commentApi.reducer,
+      [orderManagerApi.reducerPath]: orderManagerApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
@@ -37,11 +43,13 @@ export const makeStore = () => {
         .concat(mediaApi.middleware)
         .concat(userApi.middleware)
         .concat(productManagerApi.middleware)
+        .concat(productApi.middleware)
         .concat(cartApi.middleware)
         .concat(promotionApi.middleware)
         .concat(contactApi.middleware)
         .concat(orderApi.middleware)
-        .concat(commentApi.middleware);
+        .concat(commentApi.middleware)
+        .concat(orderManagerApi.middleware);
     },
   });
 

@@ -13,7 +13,7 @@ import {
 import { OrderItemType } from '@shared/models/order-item.model';
 import { SharedCartItemRepository } from '@shared/repositories/shared-cart-item.repository';
 import { PrismaService } from '@shared/services/prisma.service';
-import { OrderRepository } from './order.repository';
+import { OrderPrismaRepository, OrderRepository } from './order.repository';
 import { SharedPrismaPaymentRepository } from '@shared/repositories/shared-payment.repository';
 import { SharedProductRepository } from '@shared/repositories/shared-product.repository';
 import { ProductType } from '@shared/models/product.model';
@@ -31,13 +31,13 @@ import { OrderStatus } from '@shared/constants/order.constant';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { OrderType } from '@shared/models/order.model';
 import { FileService } from '@shared/services/file/file.service';
-import { ProductNotFoundException } from '@shared/exceptions/product.exception';
 import { OrderNotFound } from '@route/order/order.error';
+import { ORDER_REPOSITORY } from '@route/order/order.constant';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @Inject()
+    @Inject(ORDER_REPOSITORY)
     private readonly orderRepository: OrderRepository,
     @Inject(SHARED_CART_ITEM_REPOSITORY)
     private readonly sharedCartItemRepository: SharedCartItemRepository,
