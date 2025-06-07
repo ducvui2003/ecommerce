@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 const configSchema = z.object({
-  NEXT_PUBLIC_SERVER_INTERNAL: z.string(),
-  NEXT_PUBLIC_SERVER_URL: z.string(),
-  NEXT_PUBLIC_AUTH_SECRET: z.string(),
+  NEXT_PUBLIC_SERVER_INTERNAL: z.string().default(''),
+  NEXT_PUBLIC_SERVER_URL: z.string().default(''),
+  NEXT_PUBLIC_AUTH_SECRET: z.string().default(''),
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string(),
   NEXT_PUBLIC_GOOGLE_CLIENT_SECRET: z.string(),
   NEXT_PUBLIC_FACEBOOK_CLIENT_ID: z.string(),

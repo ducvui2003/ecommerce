@@ -79,7 +79,7 @@ export function DataTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    Không có khách hàng nào phù hợp với bộ lọc hiện tại
                   </TableCell>
                 </TableRow>
               )}

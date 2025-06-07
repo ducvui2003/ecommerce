@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { SearchOrderType } from '@route/order/order-manager.schema';
-import { OrderResType } from '@route/order/order.schema';
+import {
+  OrderDetailResType,
+  OrderRepositoryType,
+  SearchOrderType,
+} from '@route/order/order-manager.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderStatusType } from '@shared/constants/order.constant';
+import { PaymentStatusType } from '@shared/constants/payment.constant';
+import { OrderType } from '@shared/models/order.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface OrderManagerRepository {
-  search(dto: SearchOrderType): Promise<Paging<OrderResType>>;
+  search(dto: SearchOrderType): Promise<Paging<OrderRepositoryType>>;
+  getDetail(id: number): Promise<OrderType>;
+  getCurrentStatus(id: number): Promise<{
+    orderStatus: OrderStatusType;
+    paymentStatus?: PaymentStatusType;
+  }>;
+  changeOrderStatus(id: number, status: OrderStatusType): Promise<void>;
 }
 
 @Injectable()
 export class OrderManagerPrismaRepository implements OrderManagerRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async search(dto: SearchOrderType): Promise<Paging<OrderResType>> {
+  async search(dto: SearchOrderType): Promise<Paging<OrderRepositoryType>> {
     const {
       page,
       size,
       sorts,
-      status,
+      orderStatus,
+      paymentStatus,
       nameUser,
-      date,
+      dateFrom,
+      dateTo,
       id,
       nameReceiver,
       phoneReceiver,
@@ -28,7 +42,7 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
 
     const whereRaw: Prisma.Sql[] = [];
     if (id) {
-      whereRaw.push(Prisma.sql`u.id = ${id}`);
+      whereRaw.push(Prisma.sql`o.id = ${id}`);
     }
     if (nameUser) {
       whereRaw.push(Prisma.sql`u.name = ${nameUser}`);
@@ -39,17 +53,22 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
     if (phoneReceiver) {
       whereRaw.push(Prisma.sql`o.receiver ->> "phone" ILIKE ${phoneReceiver}`);
     }
-    if (date) {
-      const { from, to } = date;
-      if (from) {
-        whereRaw.push(Prisma.sql`o.created_at::date >= ${from}`);
-      }
-      if (to) {
-        whereRaw.push(Prisma.sql`o.created_at::date <= ${to}`);
-      }
+
+    if (dateFrom) {
+      whereRaw.push(Prisma.sql`o.created_at::date >= ${dateFrom}`);
     }
-    if (status) {
-      whereRaw.push(Prisma.sql`o.status = ${status}::"OrderStatus"`);
+    if (dateTo) {
+      whereRaw.push(Prisma.sql`o.created_at::date <= ${dateTo}`);
+    }
+    if (orderStatus.length) {
+      whereRaw.push(
+        Prisma.sql`o.status = ANY (${Prisma.sql`${orderStatus}`}::"OrderStatus"[])`,
+      );
+    }
+    if (paymentStatus.length) {
+      whereRaw.push(
+        Prisma.sql`p.status = ANY (${Prisma.sql`${paymentStatus}`}::"PaymentStatus"[])`,
+      );
     }
 
     const calculateOrderBy: Prisma.OrderOrderByWithRelationInput = {};
@@ -72,34 +91,30 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
     const limit = size;
     const offset = (page - 1) * limit;
 
-    const items = await this.prismaService.$queryRaw<OrderResType[]>(
-      Prisma.sql`SELECT o.id, o.total_amount AS "totalAmount", o.status, o.created_at as "createdAt", SUM(oi.quantity)::INT as "quantity", first_item.product ->> 'media' AS "thumbnail"
-                    FROM orders o JOIN order_items oi ON o.id = oi.order_id 
-                    JOIN LATERAL (
-                    SELECT oi2.product
-                    FROM order_items oi2
-                    WHERE oi2.order_id = o.id
-                    ORDER BY oi2.created_at ASC
-                    LIMIT 1
-                    ) first_item ON true
-                    JOIN users u ON o.user_id = u.id 
-                    ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
-                    GROUP BY o.id, o.total_amount, o.status, o.created_at, first_item.product 
-                    ${orderByRaw.length ? Prisma.sql`ORDER BY ${Prisma.join(orderByRaw)}` : Prisma.empty}
-                    LIMIT ${limit} OFFSET ${offset};`,
+    const items = await this.prismaService.$queryRaw<OrderRepositoryType[]>(
+      Prisma.sql`SELECT o.id, 
+                  o.total_amount AS "totalAmount", 
+                  o.status, o.created_at as "createdAt", 
+                  SUM(oi.quantity)::INT as "quantity",
+                  o.receiver ->> 'name' as "receiverName",
+                  o.receiver ->> 'phone' as "receiverPhone",
+                  o.receiver ->> 'email' as "receiverEmail",
+                  p.id AS "paymentId",
+                  p.provider AS "paymentProvider",
+                  p.status AS "paymentStatus",
+                  p.created_at as "paymentCreatedAt" 
+                  FROM orders o JOIN order_items oi ON o.id = oi.order_id 
+                  JOIN payment p ON p.order_id = o.id 
+                  JOIN users u ON o.user_id = u.id 
+                  ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
+                  GROUP BY o.id, o.total_amount, o.status, o.created_at, p.id, p.provider, p.status, p.created_at 
+                  LIMIT ${limit} OFFSET ${offset};`,
     );
 
     const resultCount = await this.prismaService.$queryRaw<{ count: number }>(
-      Prisma.sql`SELECT COUNT(DISTINCT o.id)::INT as count
-                FROM orders o
-                JOIN order_items oi ON o.id = oi.order_id 
-                JOIN LATERAL (
-                SELECT oi2.product
-                FROM order_items oi2
-                WHERE oi2.order_id = o.id
-                ORDER BY oi2.created_at ASC
-                LIMIT 1
-                ) first_item ON true
+      Prisma.sql`SELECT COUNT(DISTINCT o. id)::INT as count
+                FROM orders o JOIN order_items oi ON o.id = oi.order_id 
+                JOIN payment p ON p.order_id = o.id 
                 JOIN users u ON o.user_id = u.id 
                 ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
             `,
@@ -115,5 +130,49 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
         totalItems,
       },
     };
+  }
+
+  getDetail(id: number): Promise<OrderType> {
+    return this.prismaService.order.findFirstOrThrow({
+      include: {
+        orderItem: true,
+        payment: true,
+        user: true,
+      },
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async getCurrentStatus(id: number): Promise<{
+    orderStatus: OrderStatusType;
+    paymentStatus?: PaymentStatusType;
+  }> {
+    const data = await this.prismaService.order.findUniqueOrThrow({
+      select: {
+        status: true,
+        payment: {
+          select: {
+            status: true,
+          },
+        },
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      orderStatus: data.status,
+      paymentStatus: data?.payment?.status,
+    };
+  }
+  async changeOrderStatus(id: number, status: OrderStatusType): Promise<void> {
+    await this.prismaService.order.update({
+      where: { id },
+      data: { status },
+    });
+    return Promise.resolve();
   }
 }

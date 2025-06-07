@@ -1,4 +1,7 @@
-import { SearchOrderManagerReqSchema } from '@route/order/order-manager.schema';
+import {
+  ChangeStatusOrderReqSchema,
+  SearchOrderManagerReqSchema,
+} from '@route/order/order-manager.schema';
 import {
   CreateOrderSchema,
   SearchOrderReqSchema,
@@ -9,4 +12,7 @@ export class CreateOrderDto extends createZodDto(CreateOrderSchema) {}
 export class SearchOrderDto extends createZodDto(SearchOrderReqSchema) {}
 export class SearchOrderManagerDto extends createZodDto(
   SearchOrderManagerReqSchema,
+) {}
+export class ChangeOrderManagerDto extends createZodDto(
+  ChangeStatusOrderReqSchema,
 ) {}

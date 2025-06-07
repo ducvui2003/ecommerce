@@ -26,7 +26,6 @@ const VnpayReturnSchema = z.object({
   vnp_TransactionStatus: z.string(),
   vnp_SecureHash: z.string(),
 });
-
 type VnpayReturnType = z.infer<typeof VnpayReturnSchema>;
 
 type VnpayReturnSentBackendType = {

@@ -40,6 +40,9 @@ export class OrderPrismaRepository implements OrderRepository {
         receiver: data.receiver,
         status: OrderStatus.PENDING,
       },
+      include: {
+        payment: true,
+      },
     });
   }
 
