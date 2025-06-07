@@ -12,7 +12,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   PaymentProvider,
+  paymentStatus,
   PaymentStatus,
+  statusOrder,
   StatusOrderType,
 } from '@/constraint/variable';
 import { currency, formatDate } from '@/lib/utils';
@@ -43,8 +45,10 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
   },
   {
     accessorKey: 'totalAmount',
-    header: 'Giá',
+    header: 'Tổng tiền',
     size: 20,
+    meta: { label: 'Tổng tiền' },
+
     cell: ({ row }) => {
       const value: number = row.getValue('totalAmount');
 
@@ -53,17 +57,22 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
   },
   {
     accessorKey: 'quantity',
-    header: 'Số lượng',
+    header: ({}) => {
+      return <div className="text-center">Số lượng</div>;
+    },
+    meta: { label: 'Số lượng' },
     size: 100,
     cell: ({ row }) => {
       const value: number = row.getValue('quantity');
 
-      return <div className="font-medium">{value.toString()}</div>;
+      return <div className="text-center font-medium">{value.toString()}</div>;
     },
   },
   {
     accessorKey: 'createdAt',
-    header: 'Thời gian',
+    header: 'Thời gian đặt hàng',
+    meta: { label: 'Thời gian đặt hàng' },
+
     size: 100,
     cell: ({ row }) => {
       const value: Date = row.getValue('createdAt');
@@ -74,16 +83,20 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
   {
     accessorKey: 'status',
     header: 'Trạng thái đơn hàng',
+    meta: { label: 'Trạng thái đơn hàng' },
+
     size: 100,
     cell: ({ row }) => {
       const value: StatusOrderType = row.getValue('status');
 
-      return <Badge orderStatus={value}>{value}</Badge>;
+      return <Badge orderStatus={value}>{statusOrder[value]}</Badge>;
     },
   },
   {
     accessorKey: 'payment',
     header: 'Trạng thái thanh toán',
+    meta: { label: 'Trạng thái thanh toán' },
+
     size: 100,
     cell: ({ row }) => {
       const {
@@ -92,13 +105,16 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
         status: PaymentStatus;
       } = row.getValue('payment');
 
-      return <Badge paymentStatus={status}>{status}</Badge>;
+      return <Badge paymentStatus={status}>{paymentStatus[status]}</Badge>;
     },
   },
   {
+    id: 'payment.method',
     accessorKey: 'payment.method',
     header: 'Phương thức thanh toán',
     size: 100,
+    meta: { label: 'Phương thức thanh toán' },
+
     cell: ({ row }) => {
       const {
         provider,
@@ -115,8 +131,11 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
     },
   },
   {
+    id: 'payment.id',
     accessorKey: 'payment.id',
     header: 'Mã thanh toán',
+    meta: { label: 'Mã thanh toán' },
+
     size: 100,
     cell: ({ row }) => {
       const {

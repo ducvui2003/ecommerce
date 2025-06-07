@@ -101,9 +101,22 @@ type OrderSearchParamsType = {
   status?: StatusOrderType;
 };
 
+const OrderSearchParamsManagerSchema = z.object({
+  id: z.string().optional(),
+  // nameUser: z.string().optional(),
+  nameReceiver: z.string().optional(),
+  phoneReceiver: z.string().optional(),
+  dateFrom: z.coerce.date().optional(),
+  dateTo: z.coerce.date().optional(),
+  orderStatus: z.array(z.string()).optional(),
+  paymentStatus: z.array(z.string()).optional(),
+});
+
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
 
-type OrderManagerSearchParamsType = {};
+type OrderManagerSearchParamsType = z.infer<
+  typeof OrderSearchParamsManagerSchema
+>;
 
 type OrderManagerResType = {
   id: number;
@@ -123,7 +136,7 @@ type OrderManagerResType = {
   };
 };
 
-export { CreateOrderFormSchema };
+export { CreateOrderFormSchema, OrderSearchParamsManagerSchema };
 export type {
   CreateOrderFormType,
   CreateOrderReqType,

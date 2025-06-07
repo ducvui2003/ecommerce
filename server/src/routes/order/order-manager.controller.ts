@@ -29,6 +29,7 @@ export class OrderManagerController {
   search(
     @Query() search: SearchOrderManagerDto,
   ): Promise<Paging<OrderResType>> {
+    console.log(search);
     return this.orderService.search(search);
   }
 

@@ -1,12 +1,7 @@
-import { PaymentProvider } from '@prisma/client';
-import {
-  OrderStatus,
-  OrderStatusType,
-  SortBy,
-} from '@shared/constants/order.constant';
+import { PaymentProvider, PaymentStatus } from '@prisma/client';
+import { OrderStatusType, SortBy } from '@shared/constants/order.constant';
 import {
   PaymentProviderType,
-  PaymentStatus,
   PaymentStatusType,
 } from '@shared/constants/payment.constant';
 import { OrderBy, orderBySchema } from '@shared/constants/search.constant';
@@ -38,17 +33,29 @@ const sortSchema = z
   );
 
 const SearchOrderManagerReqSchema = PageableSchema.extend({
-  id: z.string().optional(),
+  id: z.coerce.number().optional(),
   nameUser: z.string().optional(),
   nameReceiver: z.string().optional(),
   phoneReceiver: z.string().optional(),
-  date: z
-    .object({
-      from: z.coerce.date().optional(),
-      to: z.coerce.date().optional(),
-    })
-    .optional(),
-  status: z.nativeEnum(OrderStatus).optional(),
+  dateFrom: z.coerce.date().optional(),
+  dateTo: z.coerce.date().optional(),
+
+  orderStatus: z
+    .union([z.coerce.string(), z.array(z.coerce.string())])
+    .optional()
+    .transform((val: OrderStatusType | OrderStatusType[] | undefined) => {
+      if (val === undefined) return [];
+
+      return Array.isArray(val) ? val : [val];
+    }),
+  paymentStatus: z
+    .union([z.coerce.string(), z.array(z.coerce.string())])
+    .optional()
+    .transform((val: PaymentStatusType | PaymentStatusType[] | undefined) => {
+      if (val === undefined) return [];
+
+      return Array.isArray(val) ? val : [val];
+    }),
   sorts: z
     .preprocess((val) => {
       // normalize to array
@@ -120,10 +127,10 @@ const OrderDetailResSchema = OrderModel.pick({
 type OrderResType = z.infer<typeof OrderResSchema>;
 type OrderDetailResType = z.infer<typeof OrderDetailResSchema>;
 
-export { OrderResSchema, SearchOrderManagerReqSchema, OrderDetailResSchema };
+export { OrderDetailResSchema, OrderResSchema, SearchOrderManagerReqSchema };
 export type {
+  OrderDetailResType,
   OrderRepositoryType,
   OrderResType,
   SearchOrderType,
-  OrderDetailResType,
 };

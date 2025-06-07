@@ -71,7 +71,7 @@ export function DataTable() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không có sản phẩm nào phù hợp với bộ lọc hiện tại
                 </TableCell>
               </TableRow>
             )}

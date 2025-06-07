@@ -2,17 +2,54 @@
 
 import * as React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, DayPickerProps } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+
+export type CalendarProps = DayPickerProps & {
+  /**
+   * In the year view, the number of years to display at once.
+   * @default 12
+   */
+  yearRange?: number;
+
+  /**
+   * Wether to show the year switcher in the caption.
+   * @default true
+   */
+  showYearSwitcher?: boolean;
+
+  monthsClassName?: string;
+  monthCaptionClassName?: string;
+  weekdaysClassName?: string;
+  weekdayClassName?: string;
+  monthClassName?: string;
+  captionClassName?: string;
+  captionLabelClassName?: string;
+  buttonNextClassName?: string;
+  buttonPreviousClassName?: string;
+  navClassName?: string;
+  monthGridClassName?: string;
+  weekClassName?: string;
+  dayClassName?: string;
+  dayButtonClassName?: string;
+  rangeStartClassName?: string;
+  rangeEndClassName?: string;
+  selectedClassName?: string;
+  todayClassName?: string;
+  outsideClassName?: string;
+  disabledClassName?: string;
+  rangeMiddleClassName?: string;
+  hiddenClassName?: string;
+};
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
   ...props
-}: React.ComponentProps<typeof DayPicker>) {
+}: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}

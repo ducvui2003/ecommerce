@@ -1,30 +1,33 @@
 import ClientIcon from '@/components/ClientIcon';
 import DropdownSelect from '@/components/DropdownSelect';
 import { Button } from '@/components/ui/button';
+import { DatePickerWithPresets } from '@/components/ui/date-picker';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { paymentStatus, statusOrder } from '@/constraint/variable';
+import { filterFalsy } from '@/lib/utils';
 import {
-  useGetAllCategoryQuery,
-  useGetAllSupplierQuery,
-} from '@/features/manager/product/product.api';
-import { currency } from '@/lib/utils';
-import { CategoryType } from '@/types/category.type';
-import { ProductManagerResType, SearchParams } from '@/types/product.type';
-import { SupplierType } from '@/types/supplier.type';
+  OrderManagerResType,
+  OrderManagerSearchParamsType,
+  OrderSearchParamsManagerSchema,
+} from '@/types/order.type';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Table } from '@tanstack/react-table';
-import Link from 'next/link';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm, useFormContext } from 'react-hook-form';
 import { useDebouncedCallback } from 'use-debounce';
 
 type ActionsBarProps = {
-  table: Table<ProductManagerResType>;
-  currentValue: SearchParams;
-  onSearch: (search: SearchParams) => void;
+  table: Table<OrderManagerResType>;
+  currentValue: OrderManagerSearchParamsType;
+  onSearch: (search: OrderManagerSearchParamsType) => void;
 };
 
 const ActionBar = ({
@@ -32,158 +35,97 @@ const ActionBar = ({
   currentValue: currentSearch,
   onSearch,
 }: ActionsBarProps) => {
-  const { data: dataCategory } = useGetAllCategoryQuery();
-  const { data: dateSupplier } = useGetAllSupplierQuery();
-  const [price, setPrice] = useState<[number | undefined, number | undefined]>([
-    undefined,
-    undefined,
-  ]);
+  const form = useForm<OrderManagerSearchParamsType>({
+    resolver: zodResolver(OrderSearchParamsManagerSchema),
+    defaultValues: currentSearch ?? {
+      dateFrom: undefined,
+      dateTo: undefined,
+    },
+  });
 
-  useEffect(() => {
-    console.log(price);
-  }, [price]);
+  const { watch } = form;
 
-  const debounceInputChange = useDebouncedCallback((val: string) => {
-    onSearch({
-      ...currentSearch,
-      name: val,
-    });
-  }, 500);
-
-  const debouncePriceChange = useDebouncedCallback(
-    (minPrice?: number, maxPrice?: number) => {
-      onSearch({
-        ...currentSearch,
-        minPrice,
-        maxPrice,
-      });
+  const debounceSearch = useDebouncedCallback(
+    (search: OrderManagerSearchParamsType) => {
+      onSearch(search);
     },
     500,
   );
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.currentTarget.value;
-    debounceInputChange(keyword);
-  };
-
-  const handlePriceChange = () => {
-    debouncePriceChange(price?.[0], price?.[1]);
-  };
-
   useEffect(() => {
-    return () => debounceInputChange.cancel();
-  }, [debounceInputChange]);
-
-  useEffect(() => {
-    return () => debouncePriceChange.cancel();
-  }, [debouncePriceChange]);
-
-  const handleSelectCategory = (checkedCategory: number[]) => {
-    onSearch({
-      ...currentSearch,
-      categoryId: checkedCategory,
+    const subscription = watch((value) => {
+      const searchParams: OrderManagerSearchParamsType = {
+        orderStatus: value.orderStatus?.length
+          ? filterFalsy(value.orderStatus)
+          : undefined,
+        paymentStatus: value.paymentStatus?.length
+          ? filterFalsy(value.paymentStatus)
+          : undefined,
+        id: value.id?.trim() || undefined,
+        nameReceiver: value.nameReceiver?.trim() || undefined,
+        phoneReceiver: value.phoneReceiver?.trim() || undefined,
+        dateFrom: value.dateFrom ? new Date(value.dateFrom) : undefined,
+        dateTo: value.dateTo ? new Date(value.dateTo) : undefined,
+      };
+      debounceSearch(searchParams);
     });
-  };
-
-  const handleSelectSupplier = (checkedSupplier: number[]) => {
-    onSearch({
-      ...currentSearch,
-      supplierId: checkedSupplier,
-    });
-  };
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   return (
-    <div className="">
-      <div className="border-accent flex rounded-md border-2 px-3 py-2">
+    <Form {...form}>
+      <form className="border-accent flex rounded-md border-2 px-3 py-2">
         <div className="flex items-start gap-2">
-          <div>
-            <span>Tên sản phẩm</span>
-            <input
-              onChange={handleInputChange}
-              className="w-full rounded-md border-2 border-gray-100 px-2 py-2 shadow-md outline-none"
-              placeholder="Tên sản phẩm"
+          <div className="flex flex-col gap-4">
+            <FormField
+              control={form.control}
+              name="id"
+              render={({ field }) => (
+                <FormItem className="item-centers flex gap-2">
+                  <Label>Mã đơn hàng</Label>
+                  <FormControl>
+                    <Input placeholder="Mã đơn hàng" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div>
-            <span className="">Thể loại</span>
-            {dataCategory && (
-              <DropdownSelect<number, CategoryType>
-                data={dataCategory.map((item) => {
-                  return {
-                    id: item.id,
-                    name: item.name,
-                  };
-                })}
-                submit={(ids) => {
-                  handleSelectCategory(ids);
-                }}
+            <div className="flex items-center gap-3">
+              <Label>Khách hàng</Label>
+              <FormField
+                control={form.control}
+                name="phoneReceiver"
+                render={({ field }) => (
+                  <FormItem className="item-centers flex gap-2">
+                    <FormControl>
+                      <Input placeholder="Số điện thoại" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
-            )}
-          </div>
-          <div>
-            <span>Nhà cung cấp</span>
-            {dateSupplier && (
-              <DropdownSelect<number, SupplierType>
-                data={dateSupplier.map((item) => {
-                  return {
-                    id: item.id,
-                    name: item.name,
-                  };
-                })}
-                submit={(ids) => {
-                  handleSelectSupplier(ids);
-                }}
-              />
-            )}
-          </div>
-
-          <div>
-            <span className="inline-flex items-center gap-3">
-              <span>Giá cả:</span>
-              {price?.[0] && (
-                <span className="text-md">{currency(price[0])}</span>
-              )}
-              <ClientIcon icon={'formkit:arrowright'} />
-              {price?.[1] ? (
-                <span className="text-md">{currency(price[1])}</span>
-              ) : (
-                <ClientIcon icon={'mdi:infinity'} />
-              )}
-            </span>
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                placeholder="20.000"
-                defaultValue={0}
-                onChange={(e) => {
-                  let value: number | undefined = e.currentTarget.valueAsNumber;
-                  if (isNaN(value)) value = undefined;
-                  setPrice((prev) => [value, prev?.[1]]);
-                  handlePriceChange();
-                }}
-              />
-              <ClientIcon icon={'formkit:arrowright'} />
-              <Input
-                type="number"
-                placeholder="200.000"
-                onChange={(e) => {
-                  let value: number | undefined = e.currentTarget.valueAsNumber;
-                  if (isNaN(value)) value = undefined;
-                  setPrice((prev) => [prev?.[0], value]);
-                  handlePriceChange();
-                }}
+              <FormField
+                control={form.control}
+                name="nameReceiver"
+                render={({ field }) => (
+                  <FormItem className="item-centers flex gap-2">
+                    <FormControl>
+                      <Input placeholder="Tên khách hàng" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
             </div>
           </div>
+          <div className="flex flex-col gap-2">
+            <SelectDate />
+            <SelectPaymentStatus />
+            <SelectOrderStatus />
+          </div>
         </div>
-      </div>
+      </form>
       <div className="mt-3 flex items-center">
-        <Button>
-          <Link href={'/admin/product/create'}>Tạo sản phẩm</Link>
-        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-4">
+            <Button variant="outline" className="ml-auto">
               <ClientIcon icon={'material-symbols:visibility'} />
             </Button>
           </DropdownMenuTrigger>
@@ -201,14 +143,105 @@ const ActionBar = ({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.columnDef.meta?.label ?? column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+    </Form>
+  );
+};
+
+const SelectDate = () => {
+  const form = useFormContext<OrderManagerSearchParamsType>();
+  return (
+    <div className="flex gap-2">
+      <FormField
+        control={form.control}
+        name="dateFrom"
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <DatePickerWithPresets
+                date={field.value}
+                setDate={field.onChange}
+              />
+            </FormItem>
+          );
+        }}
+      />
+
+      <FormField
+        control={form.control}
+        name="dateTo"
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <DatePickerWithPresets
+                date={field.value}
+                setDate={field.onChange}
+              />
+            </FormItem>
+          );
+        }}
+      />
     </div>
+  );
+};
+
+const SelectPaymentStatus = () => {
+  const form = useFormContext<OrderManagerSearchParamsType>();
+  const { setValue } = form;
+  return (
+    <FormItem className="flex items-center gap-2">
+      <Label className="m-0 h-fit">Trạng thái thanh toán </Label>
+      <DropdownSelect<
+        string,
+        {
+          id: string;
+          name: string;
+        }
+      >
+        data={Object.entries(paymentStatus).map(([key, value]) => {
+          return {
+            id: key,
+            name: value,
+          };
+        })}
+        submit={(ids) => {
+          setValue('paymentStatus', ids);
+        }}
+      />
+    </FormItem>
+  );
+};
+
+const SelectOrderStatus = () => {
+  const form = useFormContext<OrderManagerSearchParamsType>();
+  const { setValue } = form;
+  return (
+    <FormItem className="flex items-center gap-2">
+      <Label className="m-0 h-fit">Trạng thái đơn hàng</Label>
+      <DropdownSelect<
+        string,
+        {
+          id: string;
+          name: string;
+        }
+      >
+        data={Object.entries(statusOrder).map(([key, value]) => {
+          return {
+            id: key,
+            name: value,
+          };
+        })}
+        submit={(ids) => {
+          setValue('orderStatus', filterFalsy(ids));
+        }}
+      />
+    </FormItem>
   );
 };
 export default ActionBar;

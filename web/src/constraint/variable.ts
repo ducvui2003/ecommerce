@@ -25,7 +25,7 @@ export type StatusOrderType =
   | 'CANCELED';
 
 export const statusOrder: Record<StatusOrderType, string> = {
-  PENDING: 'Đang chờ thanh toán',
+  PENDING: 'Chưa thanh toán',
   PAID: 'Đã thanh toán',
   DELIVERING: 'Đang vận chuyển',
   COMPLETE: 'Thành công',

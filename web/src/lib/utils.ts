@@ -133,6 +133,10 @@ function setKey<T extends object, K extends keyof T>(
   };
 }
 
+const filterFalsy = (array: any[]) => {
+  return array.filter((item) => Boolean(item));
+};
+
 export {
   matchPath,
   handleErrorApi,
@@ -146,4 +150,5 @@ export {
   uuid,
   setKey,
   currencyFromString,
+  filterFalsy,
 };

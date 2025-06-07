@@ -23,9 +23,11 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
       page,
       size,
       sorts,
-      status,
+      orderStatus,
+      paymentStatus,
       nameUser,
-      date,
+      dateFrom,
+      dateTo,
       id,
       nameReceiver,
       phoneReceiver,
@@ -33,7 +35,7 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
 
     const whereRaw: Prisma.Sql[] = [];
     if (id) {
-      whereRaw.push(Prisma.sql`u.id = ${id}`);
+      whereRaw.push(Prisma.sql`o.id = ${id}`);
     }
     if (nameUser) {
       whereRaw.push(Prisma.sql`u.name = ${nameUser}`);
@@ -44,17 +46,22 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
     if (phoneReceiver) {
       whereRaw.push(Prisma.sql`o.receiver ->> "phone" ILIKE ${phoneReceiver}`);
     }
-    if (date) {
-      const { from, to } = date;
-      if (from) {
-        whereRaw.push(Prisma.sql`o.created_at::date >= ${from}`);
-      }
-      if (to) {
-        whereRaw.push(Prisma.sql`o.created_at::date <= ${to}`);
-      }
+
+    if (dateFrom) {
+      whereRaw.push(Prisma.sql`o.created_at::date >= ${dateFrom}`);
     }
-    if (status) {
-      whereRaw.push(Prisma.sql`o.status = ${status}::"OrderStatus"`);
+    if (dateTo) {
+      whereRaw.push(Prisma.sql`o.created_at::date <= ${dateTo}`);
+    }
+    if (orderStatus.length) {
+      whereRaw.push(
+        Prisma.sql`o.status = ANY (${Prisma.sql`${orderStatus}`}::"OrderStatus"[])`,
+      );
+    }
+    if (paymentStatus.length) {
+      whereRaw.push(
+        Prisma.sql`p.status = ANY (${Prisma.sql`${paymentStatus}`}::"PaymentStatus"[])`,
+      );
     }
 
     const calculateOrderBy: Prisma.OrderOrderByWithRelationInput = {};
@@ -89,18 +96,18 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
                   p.provider AS "paymentProvider",
                   p.status AS "paymentStatus",
                   p.created_at as "paymentCreatedAt" 
-
                   FROM orders o JOIN order_items oi ON o.id = oi.order_id 
-                  JOIN payment p ON p.order_id = o.id
+                  JOIN payment p ON p.order_id = o.id 
+                  JOIN users u ON o.user_id = u.id 
                   ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
                   GROUP BY o.id, o.total_amount, o.status, o.created_at, p.id, p.provider, p.status, p.created_at 
                   LIMIT ${limit} OFFSET ${offset};`,
     );
 
     const resultCount = await this.prismaService.$queryRaw<{ count: number }>(
-      Prisma.sql`SELECT COUNT(DISTINCT o.id)::INT as count
-                FROM orders o
-                JOIN order_items oi ON o.id = oi.order_id 
+      Prisma.sql`SELECT COUNT(DISTINCT o. id)::INT as count
+                FROM orders o JOIN order_items oi ON o.id = oi.order_id 
+                JOIN payment p ON p.order_id = o.id 
                 JOIN users u ON o.user_id = u.id 
                 ${whereRaw.length ? Prisma.sql`WHERE ${Prisma.join(whereRaw, ' AND ')}` : Prisma.empty}
             `,

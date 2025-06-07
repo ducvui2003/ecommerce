@@ -18,9 +18,9 @@ export const useOrderTable = (searchParams: OrderManagerSearchParamsType) => {
     pageSize: 10,
   });
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    salePrice: false,
-    supplier: false,
     createdAt: false,
+    ['payment.id']: false,
+    ['payment.method']: false,
   });
 
   const [globalFilter, setGlobalFilter] = useState('');

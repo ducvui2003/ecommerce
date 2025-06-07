@@ -12,10 +12,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import ActionBar from '@/app/admin/product/action-bar';
 import { useState } from 'react';
 import { useOrderTable } from '@/hooks/use-manager-order-datatable';
 import { OrderManagerSearchParamsType } from '@/types/order.type';
+import ActionBar from '@/app/admin/order/action-bar';
 
 export function DataTable() {
   const [search, setSearch] = useState<OrderManagerSearchParamsType>({});
@@ -23,7 +23,7 @@ export function DataTable() {
 
   return (
     <div>
-      {/* <ActionBar table={table} currentValue={search} onSearch={setSearch} /> */}
+      <ActionBar table={table} currentValue={search} onSearch={setSearch} />
 
       <div className="relative mt-4 h-[67vh] overflow-y-auto rounded-md border">
         <Table className="mr-2">
@@ -71,7 +71,7 @@ export function DataTable() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không có đơn hàng nào phù hợp với bộ lọc hiện tại
                 </TableCell>
               </TableRow>
             )}
