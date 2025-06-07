@@ -2,6 +2,7 @@ import orderManagerService from '@/service/manager/order-manager.service';
 import userManagerService from '@/service/manager/user-manager.service';
 import { PageReq, Paging, ResponseApiPaging } from '@/types/api.type';
 import {
+  OrderDetailResType,
   OrderManagerResType,
   OrderManagerSearchParamsType,
 } from '@/types/order.type';
@@ -59,10 +60,10 @@ export const orderManagerApi = createApi({
       },
     }),
 
-    getUserDetail: builder.query<GetUserDetailResType, number>({
+    getOrderDetail: builder.query<OrderDetailResType, number>({
       async queryFn(arg) {
         try {
-          const data = await userManagerService.getDetail(arg);
+          const data = await orderManagerService.getDetail(arg);
           return { data: data };
         } catch (error: any) {
           return {
@@ -108,6 +109,6 @@ export const orderManagerApi = createApi({
 });
 export const {
   useGetOrderTableQuery,
-  useGetUserDetailQuery,
+  useGetOrderDetailQuery,
   useChangeStatusMutation,
 } = orderManagerApi;

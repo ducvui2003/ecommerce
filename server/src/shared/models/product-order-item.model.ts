@@ -1,4 +1,3 @@
-import { NumberToDecimalSchema } from '@shared/models/base.model';
 import { z } from 'zod';
 
 export const ProductOrderItemModel = z.object({

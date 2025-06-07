@@ -1,9 +1,7 @@
 import orderColumns from '@/app/admin/order/column';
 import productColumns from '@/app/admin/product/column';
 import { useGetOrderTableQuery } from '@/features/manager/order/order.api';
-import { useGetProductTableQuery } from '@/features/manager/product/product.api';
 import { OrderManagerSearchParamsType } from '@/types/order.type';
-import { SearchParams } from '@/types/product.type';
 import {
   ColumnFiltersState,
   getCoreRowModel,

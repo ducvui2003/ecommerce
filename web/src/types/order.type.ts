@@ -3,7 +3,6 @@ import {
   PaymentStatus,
   StatusOrderType,
 } from '@/constraint/variable';
-import { PageReq } from '@/types/api.type';
 import { z } from 'zod';
 
 const string = z.string().trim().min(1, 'Không được để trống trường này');
@@ -77,7 +76,7 @@ type OrderDetailResType = {
   createdAt: Date;
   payment: {
     provider: string;
-    status: string;
+    status: PaymentStatus;
     createdAt: Date;
     updatedAt?: Date;
   };
