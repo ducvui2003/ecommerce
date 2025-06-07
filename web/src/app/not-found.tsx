@@ -10,6 +10,8 @@ const NotFound = () => {
         src={'/images/notfound.png'}
         alt={ALT}
         className="w-full object-contain object-center"
+        fill
+        sizes="100vw"
       />
       <Button
         size={'lg'}

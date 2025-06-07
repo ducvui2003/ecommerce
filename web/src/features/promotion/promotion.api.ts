@@ -3,7 +3,7 @@ import { GetActivePromotionsResType } from '@/types/promotion.type';
 import promotionService from '@/service/promotion.service';
 
 export const promotionApi = createApi({
-  reducerPath: 'promotion',
+  reducerPath: 'promotionApi',
   tagTypes: ['ActivePromotion', 'Promotion'],
   baseQuery: () => ({ data: {} }),
   endpoints: (builder) => ({

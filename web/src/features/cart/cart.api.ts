@@ -7,7 +7,7 @@ import {
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const cartApi = createApi({
-  reducerPath: 'cart',
+  reducerPath: 'cartApi',
   tagTypes: ['Cart'],
   baseQuery: () => ({ data: {} }),
   endpoints: (builder) => ({
@@ -65,7 +65,7 @@ export const cartApi = createApi({
           };
         }
       },
-      invalidatesTags: ['Cart'],
+      invalidatesTags: ['Cart']
     }),
 
     toggleCartItem: builder.mutation<void, string | 'all'>({
@@ -90,7 +90,7 @@ export const cartApi = createApi({
         try {
           const result = await cartService.deleteCartItem(cartItemId);
           return { data: result.payload };
-        } catch (error: any) {
+        }catch (error: any){
           return {
             error: {
               status: error?.status || 500,
@@ -99,8 +99,8 @@ export const cartApi = createApi({
           };
         }
       },
-      invalidatesTags: ['Cart'],
-    }),
+      invalidatesTags: ['Cart']
+    })
   }),
 });
 
@@ -109,5 +109,5 @@ export const {
   useAddCartItemMutation,
   useToggleCartItemMutation,
   useChangeQuantityCartItemMutation,
-  useDeleteCartItemMutation,
+  useDeleteCartItemMutation
 } = cartApi;

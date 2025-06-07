@@ -2,6 +2,7 @@ import {
   ProductDetailRespType,
   ProductResType,
   SearchParams,
+  SearchProductResType,
 } from '@/types/product.type';
 import {
   PageReq,
