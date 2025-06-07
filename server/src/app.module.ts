@@ -25,6 +25,7 @@ import { CategoryModule } from './routes/category/category.module';
 import { SupplierModule } from './routes/supplier/supplier.module';
 import { OrderModule } from '@route/order/order.module';
 import { ContactModule } from '@route/contact/contact.module';
+import { CommentModule } from '@route/comment/comment.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ContactModule } from '@route/contact/contact.module';
     SupplierModule,
     OrderModule,
     ContactModule,
+    CommentModule
   ],
   controllers: [AppController],
   providers: [

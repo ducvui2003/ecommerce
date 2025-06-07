@@ -66,7 +66,7 @@ function Pagination({
         className={`mx-1 rounded px-4 py-2 ${
           currentPage === 1
             ? 'cursor-not-allowed bg-gray-300'
-            : 'bg-black font-bold text-[#FFA726]'
+            : 'bg-black font-bold text-primary'
         }`}
         disabled={currentPage === 1}
         onClick={() => onPageChange(1)}
@@ -78,7 +78,7 @@ function Pagination({
         className={`mx-1 rounded px-4 py-2 ${
           currentPage === 1
             ? 'cursor-not-allowed bg-gray-300'
-            : 'bg-black font-bold text-[#FFA726]'
+            : 'bg-black font-bold text-primary'
         }`}
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -91,8 +91,8 @@ function Pagination({
           key={index}
           className={`mx-1 rounded px-4 py-2 ${
             currentPage === page
-              ? 'bg-[#FFA726] font-bold text-black'
-              : 'bg-black text-white hover:bg-[#FFA726] hover:text-black'
+              ? 'bg-primary font-bold text-black'
+              : 'bg-black text-white hover:bg-primary hover:text-black'
           }`}
           onClick={() => typeof page === 'number' && onPageChange(page)}
           disabled={typeof page !== 'number'}
@@ -105,7 +105,7 @@ function Pagination({
         className={`mx-1 rounded px-4 py-2 ${
           currentPage === totalPages
             ? 'cursor-not-allowed bg-gray-300'
-            : 'bg-black font-bold text-[#FFA726]'
+            : 'bg-black font-bold text-primary'
         }`}
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
@@ -117,7 +117,7 @@ function Pagination({
         className={`mx-1 rounded px-4 py-2 ${
           currentPage === totalPages
             ? 'cursor-not-allowed bg-gray-300'
-            : 'bg-black font-bold text-[#FFA726]'
+            : 'bg-black font-bold text-primary'
         }`}
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(totalPages)}
