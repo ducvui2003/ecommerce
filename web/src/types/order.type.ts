@@ -1,5 +1,9 @@
-import { StatusOrderType } from '@/constraint/variable';
-import { PageReq } from '@/types/api.type';
+import {
+  PaymentProvider,
+  PaymentStatus,
+  statusOrder,
+  StatusOrderType,
+} from '@/constraint/variable';
 import { z } from 'zod';
 
 const string = z.string().trim().min(1, 'Không được để trống trường này');
@@ -73,7 +77,7 @@ type OrderDetailResType = {
   createdAt: Date;
   payment: {
     provider: string;
-    status: string;
+    status: PaymentStatus;
     createdAt: Date;
     updatedAt?: Date;
   };
@@ -98,8 +102,57 @@ type OrderSearchParamsType = {
   status?: StatusOrderType;
 };
 
+const OrderSearchParamsManagerSchema = z.object({
+  id: z.string().optional(),
+  // nameUser: z.string().optional(),
+  nameReceiver: z.string().optional(),
+  phoneReceiver: z.string().optional(),
+  dateFrom: z.coerce.date().optional(),
+  dateTo: z.coerce.date().optional(),
+  orderStatus: z.array(z.string()).optional(),
+  paymentStatus: z.array(z.string()).optional(),
+});
+
+const validStatusKeys = Object.keys(statusOrder) as [
+  StatusOrderType,
+  ...StatusOrderType[],
+];
+
+const OrderChangeStatusSchema = z.object({
+  status: z.enum(validStatusKeys),
+});
+
 type CreateOrderFormType = z.infer<typeof CreateOrderFormSchema>;
-export { CreateOrderFormSchema };
+
+type OrderManagerSearchParamsType = z.infer<
+  typeof OrderSearchParamsManagerSchema
+>;
+
+type OrderChangeStatusType = z.infer<typeof OrderChangeStatusSchema>;
+
+type OrderManagerResType = {
+  id: number;
+  status: StatusOrderType;
+  totalAmount: number;
+  quantity: number;
+  createdAt: Date;
+  receiver: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  payment: {
+    id: string;
+    provider: PaymentProvider;
+    status: PaymentStatus;
+  };
+};
+
+export {
+  CreateOrderFormSchema,
+  OrderSearchParamsManagerSchema,
+  OrderChangeStatusSchema,
+};
 export type {
   CreateOrderFormType,
   CreateOrderReqType,
@@ -109,4 +162,7 @@ export type {
   OrderDetailResType,
   OrderSearchParamsType,
   OrderDetailItemType,
+  OrderManagerResType,
+  OrderManagerSearchParamsType,
+  OrderChangeStatusType,
 };

@@ -1,7 +1,8 @@
 import {
   ProductDetailRespType,
   ProductResType,
-  SearchParams, SearchProductResType,
+  SearchParams,
+  SearchProductResType,
 } from '@/types/product.type';
 import {
   PageReq,
@@ -11,7 +12,6 @@ import {
 } from '@/types/api.type';
 import httpServer from '@/lib/http.server';
 import { toQueryString } from '@/lib/utils';
-import http from '@/lib/http.client';
 
 const productService = {
   getAllProducts: async (

@@ -12,14 +12,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import ActionBar from '@/app/admin/product/action-bar';
-import { useProductTable } from '@/hooks/use-manager-product-datatable';
-import { SearchParams } from '@/types/product.type';
 import { useState } from 'react';
+import { useOrderTable } from '@/hooks/use-manager-order-datatable';
+import { OrderManagerSearchParamsType } from '@/types/order.type';
+import ActionBar from '@/app/admin/order/action-bar';
+import DialogOrderStatus from '@/components/DialogOrderStatus';
 
 export function DataTable() {
-  const [search, setSearch] = useState<SearchParams>({});
-  const { table, columns } = useProductTable(search);
+  const [search, setSearch] = useState<OrderManagerSearchParamsType>({});
+  const { table, columns } = useOrderTable(search);
 
   return (
     <div>
@@ -71,7 +72,7 @@ export function DataTable() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Không có sản phẩm nào phù hợp với bộ lọc hiện tại
+                  Không có đơn hàng nào phù hợp với bộ lọc hiện tại
                 </TableCell>
               </TableRow>
             )}
@@ -81,6 +82,7 @@ export function DataTable() {
           <DataTablePagination table={table} />
         </div>
       </div>
+      <DialogOrderStatus />
     </div>
   );
 }

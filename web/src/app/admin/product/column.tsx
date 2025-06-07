@@ -61,11 +61,14 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'category',
     header: 'Thể loại',
+    meta: { label: 'Thể loại' },
   },
   {
     accessorKey: 'basePrice',
     header: 'Giá',
     size: 20,
+    meta: { label: 'Giá' },
+
     cell: ({ row }) => {
       const value: number = row.getValue('basePrice');
 
@@ -75,6 +78,8 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'salePrice',
     header: 'Giá giảm',
+    meta: { label: 'Giá giảm' },
+
     size: 20,
     cell: ({ row }) => {
       const value: number = row.getValue('salePrice');
@@ -85,10 +90,13 @@ const productColumns: ColumnDef<ProductManagerResType>[] = [
   {
     accessorKey: 'supplier',
     header: 'Nhà cung cấp',
+    meta: { label: 'Nhà cung cấp' },
   },
   {
     accessorKey: 'createdAt',
     header: 'Thời gian tạo',
+    meta: { label: 'Thời gian tạo' },
+
     size: 100,
     cell: ({ row }) => {
       const value: Date = row.getValue('createdAt');
