@@ -118,10 +118,12 @@ const OrderDetailResSchema = OrderModel.pick({
 });
 
 type OrderResType = z.infer<typeof OrderResSchema>;
-export { OrderResSchema, SearchOrderManagerReqSchema };
+type OrderDetailResType = z.infer<typeof OrderDetailResSchema>;
+
+export { OrderResSchema, SearchOrderManagerReqSchema, OrderDetailResSchema };
 export type {
-  OrderDetailResSchema,
   OrderRepositoryType,
   OrderResType,
   SearchOrderType,
+  OrderDetailResType,
 };

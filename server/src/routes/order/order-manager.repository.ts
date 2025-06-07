@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
+  OrderDetailResType,
   OrderRepositoryType,
   SearchOrderType,
 } from '@route/order/order-manager.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderType } from '@shared/models/order.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface OrderManagerRepository {
   search(dto: SearchOrderType): Promise<Paging<OrderRepositoryType>>;
+  getDetail(id: number): Promise<OrderType>;
 }
 
 @Injectable()
@@ -113,5 +116,18 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
         totalItems,
       },
     };
+  }
+
+  getDetail(id: number): Promise<OrderType> {
+    return this.prismaService.order.findFirstOrThrow({
+      include: {
+        orderItem: true,
+        payment: true,
+        user: true,
+      },
+      where: {
+        id: id,
+      },
+    });
   }
 }
