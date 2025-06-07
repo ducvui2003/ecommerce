@@ -1,7 +1,12 @@
-import { PaymentProvider, PaymentStatus } from '@prisma/client';
-import { OrderStatusType, SortBy } from '@shared/constants/order.constant';
 import {
+  OrderStatus,
+  OrderStatusType,
+  SortBy,
+} from '@shared/constants/order.constant';
+import {
+  PaymentProvider,
   PaymentProviderType,
+  PaymentStatus,
   PaymentStatusType,
 } from '@shared/constants/payment.constant';
 import { OrderBy, orderBySchema } from '@shared/constants/search.constant';
@@ -124,10 +129,19 @@ const OrderDetailResSchema = OrderModel.pick({
   }),
 });
 
+const ChangeStatusOrderReqSchema = z.object({
+  status: z.nativeEnum(OrderStatus),
+});
+
 type OrderResType = z.infer<typeof OrderResSchema>;
 type OrderDetailResType = z.infer<typeof OrderDetailResSchema>;
 
-export { OrderDetailResSchema, OrderResSchema, SearchOrderManagerReqSchema };
+export {
+  OrderDetailResSchema,
+  OrderResSchema,
+  SearchOrderManagerReqSchema,
+  ChangeStatusOrderReqSchema,
+};
 export type {
   OrderDetailResType,
   OrderRepositoryType,

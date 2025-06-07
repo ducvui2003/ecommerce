@@ -6,12 +6,19 @@ import {
   SearchOrderType,
 } from '@route/order/order-manager.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderStatusType } from '@shared/constants/order.constant';
+import { PaymentStatusType } from '@shared/constants/payment.constant';
 import { OrderType } from '@shared/models/order.model';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface OrderManagerRepository {
   search(dto: SearchOrderType): Promise<Paging<OrderRepositoryType>>;
   getDetail(id: number): Promise<OrderType>;
+  getCurrentStatus(id: number): Promise<{
+    orderStatus: OrderStatusType;
+    paymentStatus?: PaymentStatusType;
+  }>;
+  changeOrderStatus(id: number, status: OrderStatusType): Promise<void>;
 }
 
 @Injectable()
@@ -136,5 +143,36 @@ export class OrderManagerPrismaRepository implements OrderManagerRepository {
         id: id,
       },
     });
+  }
+
+  async getCurrentStatus(id: number): Promise<{
+    orderStatus: OrderStatusType;
+    paymentStatus?: PaymentStatusType;
+  }> {
+    const data = await this.prismaService.order.findUniqueOrThrow({
+      select: {
+        status: true,
+        payment: {
+          select: {
+            status: true,
+          },
+        },
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      orderStatus: data.status,
+      paymentStatus: data?.payment?.status,
+    };
+  }
+  async changeOrderStatus(id: number, status: OrderStatusType): Promise<void> {
+    await this.prismaService.order.update({
+      where: { id },
+      data: { status },
+    });
+    return Promise.resolve();
   }
 }

@@ -11,8 +11,9 @@ import {
   SearchOrderType,
 } from '@route/order/order-manager.schema';
 import { ORDER_MANAGER_REPOSITORY } from '@route/order/order.constant';
-import { OrderNotFound } from '@route/order/order.error';
+import { OrderChangeNotAllow, OrderNotFound } from '@route/order/order.error';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderStatusType } from '@shared/constants/order.constant';
 import { OrderType } from '@shared/models/order.model';
 
 @Injectable()
@@ -65,5 +66,35 @@ export class OrderManagerService {
       if (isNotFoundError(e)) throw OrderNotFound;
       throw e;
     }
+  }
+
+  async getOrderStatusCanChange(orderId: number): Promise<OrderStatusType[]> {
+    try {
+      const { orderStatus } =
+        await this.orderRepository.getCurrentStatus(orderId);
+      if (orderStatus === 'PENDING') return ['CANCELED'];
+      if (orderStatus === 'PAID') {
+        return ['DELIVERING', 'CANCELED', 'COMPLETE'];
+      }
+      if (orderStatus === 'DELIVERING') {
+        return ['COMPLETE', 'CANCELED'];
+      }
+      if (orderStatus === 'COMPLETE' || orderStatus === 'CANCELED') return [];
+      return [];
+    } catch (e) {
+      if (isNotFoundError(e)) throw OrderNotFound;
+      throw e;
+    }
+  }
+
+  async changeStatus(orderId: number, status: OrderStatusType): Promise<void> {
+    const orderStatusCanChange = await this.getOrderStatusCanChange(orderId);
+    if (orderStatusCanChange.length === 0) {
+      throw OrderChangeNotAllow();
+    }
+    if (!orderStatusCanChange.includes(status)) {
+      throw OrderChangeNotAllow(orderStatusCanChange);
+    }
+    await this.orderRepository.changeOrderStatus(orderId, status);
   }
 }

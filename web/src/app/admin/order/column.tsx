@@ -162,7 +162,6 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(id.toString())}
             >
@@ -173,6 +172,7 @@ const orderColumns: ColumnDef<OrderManagerResType>[] = [
                 Xem chi tiết đơn hàng
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem>Cập nhập trạng thái đơn hàng</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
