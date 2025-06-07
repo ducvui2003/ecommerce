@@ -1,9 +1,7 @@
 'use client';
 
 import notFound from '@/app/not-found';
-import ProductComment from '@/app/product/detail/[id]/ProductComment';
 import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
-import ProductRelation from '@/app/product/detail/[id]/ProductRelation';
 import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
 import WishlistButton from '@/components/button/WishlistButton';
 import { Button } from '@/components/ui/button';
@@ -218,10 +216,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </Form>
       </div>
       <div className="mt-5 lg:mt-10">
-        <ProductDescription description={product.description} />
+        <ProductDescription description={product.description} productId={product.id}/>
       </div>
       <RatingSummary />
-      <ProductComment />
     </div>
   );
 }
