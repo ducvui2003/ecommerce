@@ -46,13 +46,14 @@ export const components: NavigationType[] = [
       },
     ],
   },
+
   {
     title: 'Về chúng tôi',
-    href: '/about-us',
+    href: '/about',
   },
   {
     title: 'Liên hệ',
-    href: '/contact-us',
+    href: '/contact',
   },
   {
     title: 'Tư vấn',
@@ -76,10 +77,7 @@ const Navigation = ({ components }: NavigationProps) => {
               {!component.child ? (
                 <Link href={component.href!} legacyBehavior passHref>
                   <NavigationMenuLink
-                    className={
-                      (navigationMenuTriggerStyle(),
-                      'hover:text-primary mx-2 text-lg')
-                    }
+                    className={(navigationMenuTriggerStyle(),'text-lg hover:text-primary mx-2')}
                   >
                     {component.title}
                   </NavigationMenuLink>
@@ -87,7 +85,7 @@ const Navigation = ({ components }: NavigationProps) => {
               ) : (
                 <React.Fragment key={uuid()}>
                   <NavigationMenuTrigger
-                    className="data-[state=open]:hover:text-primary p-0 text-lg hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent"
+                    className="text-lg data-[state=open]:hover:text-primary data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent focus:bg-transparent hover:bg-transparent p-0"
                     ref={(ref) => {
                       if (ref) {
                         triggerRef.current[index] = ref;
@@ -97,17 +95,12 @@ const Navigation = ({ components }: NavigationProps) => {
                     {component.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                       {component.child.map((item, index) => {
                         return (
                           <li key={index}>
                             <Link href={item.href} legacyBehavior passHref>
-                              <NavigationMenuLink
-                                className={
-                                  (navigationMenuTriggerStyle(),
-                                  'hover:text-primary mx-2 text-base')
-                                }
-                              >
+                              <NavigationMenuLink className={(navigationMenuTriggerStyle(), 'text-base hover:text-primary mx-2')}>
                                 {item.title}
                               </NavigationMenuLink>
                             </Link>

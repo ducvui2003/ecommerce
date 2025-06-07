@@ -186,6 +186,10 @@ type CreateProductResType = {
   updatedAt: Date;
 };
 
+type SearchProductResType = {
+  items: Pick<ProductResType, 'id' | 'name'>[]
+}
+
 export type {
   ProductCardType,
   ProductResType,
@@ -199,6 +203,7 @@ export type {
   ProductDetailManagerResType,
   BaseProductFormType,
   UpdateProductBodyType,
+  SearchProductResType,
 };
 export {
   CreateProductBodySchema,

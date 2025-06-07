@@ -5,8 +5,8 @@ import {
   ChangeQuantityCartItemReqDTO,
   GetCartResDTO,
 } from '@route/cart/cart.dto';
-import { v4 } from 'uuid';
 import { Prisma } from '@prisma/client';
+import { FileService } from '@shared/services/file/file.service';
 
 export interface CartRepository {
   getCart(userId: number): Promise<GetCartResDTO>;
@@ -28,11 +28,15 @@ export interface CartRepository {
 
 @Injectable()
 export class PrismaCartRepository implements CartRepository {
-  constructor(@Inject() private readonly prismaService: PrismaService) {}
+  constructor(
+    @Inject() private readonly prismaService: PrismaService,
+    @Inject('FILE_SERVICE')
+    private readonly fileService: FileService,
+  ) {}
 
-  async getCart(userId: number): Promise<GetCartResDTO> {
+  async getCart(userId: number, onlySelected: boolean = false): Promise<GetCartResDTO> {
     await this.upsertCart(userId);
-    const cart = await this.manifestCart(userId);
+    const cart = await this.manifestCart(userId, onlySelected);
     return {
       id: cart.id,
       userId: cart.userId,
@@ -47,6 +51,7 @@ export class PrismaCartRepository implements CartRepository {
             basePrice: item.product.basePrice,
             salePrice: item.product.salePrice,
           },
+          thumbnail: this.fileService.getUrl(item.product.thumbnail!.publicId),
           ...(item.option && {
             option: {
               id: item.option.id,
@@ -59,53 +64,21 @@ export class PrismaCartRepository implements CartRepository {
           (itemFirst, itemSecond) =>
             new Date(itemSecond.createdAt).getTime() -
             new Date(itemFirst.createdAt).getTime(),
-        ),
+        )
+      ,
+      temporaryTotalPrice: cart.cartItems
+        .filter(item => item.selected)
+        .reduce((accumulator, currentItem) =>
+            accumulator + currentItem.quantity * (
+              Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option?.price ?? 0)
+            ), 0,
+        )
+      ,
     };
   }
 
   async getCartSelected(userId: number): Promise<GetCartResDTO> {
-    const cart = await this.prismaService.cart.findUniqueOrThrow({
-      where: { userId },
-      include: {
-        cartItems: {
-          where: {
-            selected: true,
-          },
-          include: {
-            product: true,
-            option: true,
-          },
-        },
-      },
-    });
-    return {
-      id: cart.id,
-      userId: cart.userId,
-      cartItems: cart.cartItems
-        .map((item) => ({
-          id: item.id,
-          quantity: item.quantity,
-          selected: item.selected,
-          createdAt: item.createdAt,
-          product: {
-            name: item.product.name,
-            basePrice: item.product.basePrice,
-            salePrice: item.product.salePrice,
-          },
-          ...(item.option && {
-            option: {
-              id: item.option.id,
-              name: item.option.name,
-              price: item.option.price,
-            },
-          }),
-        }))
-        .sort(
-          (itemFirst, itemSecond) =>
-            new Date(itemSecond.createdAt).getTime() -
-            new Date(itemFirst.createdAt).getTime(),
-        ),
-    };
+    return await this.getCart(userId, true);
   }
 
   async addCartItem(userId: number, body: AddCartItemReqDTO): Promise<void> {
@@ -118,7 +91,7 @@ export class PrismaCartRepository implements CartRepository {
             cartId_productId_optionId: { cartId: cart.id, productId, optionId },
           }
         : { cartId_productId: { cartId: cart.id, productId } },
-      { quantity: { increment: 1 } },
+      { quantity: { increment: quantity } },
       { quantity, cartId: cart.id, productId, optionId: optionId },
     );
   }
@@ -182,13 +155,22 @@ export class PrismaCartRepository implements CartRepository {
     });
   }
 
-  async manifestCart(userId: number) {
+  async manifestCart(userId: number, onlySelected?: boolean) {
     return this.prismaService.cart.findUniqueOrThrow({
       where: { userId },
       include: {
         cartItems: {
+          ...(onlySelected && {
+            where: {
+              selected: true,
+            },
+          }),
           include: {
-            product: true,
+            product: {
+              include: {
+                thumbnail: true,
+              },
+            },
             option: true,
           },
         },
