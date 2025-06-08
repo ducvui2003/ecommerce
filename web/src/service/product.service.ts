@@ -34,6 +34,15 @@ const productService = {
     );
     return res.payload.data;
   },
+
+  getNewProducts: async (): Promise<ProductResType[]> => {
+    const res = await httpServer.get<ResponseApi<ProductResType[]>>(
+      `api/v1/products/new`,
+      undefined,
+      false,
+    );
+    return res.payload.data;
+  },
 };
 
 export default productService;

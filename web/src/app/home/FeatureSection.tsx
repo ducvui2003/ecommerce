@@ -14,25 +14,26 @@ const FeatureSection = () => {
 
 const data: CardProps[] = [
   {
-    title: 'Shopping',
+    title: 'Mua sắm dễ dàng',
     description:
-      'At imperdiet dui accumsan sit amet nulla risus est ultricies quis.',
+      'Giao diện đơn giản, thân thiện giúp bạn tìm kiếm và chọn mua tinh dầu yêu thích chỉ trong vài bước.',
     icon: 'mdi:cart',
   },
   {
-    title: 'Delivery',
+    title: 'Giao hàng nhanh chóng',
     description:
-      'At imperdiet dui accumsan sit amet nulla risus est ultricies quis.',
+      'Chúng tôi cam kết giao hàng nhanh, đóng gói cẩn thận để sản phẩm đến tay bạn luôn nguyên vẹn và thơm ngát.',
     icon: 'hugeicons:truck-delivery',
   },
   {
-    title: 'Customer Service',
+    title: 'Hỗ trợ tận tâm',
     description:
-      'At imperdiet dui accumsan sit amet nulla risus est ultricies quis.',
+      'Đội ngũ chăm sóc khách hàng luôn sẵn sàng lắng nghe và đồng hành cùng bạn trong hành trình trải nghiệm hương thơm.',
     icon: 'mdi:customer-service',
     highlight: true,
   },
 ];
+
 
 type CardProps = {
   title: string;
@@ -44,11 +45,12 @@ const Card = ({ title, description, icon, highlight = false }: CardProps) => {
   return (
     <article
       className={cn(
-        'flex flex-col justify-center rounded-xl px-5 pb-12 pt-8 text-center',
-        highlight && 'bg-[#FFF5EA]',
+        'flex flex-col justify-center rounded-xl px-5 pb-12 pt-8 text-center transition-colors duration-300 cursor-pointer',
+        'hover:bg-[#FFF5EA]',
       )}
     >
-      <ClientIcon icon={icon} size={60} className="text-[#FFAB66]" />
+
+    <ClientIcon icon={icon} size={60} className="text-primary"/>
       <h3 className="mt-2 text-xl font-bold">{title}</h3>
       <p className="pt-4">{description}</p>
     </article>

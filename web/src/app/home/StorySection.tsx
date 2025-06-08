@@ -6,27 +6,25 @@ import { ALT } from '@/constraint/variable';
 
 const StorySection = () => {
   return (
-    <section className="h-screen overflow-hidden bg-[#FFF5EA]">
-      <div className="container flex items-center gap-12 py-12">
-        <div className="flex-1">
-          <h2 className="text-3xl">Lorem ipsum dolor sit amet</h2>
+    <section className="overflow-hidden bg-[#FFF5EA]">
+      <div className="container flex flex-col-reverse md:flex-row items-center gap-12 py-12">
+      <div className="flex-1">
+          <h2 className="text-3xl font-bold">Câu chuyện về hương thơm & sự thư giãn</h2>
           <p className="pb-4 pt-2 text-xl">
-            Dignissim lacus, turpis ut suspendisse vel tellus. Turpis purus,
-            gravida orci, fringilla a. Ac sed eu fringilla odio mi. Consequat
-            pharetra at magna imperdiet cursus ac faucibus sit libero. Ultricies
-            quam nunc, lorem sit lorem urna, pretium aliquam ut. In vel, quis
-            donec dolor id in. Pulvinar commodo mollis diam sed facilisis at
-            cursus imperdiet cursus ac faucibus sit faucibus sit libero.
+            Chúng tôi tin rằng một giọt tinh dầu nhỏ có thể mang lại sự thay đổi lớn cho tâm trạng và sức khỏe của bạn.
+            Mỗi sản phẩm đều được chiết xuất 100% từ thiên nhiên, không hóa chất, không độc hại – là món quà tinh túy từ đất mẹ dành cho cuộc sống hiện đại đầy áp lực.
+            Từng chai tinh dầu là kết tinh của sự tỉ mỉ trong từng khâu chọn lọc nguyên liệu, chưng cất và bảo quản.
           </p>
           <div>
-            <Button>Xem thêm</Button>
+            <Button>Khám phá ngay</Button>
           </div>
+
         </div>
         <div className="flex-1">
           <Image
             src={image}
             alt={ALT}
-            className="h-[calc(100vh-100px)] w-full rounded-md object-cover"
+            className="max-h-[480px] w-full rounded-md object-cover"
           />
         </div>
       </div>
