@@ -59,12 +59,10 @@ const GET = async (request: NextRequest) => {
       refreshToken: refreshToken,
       user: props,
     };
-    console.log('session', session);
 
     const response = NextResponse.redirect(`${origin}${state}?google=true`);
 
     setSession(session, response);
-    console.log('set session');
 
     return response;
   } else {
