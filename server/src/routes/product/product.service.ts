@@ -84,4 +84,15 @@ export class ProductServiceImpl implements ProductService {
       });
     });
   }
+
+  async getNewProducts(): Promise<ProductResType[]> {
+    const products = await this.productRepository.getNewProducts();
+    return products.map((item) => {
+      return ProductResSchema.parse({
+        ...item,
+        thumbnail:
+          item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
+      });
+    });
+  }
 }

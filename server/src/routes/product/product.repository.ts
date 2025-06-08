@@ -304,4 +304,29 @@ export class ProductRepositoryImpl implements ProductRepository {
       });
     });
   }
+
+  async getNewProducts(): Promise<ProductType[]> {
+    const products = await this.prisma.product.findMany({
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 10,
+      include: {
+        supplier: true,
+        category: true,
+        thumbnail: true,
+        productResource: {
+          include: {
+            resource: true,
+          },
+        },
+        option: true,
+      },
+    });
+
+    return products;
+  }
 }
