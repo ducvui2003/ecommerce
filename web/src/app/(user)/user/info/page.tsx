@@ -1,7 +1,7 @@
 import AvatarForm from '@/app/(user)/user/info/avatar-form';
 import UserInfoForm from '@/app/(user)/user/info/info-form';
 import getServerSession from '@/components/auth/getServerSession';
-import userService from '@/service/user.service';
+import userServerService from '@/service/user.server.service';
 import { Gender } from '@/types/user.type';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -15,7 +15,7 @@ const UserInfoPage = async () => {
   const session = await getServerSession();
   if (!session) return notFound();
   const { email, role, status, avatar, name, phone, dob } =
-    await userService.getInfo(session.accessToken);
+    await userServerService.getInfo(session.accessToken);
   return (
     <div className="mx-auto mt-3 w-[70vw]">
       <div className="border-accent rounded-md border-2 p-4">

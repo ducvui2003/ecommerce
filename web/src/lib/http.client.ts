@@ -63,13 +63,13 @@ const request = async <Response>(
   };
   const baseUrl =
     options?.baseUrl === undefined
-      ? envConfig.NEXT_PUBLIC_SERVER_URL
+      ? envConfig.NEXT_PUBLIC_SERVER_EXTERNAL
       : options?.baseUrl;
 
   const fullUrl = url.startsWith('/')
     ? `${baseUrl}${url} `
     : `${baseUrl}/${url}`;
-
+  console.log('fullUrl', fullUrl);
   const res = await fetch(fullUrl, {
     ...options,
     headers: {

@@ -4,10 +4,13 @@ import {
   PageReq,
   Paging,
 } from '@/types/api.type';
-import httpServer from '@/lib/http.server';
 import { toQueryString } from '@/lib/utils';
-import { CommentRequest, CommentResponse, CommentUpdateRequest } from '@/types/comment.type';
-import httpClient from "@/lib/http.client";
+import {
+  CommentRequest,
+  CommentResponse,
+  CommentUpdateRequest,
+} from '@/types/comment.type';
+import httpClient from '@/lib/http.client';
 
 const commentService = {
   getCommentsByProduct: async (
@@ -43,15 +46,16 @@ const commentService = {
     return res.payload.data;
   },
 
-  deleteComment: async (commentId: string): Promise<ResponseApi<{ status: boolean }>> => {
+  deleteComment: async (
+    commentId: string,
+  ): Promise<ResponseApi<{ status: boolean }>> => {
     const response = await httpClient.delete<ResponseApi<{ status: boolean }>>(
       `api/v1/comment/${commentId}`,
       undefined,
-      undefined
+      undefined,
     );
     return response.payload;
   },
-
 
   likeComment: async (commentId: string): Promise<void> => {
     await httpClient.put<ResponseApi<void>>(
@@ -59,8 +63,7 @@ const commentService = {
       false,
       undefined,
     );
-  }
-
+  },
 };
 
 export default commentService;

@@ -1,7 +1,7 @@
 import envConfig from '@/config/env.config';
 import { HOME_PAGE } from '@/constraint/variable';
 
-const redirectUri = 'http://localhost:3000/api/auth/callback/google';
+const redirectUri = `${window.location.origin}/api/auth/callback/google`;
 
 const signInGoogle = ({
   redirectUrl = HOME_PAGE,
@@ -15,6 +15,7 @@ const signInGoogle = ({
     scope: 'openid email profile',
     state: encodeURIComponent(redirectUrl),
   });
+  console.log('redirectUri', redirectUri);
 
   window.location.replace(
     `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,

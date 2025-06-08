@@ -78,7 +78,7 @@ const authService = {
       refreshToken: refreshToken,
     };
     const res = await fetch(
-      `${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/refresh-token`,
+      `${envConfig.NEXT_PUBLIC_SERVER_EXTERNAL}/api/v1/auth/refresh-token`,
       {
         method: 'POST',
         body: JSON.stringify(body),
@@ -111,14 +111,17 @@ const authService = {
       const body = {
         refreshToken: refreshToken,
       };
-      await fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/logout`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+      await fetch(
+        `${envConfig.NEXT_PUBLIC_SERVER_EXTERNAL}/api/v1/auth/logout`,
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      });
+      );
       console.log('✅ Successfully logged out from external API');
     } catch (error) {
       console.error('⚠️ Error calling logout API:', error);

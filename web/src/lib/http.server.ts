@@ -56,15 +56,17 @@ const request = async <Response>(
     'Content-Type': 'application/json',
     Authorization: auth ? `Bearer ${await getAccessToken()}` : '',
   };
-  console.log('Authorization', baseHeaders.Authorization);
+
   const baseUrl =
     options?.baseUrl === undefined
-      ? envConfig.NEXT_PUBLIC_SERVER_URL
+      ? envConfig.NEXT_PUBLIC_SERVER_CONTAINER
       : options?.baseUrl;
 
   const fullUrl = url.startsWith('/')
     ? `${baseUrl}${url} `
     : `${baseUrl}/${url}`;
+  console.log('fullUrl', fullUrl);
+
   const res = await fetch(fullUrl, {
     ...options,
     headers: {
