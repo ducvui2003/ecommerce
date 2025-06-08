@@ -2,11 +2,11 @@ import Banner from '@/app/home/Banner';
 import CollectionSection from '@/app/home/CollectionSection';
 import FeatureSection from '@/app/home/FeatureSection';
 import ReviewSection from '@/app/home/ReviewSection';
-import SellerSection from '@/app/home/SellerSection';
 import StorySection from '@/app/home/StorySection';
 import StorySection2 from '@/app/home/StorySection2';
 import VendorSection from '@/app/home/VendorSection';
 import HeaderWrapper from '@/components/HeaderWrapper';
+import NewSection from '@/app/home/NewSection';
 
 const HomePage = () => {
   return (
@@ -23,7 +23,7 @@ const HomePage = () => {
           <FeatureSection />
         </div>
         <div className="mt-10">
-          <SellerSection />
+          <NewSection />
         </div>
         <div className="container mt-10">
           <StorySection2 />

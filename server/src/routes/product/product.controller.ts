@@ -20,6 +20,10 @@ export class ProductController {
     @Inject('PRODUCT_SERVICE')
     private readonly productService: ProductServiceImpl,
   ) {}
+  @Get('/new')
+  getNewProducts(): Promise<ProductResType[]> {
+    return this.productService.getNewProducts();
+  }
 
   @Get('/search')
   searchProducts(

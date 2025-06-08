@@ -11,4 +11,5 @@ export interface ProductRepository {
   search(dto: SearchProductDto): Promise<Paging<ProductType>>;
   create(dto: CreateProductBodyType): Promise<ProductType>;
   update(id: number, dto: UpdateProductBodyType): Promise<ProductType>;
+  getNewProducts(): Promise<ProductType[]>;
 }

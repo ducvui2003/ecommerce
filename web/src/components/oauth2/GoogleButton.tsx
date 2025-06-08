@@ -1,7 +1,6 @@
 'use client';
 import signInGoogle from '@/components/auth/signInGoogle';
 import ClientIcon from '@/components/ClientIcon';
-import { HOME_PAGE } from '@/constraint/variable';
 import React from 'react';
 
 const GoogleButton = () => {
