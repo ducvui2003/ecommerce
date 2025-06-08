@@ -9,7 +9,7 @@ services:
 
   ecommerce-be:
     container_name: ecommerce-be
-    image: ducvui2003/nextjs-ecommerce:latest
+    image: ducvui2003/nestjs-ecommerce:latest
     # ports:
     #   - ${SERVER_PORT}:8000
     env_file:

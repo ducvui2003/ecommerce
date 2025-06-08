@@ -1,4 +1,4 @@
-1. Run ngnix
+1. Run nginx
    `docker-compose up -d nginx`
 2. Create cert
    `./certbot/get-cert.sh`
