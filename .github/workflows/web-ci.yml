@@ -44,9 +44,14 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./web
-          push: true
-          tags: ducvui2003/nextjs-ecommerce:latest
+      - name: Parse .env and build Docker image
+        run: |
+          echo "${{ secrets.ENV_WEB }}" > .env
+          BUILD_ARGS=""
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            BUILD_ARGS+="--build-arg $line "
+          done < .env
+          docker build $BUILD_ARGS -t ducvui2003/nextjs-ecommerce:latest .
+          docker push ducvui2003/nextjs-ecommerce:latest
+        working-directory: web
