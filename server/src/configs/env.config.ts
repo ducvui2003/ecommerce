@@ -3,13 +3,15 @@ import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
 
-config({
-  path: '.env',
-});
+if (process.env.NODE_ENV !== 'production') {
+  config({
+    path: '.env',
+  });
 
-if (!fs.existsSync(path.resolve('.env'))) {
-  console.error('No .env file found in the root directory');
-  process.exit(1);
+  if (!fs.existsSync(path.resolve('.env'))) {
+    console.error('No .env file found in the root directory');
+    process.exit(1);
+  }
 }
 
 const envSchema = z.object({

@@ -1,7 +1,7 @@
 import envConfig from '@/config/env.config';
 import { HOME_PAGE } from '@/constraint/variable';
 
-const redirectUri = 'http://localhost:3000/api/auth/callback/facebook';
+const redirectUri = `${window.location.origin}/api/auth/callback/facebook`;
 
 const signInFacebook = ({
   redirectUrl = HOME_PAGE,

@@ -4,6 +4,7 @@ import { Session } from '@/app/api/auth/session/type';
 import envConfig from '@/config/env.config';
 import { HOME_PAGE } from '@/constraint/variable';
 import { setSession } from '@/lib/auth.helper';
+import { getServerSideProps } from '@/lib/server.helper';
 import oauth2Api from '@/service/oauth2.service';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -18,16 +19,15 @@ const GET = async (request: NextRequest) => {
   const code = searchParams.get('code');
   const state = decodeURIComponent(searchParams.get('state') || HOME_PAGE);
   if (!code) return;
+  const { origin } = await getServerSideProps(request);
 
   const accessTokenUrl = 'https://graph.facebook.com/v22.0/oauth/access_token';
   let params = new URLSearchParams();
   params.append('client_id', envConfig.NEXT_PUBLIC_FACEBOOK_CLIENT_ID);
   params.append('client_secret', envConfig.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET);
   params.append('code', code);
-  params.append(
-    'redirect_uri',
-    `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}/api/auth/callback/facebook`,
-  );
+  params.append('redirect_uri', `${origin}/api/auth/callback/facebook`);
+  console.log(`${origin}/api/auth/callback/facebook`);
   const responseExchangeAccessToken = await fetch(
     `${accessTokenUrl}?${params.toString()}`,
   );
@@ -50,17 +50,13 @@ const GET = async (request: NextRequest) => {
       user: props,
     };
 
-    const response = NextResponse.redirect(
-      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${state}?facebook=true`,
-    );
+    const response = NextResponse.redirect(`${origin}${state}?facebook=true`);
 
     setSession(session, response);
 
     return response;
   } else {
-    return NextResponse.redirect(
-      `${envConfig.NEXT_PUBLIC_SERVER_INTERNAL}${state}?facebook=false`,
-    );
+    return NextResponse.redirect(`${origin}${state}?facebook=false`);
   }
 };
 

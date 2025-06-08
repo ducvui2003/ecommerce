@@ -1,5 +1,5 @@
-import { PaymentProvider } from '@prisma/client';
 import { OrderStatus, SortBy } from '@shared/constants/order.constant';
+import { PaymentProvider } from '@shared/constants/payment.constant';
 import { OrderBy, orderBySchema } from '@shared/constants/search.constant';
 import { DecimalToNumberSchema } from '@shared/models/base.model';
 import { OrderItemModel } from '@shared/models/order-item.model';
