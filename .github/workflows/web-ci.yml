@@ -53,5 +53,9 @@ jobs:
             BUILD_ARGS+="--build-arg $line "
           done < .env
           docker build $BUILD_ARGS -t ducvui2003/nextjs-ecommerce:latest .
-          docker push ducvui2003/nextjs-ecommerce:latest
+        working-directory: web
+
+      - name: Push Docker image (only on push or manual trigger)
+        if: github.event_name != 'pull_request'
+        run: docker push ducvui2003/nextjs-ecommerce:latest
         working-directory: web
