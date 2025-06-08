@@ -31,7 +31,7 @@ const CartDropdown = () => {
             <div className="relative">
               <ClientIcon icon={'lucide:shopping-cart'} size={22} />
               <span
-                className="absolute -top-2 border-2 border-muted -right-2.5 text-[10px] rounded-full size-5 text-center place-content-center text-white bg-accent">
+                className="absolute -top-2 border-2 border-muted -right-2.5 text-[10px] rounded-full size-5 text-center place-content-center text-white bg-destructive">
                 {data && isSuccess ? data.cartItems.length : 0}
               </span>
             </div>
