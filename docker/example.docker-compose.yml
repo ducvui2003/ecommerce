@@ -1,0 +1,81 @@
+services:
+  ecommerce-fe:
+    container_name: ecommerce-fe
+    image: ducvui2003/nextjs-ecommerce:latest
+    # ports:
+    #   - ${CLIENT_PORT}:3000
+    env_file:
+      - env/web.env
+
+  ecommerce-be:
+    container_name: ecommerce-be
+    image: ducvui2003/nextjs-ecommerce:latest
+    # ports:
+    #   - ${SERVER_PORT}:8000
+    env_file:
+      - env/server.env
+    command:
+      [
+        "./wait-for-it.sh",
+        "postgres:5432",
+        "--timeout=30",
+        "--strict",
+        "--",
+        "node",
+        "dist/src/main",
+      ]
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    container_name: ecommerce-postgres
+    image: postgres:latest
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    env_file:
+      - env/db.env
+    volumes:
+      - ./init/postgres:/docker-entrypoint-initdb.d
+      - ecommerce_postgres_data:/var/lib/postgresql/data
+
+  redis:
+    container_name: ecommerce-redis
+    image: redis:7.4.2-alpine
+    ports:
+      - "${REDIS_PORT}:6379"
+    env_file:
+      - env/db.env
+    volumes:
+      - ecommerce_redis_data:/data
+
+  nginx:
+    image: nginx:latest
+    container_name: ecommerce-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - ecommerce-fe
+      - ecommerce-be
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do
+        certbot renew --webroot --webroot-path=/var/www/certbot --quiet &&
+        nginx -s reload;
+        sleep 12h;
+      done"
+
+volumes:
+  ecommerce_redis_data:
+  ecommerce_postgres_data:
