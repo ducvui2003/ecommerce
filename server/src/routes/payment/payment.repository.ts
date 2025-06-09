@@ -13,6 +13,8 @@ export interface PaymentRepository {
     paymentId: number,
     status: PaymentStatusType,
   ): Promise<PaymentType>;
+
+  getUserIdByPaymentId(paymentId: number): Promise<number | null>;
 }
 
 @Injectable()
@@ -38,5 +40,17 @@ export class PrismaPaymentRepository implements PaymentRepository {
         id: paymentId,
       },
     });
+  }
+
+  async getUserIdByPaymentId(paymentId: number): Promise<number | null> {
+    const data = await this.prismaService.payment.findUnique({
+      where: {
+        id: paymentId,
+      },
+      include: {
+        order: true,
+      },
+    });
+    return data?.order?.userId ?? null;
   }
 }

@@ -1,7 +1,10 @@
 'use client';
 import OrderInfo from '@/app/order/OrderInfo';
 import OrderPayment from '@/app/order/OrderPayment';
+
 import { Form } from '@/components/ui/form';
+import { setQrCode } from '@/features/order/order.slice';
+import { useAppDispatch } from '@/hooks/use-store';
 import orderService from '@/service/order.service';
 import {
   CreateOrderFormSchema,
@@ -9,6 +12,8 @@ import {
   CreateOrderReqType,
 } from '@/types/order.type';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+
 import { useForm } from 'react-hook-form';
 
 type OrderFormTypeProps = {
@@ -16,6 +21,8 @@ type OrderFormTypeProps = {
 };
 
 const OrderForm = ({ cartItemIds }: OrderFormTypeProps) => {
+  const route = useRouter();
+  const dispatch = useAppDispatch();
   const form = useForm<CreateOrderFormType>({
     resolver: zodResolver(CreateOrderFormSchema),
     defaultValues: {
@@ -51,11 +58,11 @@ const OrderForm = ({ cartItemIds }: OrderFormTypeProps) => {
       const { type, url } = response;
       if (type === 'REDIRECT') {
         window.location.href = url;
-
         return;
       }
       if (type === 'QR_CODE') {
-        return;
+        dispatch(setQrCode(response.url));
+        route.push(`/payment/qr-code`);
       }
     });
   }

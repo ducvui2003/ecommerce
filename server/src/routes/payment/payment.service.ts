@@ -1,4 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { PaymentRepository } from '@route/payment/payment.repository';
 import {
   UrlIPNVnPayType,
@@ -13,58 +14,98 @@ import {
   VnPayPaymentTransactionModel,
 } from '@shared/models/payment-transaction.model';
 import { SharedOrderRepository } from '@shared/repositories/shared-order.repository';
-
+import { WebsocketService } from '@shared/services/websocket.service';
+import { Server } from 'socket.io';
 @Injectable()
+@WebSocketGateway({ namespace: 'payment' })
 export class PaymentService {
+  @WebSocketServer()
+  server: Server;
   constructor(
     @Inject('PaymentRepository')
     private readonly paymentRepository: PaymentRepository,
     @Inject(SHARED_ORDER_REPOSITORY)
+    @Inject()
     private readonly sharedOrderRepository: SharedOrderRepository,
+    @Inject()
+    private readonly websocketService: WebsocketService,
   ) {}
 
   async handleWebhookSepay(body: WebhookPaymentBodyType) {
-    // 1. Create payment transaction
-    const paymentId = body.code
-      ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
-      : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
+    try {
+      // 1. Create payment transaction
+      const paymentId = body.code
+        ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
+        : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
 
-    if (isNaN(paymentId)) {
-      throw new BadRequestException('Cannot get payment id from content');
+      if (isNaN(paymentId)) {
+        throw new BadRequestException('Cannot get payment id from content');
+      }
+
+      let amount;
+
+      if (body.transferType === 'out') {
+        amount = -1 * Number(body.transferAmount);
+      } else {
+        amount = Number(body.transferAmount);
+      }
+
+      const providerPaymentId = body.id.toString();
+
+      const payload = SePaymentTransactionModel.parse(body);
+
+      await this.paymentRepository.createPaymentTransaction({
+        paymentId: paymentId,
+        providerPaymentId: providerPaymentId,
+        payload: payload,
+        amount: amount,
+      });
+
+      // 2. Check payment id exist in database payment
+      const payment = await this.paymentRepository.updatePayment(
+        paymentId,
+        'SUCCESS',
+      );
+
+      if (!payment) {
+        throw new BadRequestException('Payment not found');
+      }
+      // 3. Update status in Order
+      if (payment.orderId)
+        this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
+      await this.paymentRepository.updatePayment(paymentId, 'FAILED');
+
+      // 4. Get userId from payment
+      const userId =
+        await this.paymentRepository.getUserIdByPaymentId(paymentId);
+      if (!userId) {
+        throw new BadRequestException('User not found for this payment');
+      }
+
+      //Websocket
+      this.emitEvent(userId);
+    } catch (error) {
+      console.error('Error handling webhook Sepay:', error);
+      throw new BadRequestException('Error processing payment webhook');
     }
+  }
 
-    let amount;
-
-    if (body.transferType === 'out') {
-      amount = -1 * Number(body.transferAmount);
-    } else {
-      amount = Number(body.transferAmount);
-    }
-
-    const providerPaymentId = body.id.toString();
-
-    const payload = SePaymentTransactionModel.parse(body);
-
-    await this.paymentRepository.createPaymentTransaction({
-      paymentId: paymentId,
-      providerPaymentId: providerPaymentId,
-      payload: payload,
-      amount: amount,
-    });
-
-    // 2. Check payment id exist in database payment
-    const payment = await this.paymentRepository.updatePayment(
-      paymentId,
-      'SUCCESS',
+  private async emitEvent(userId: number) {
+    const websocketId = await this.websocketService.getPaymentListener(userId);
+    console.log(
+      `Emitting payment event to user ${userId} with websocketId ${websocketId}`,
     );
-
-    if (!payment) {
-      throw new BadRequestException('Payment not found');
+    if (!websocketId) {
+      return;
     }
-    // 3. Update status in Order
-    if (payment.orderId)
-      this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
-    await this.paymentRepository.updatePayment(paymentId, 'FAILED');
+    try {
+      this.server.to(websocketId.toString()).emit('paymentEvent', {
+        message: 'Payment event received',
+        status: 'success',
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async handleUrlIPNVnPay(body: UrlIPNVnPayType) {
