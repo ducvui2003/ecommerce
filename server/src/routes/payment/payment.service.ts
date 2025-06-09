@@ -45,19 +45,26 @@ export class PaymentService {
 
     const payload = SePaymentTransactionModel.parse(body);
 
-    const paymentTransaction: PaymentTransactionType =
-      await this.paymentRepository.createPaymentTransaction({
-        paymentId: paymentId,
-        providerPaymentId: providerPaymentId,
-        payload: payload,
-        amount: amount,
-      });
+    await this.paymentRepository.createPaymentTransaction({
+      paymentId: paymentId,
+      providerPaymentId: providerPaymentId,
+      payload: payload,
+      amount: amount,
+    });
 
     // 2. Check payment id exist in database payment
+    const payment = await this.paymentRepository.updatePayment(
+      paymentId,
+      'SUCCESS',
+    );
 
-    // 3. Calculate total price of order is same with amountIn
-
-    // 4. Update status in payment and order
+    if (!payment) {
+      throw new BadRequestException('Payment not found');
+    }
+    // 3. Update status in Order
+    if (payment.orderId)
+      this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
+    await this.paymentRepository.updatePayment(paymentId, 'FAILED');
   }
 
   async handleUrlIPNVnPay(body: UrlIPNVnPayType) {
