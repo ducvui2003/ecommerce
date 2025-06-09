@@ -4,6 +4,7 @@ import { VNPAY } from '@shared/constants/payment.constant';
 import { PaymentService } from '@shared/services/payment/payment.service';
 import crypto from 'crypto';
 import { addMinutes, format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import qs from 'qs';
 
 export class VnpayPaymentService extends PaymentService {
@@ -18,10 +19,15 @@ export class VnpayPaymentService extends PaymentService {
     let vnpUrl = envConfig.VNPAY_PAY_URL;
     const returnUrl = envConfig.VNPAY_PAY_RETURN_URL;
 
+    const timeZone = 'Asia/Ho_Chi_Minh';
     const now = new Date();
 
-    const createDate = format(now, 'yyyyMMddHHmmss');
-    const expireDate = format(addMinutes(now, 15), 'yyyyMMddHHmmss');
+    const createDate = formatInTimeZone(now, timeZone, 'yyyyMMddHHmmss');
+    const expireDate = formatInTimeZone(
+      addMinutes(now, 15),
+      timeZone,
+      'yyyyMMddHHmmss',
+    );
 
     const orderInfo = 'HD: ' + this.paymentRef;
     const orderType = VNPAY.ORDER_TYPE;

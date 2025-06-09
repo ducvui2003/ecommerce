@@ -1,4 +1,5 @@
 import { PAYMENT_COOKIE } from '@/constraint/variable';
+import { getServerSideProps } from '@/lib/server.helper';
 import paymentService from '@/service/payment.service';
 import { VnpayReturnSchema } from '@/types/payment.type';
 import { NextRequest, NextResponse } from 'next/server';
@@ -42,8 +43,8 @@ export async function GET(request: NextRequest) {
       transactionStatus: vnp_TransactionStatus,
       txnRef: vnp_TxnRef,
     });
-
-    const redirect = NextResponse.redirect(new URL('/payment', request.url));
+    const { origin } = await getServerSideProps(request);
+    const redirect = NextResponse.redirect(new URL('/payment', origin));
     redirect.cookies.set(PAYMENT_COOKIE, 'true', {
       path: '/',
       httpOnly: true,
