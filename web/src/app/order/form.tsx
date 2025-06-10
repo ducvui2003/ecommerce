@@ -61,17 +61,16 @@ const OrderForm = ({ cartItemIds }: OrderFormTypeProps) => {
         detail: values.detail,
       },
     };
-    console.log(data);
-    // orderService.createOrder(data).then((response) => {
-    //   const { type, url, orderId, paymentId } = response;
-    //   if (type === 'REDIRECT') {
-    //     window.location.href = url;
-    //     return;
-    //   }
-    //   if (type === 'QR_CODE') {
-    //     setPaymentData({ url, paymentId, orderId });
-    //   }
-    // });
+    orderService.createOrder(data).then((response) => {
+      const { type, url, orderId, paymentId } = response;
+      if (type === 'REDIRECT') {
+        window.location.href = url;
+        return;
+      }
+      if (type === 'QR_CODE') {
+        setPaymentData({ url, paymentId, orderId });
+      }
+    });
   }
 
   return (
