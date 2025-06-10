@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { PaymentRepository } from '@route/payment/payment.repository';
 import {
   UrlIPNVnPayType,
@@ -13,14 +19,21 @@ import {
   VnPayPaymentTransactionModel,
 } from '@shared/models/payment-transaction.model';
 import { SharedOrderRepository } from '@shared/repositories/shared-order.repository';
-
+import { WebsocketService } from '@shared/services/websocket.service';
+import { Server } from 'socket.io';
 @Injectable()
+@WebSocketGateway({ namespace: 'payment' })
 export class PaymentService {
+  @WebSocketServer()
+  server: Server;
   constructor(
     @Inject('PaymentRepository')
     private readonly paymentRepository: PaymentRepository,
     @Inject(SHARED_ORDER_REPOSITORY)
+    @Inject()
     private readonly sharedOrderRepository: SharedOrderRepository,
+    @Inject()
+    private readonly websocketService: WebsocketService,
   ) {}
 
   async handleWebhookSepay(body: WebhookPaymentBodyType) {
@@ -28,7 +41,7 @@ export class PaymentService {
     const paymentId = body.code
       ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
       : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
-
+    Logger.log(`Payment ID extracted: ${paymentId}`, 'PaymentService');
     if (isNaN(paymentId)) {
       throw new BadRequestException('Cannot get payment id from content');
     }
@@ -45,19 +58,52 @@ export class PaymentService {
 
     const payload = SePaymentTransactionModel.parse(body);
 
-    const paymentTransaction: PaymentTransactionType =
-      await this.paymentRepository.createPaymentTransaction({
-        paymentId: paymentId,
-        providerPaymentId: providerPaymentId,
-        payload: payload,
-        amount: amount,
+    await this.paymentRepository.createPaymentTransaction({
+      paymentId: paymentId,
+      providerPaymentId: providerPaymentId,
+      payload: payload,
+      amount: amount,
+    });
+
+    let payment;
+    try {
+      // 2. Check payment id exist in database payment
+      payment = await this.paymentRepository.updatePayment(
+        paymentId,
+        'SUCCESS',
+      );
+    } catch (error) {
+      throw new BadRequestException('Payment not found');
+    }
+
+    // 3. Update status in Order
+    await this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
+
+    // 4. Get userId from payment
+    const userId = await this.paymentRepository.getUserIdByPaymentId(paymentId);
+    if (!userId) {
+      throw new BadRequestException('User not found for this payment');
+    } else
+      //Websocket
+      this.emitEvent(userId);
+  }
+
+  private async emitEvent(userId: number) {
+    const websocketId = await this.websocketService.getPaymentListener(userId);
+    console.log(
+      `Emitting payment event to user ${userId} with websocketId ${websocketId}`,
+    );
+    if (!websocketId) {
+      return;
+    }
+    try {
+      this.server.to(websocketId.toString()).emit('paymentEvent', {
+        message: 'Payment event received',
+        status: 'success',
       });
-
-    // 2. Check payment id exist in database payment
-
-    // 3. Calculate total price of order is same with amountIn
-
-    // 4. Update status in payment and order
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async handleUrlIPNVnPay(body: UrlIPNVnPayType) {

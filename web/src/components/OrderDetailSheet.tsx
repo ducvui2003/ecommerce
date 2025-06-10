@@ -93,6 +93,8 @@ const OrderItem = ({
         src={media || DEFAULT_IMAGE}
         alt={name}
         className="size-[70px] rounded-md shadow-md"
+        width={100}
+        height={100}
       />
       <div>
         <span className="text-sm">

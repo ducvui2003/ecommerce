@@ -1,13 +1,17 @@
 'use client';
 import ClientIcon from '@/components/ClientIcon';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  paymentStatus,
+  statusOrder,
+  StatusOrderType,
+} from '@/constraint/variable';
 import { setIsDetailSheet, setOrderId } from '@/features/order/order.slice';
 import { useAppDispatch } from '@/hooks/use-store';
 import { currency, formatDate } from '@/lib/utils';
 import { OrderResType } from '@/types/order.type';
 import { ColumnDef } from '@tanstack/react-table';
-
-type OrderStatus = 'Chờ xử lý' | 'Đang vận chuyển' | 'Hoàn thành';
 
 export const userOrderColumns: ColumnDef<OrderResType>[] = [
   {
@@ -53,26 +57,9 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
     accessorKey: 'status',
     header: 'Trạng thái',
     cell: ({ row }) => {
-      const status = row.getValue('status') as OrderStatus;
-      let colorClass = '';
+      const value = row.getValue('status') as StatusOrderType;
 
-      switch (status) {
-        case 'Hoàn thành':
-          colorClass = 'bg-green-100 text-green-800';
-          break;
-        case 'Đang vận chuyển':
-          colorClass = 'bg-yellow-100 text-yellow-800';
-          break;
-        case 'Chờ xử lý':
-          colorClass = 'bg-red-100 text-red-800';
-          break;
-      }
-
-      return (
-        <span className={`rounded px-2 py-1 text-sm font-medium ${colorClass}`}>
-          {status}
-        </span>
-      );
+      return <Badge orderStatus={value}>{statusOrder[value]}</Badge>;
     },
   },
   {

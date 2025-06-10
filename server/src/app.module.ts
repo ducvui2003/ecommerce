@@ -26,6 +26,7 @@ import { SupplierModule } from './routes/supplier/supplier.module';
 import { OrderModule } from '@route/order/order.module';
 import { ContactModule } from '@route/contact/contact.module';
 import { CommentModule } from '@route/comment/comment.module';
+import { WebsocketModule } from 'src/websockets/websocket.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { CommentModule } from '@route/comment/comment.module';
     SupplierModule,
     OrderModule,
     ContactModule,
-    CommentModule
+    CommentModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [

@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type OrderState = {
   isOpenDetailSheet: boolean;
   orderId?: number;
+  qrCode?: string;
 };
 
 const initialState: OrderState = {
