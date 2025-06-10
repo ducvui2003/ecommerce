@@ -3,7 +3,7 @@
 2. Run nginx
    `docker compose up -d nginx`
 3. Create cert
-   `./generate-ssh.sh`
+   `./generate-ssl.sh`
 4. Change volume in `docker-compose.yml`
    ```
    nginx:
