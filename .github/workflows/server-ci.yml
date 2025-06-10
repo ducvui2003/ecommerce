@@ -46,9 +46,14 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: ./server
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ducvui2003/nestjs-ecommerce:latest
+          tags: |
+            ducvui2003/nestjs-ecommerce:latest
+            ducvui2003/nestjs-ecommerce:${{ env.SHORT_SHA }}
