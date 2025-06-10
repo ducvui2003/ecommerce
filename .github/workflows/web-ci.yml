@@ -52,10 +52,18 @@ jobs:
             [[ -z "$line" || "$line" == \#* ]] && continue
             BUILD_ARGS+="--build-arg $line "
           done < .env
-          docker build $BUILD_ARGS -t ducvui2003/nextjs-ecommerce:latest .
+
+          SHA_TAG=${GITHUB_SHA::7}
+          IMAGE_NAME=ducvui2003/nextjs-ecommerce
+
+          docker build $BUILD_ARGS -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SHA_TAG .
+          echo "SHA_TAG=$SHA_TAG" >> $GITHUB_ENV
         working-directory: web
 
       - name: Push Docker image (only on push or manual trigger)
         if: github.event_name != 'pull_request'
-        run: docker push ducvui2003/nextjs-ecommerce:latest
+        run: |
+          IMAGE_NAME=ducvui2003/nextjs-ecommerce
+          docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:${SHA_TAG}
         working-directory: web
