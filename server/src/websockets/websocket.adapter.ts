@@ -25,7 +25,6 @@ export class WebsocketAdapter extends IoAdapter {
     // Middleware
     server.of('/payment').use((socket, next) => {
       this.authMiddleware(socket, next);
-      next();
     });
 
     return server;

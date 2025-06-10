@@ -18,6 +18,7 @@ export class PrismaProductRepository implements SharedProductRepository {
       include: {
         category: true,
         supplier: true,
+        thumbnail: true,
         productResource: {
           include: {
             resource: true,

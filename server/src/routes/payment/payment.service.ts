@@ -32,62 +32,55 @@ export class PaymentService {
   ) {}
 
   async handleWebhookSepay(body: WebhookPaymentBodyType) {
+    // 1. Create payment transaction
+    const paymentId = body.code
+      ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
+      : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
+    console.log(`Payment ID extracted: ${paymentId}`);
+    if (isNaN(paymentId)) {
+      throw new BadRequestException('Cannot get payment id from content');
+    }
+
+    let amount;
+
+    if (body.transferType === 'out') {
+      amount = -1 * Number(body.transferAmount);
+    } else {
+      amount = Number(body.transferAmount);
+    }
+
+    const providerPaymentId = body.id.toString();
+
+    const payload = SePaymentTransactionModel.parse(body);
+
+    await this.paymentRepository.createPaymentTransaction({
+      paymentId: paymentId,
+      providerPaymentId: providerPaymentId,
+      payload: payload,
+      amount: amount,
+    });
+
+    let payment;
     try {
-      // 1. Create payment transaction
-      const paymentId = body.code
-        ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
-        : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
-
-      if (isNaN(paymentId)) {
-        throw new BadRequestException('Cannot get payment id from content');
-      }
-
-      let amount;
-
-      if (body.transferType === 'out') {
-        amount = -1 * Number(body.transferAmount);
-      } else {
-        amount = Number(body.transferAmount);
-      }
-
-      const providerPaymentId = body.id.toString();
-
-      const payload = SePaymentTransactionModel.parse(body);
-
-      await this.paymentRepository.createPaymentTransaction({
-        paymentId: paymentId,
-        providerPaymentId: providerPaymentId,
-        payload: payload,
-        amount: amount,
-      });
-
       // 2. Check payment id exist in database payment
-      const payment = await this.paymentRepository.updatePayment(
+      payment = await this.paymentRepository.updatePayment(
         paymentId,
         'SUCCESS',
       );
+    } catch (error) {
+      throw new BadRequestException('Payment not found');
+    }
 
-      if (!payment) {
-        throw new BadRequestException('Payment not found');
-      }
-      // 3. Update status in Order
-      if (payment.orderId)
-        this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
-      await this.paymentRepository.updatePayment(paymentId, 'FAILED');
+    // 3. Update status in Order
+    await this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
 
-      // 4. Get userId from payment
-      const userId =
-        await this.paymentRepository.getUserIdByPaymentId(paymentId);
-      if (!userId) {
-        throw new BadRequestException('User not found for this payment');
-      }
-
+    // 4. Get userId from payment
+    const userId = await this.paymentRepository.getUserIdByPaymentId(paymentId);
+    if (!userId) {
+      throw new BadRequestException('User not found for this payment');
+    } else
       //Websocket
       this.emitEvent(userId);
-    } catch (error) {
-      console.error('Error handling webhook Sepay:', error);
-      throw new BadRequestException('Error processing payment webhook');
-    }
   }
 
   private async emitEvent(userId: number) {
