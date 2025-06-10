@@ -96,4 +96,15 @@ export class ProductServiceImpl implements ProductService {
       });
     });
   }
+
+  async getMostViewProducts(): Promise<ProductResType[]> {
+    const products = await this.productRepository.getMostViewProducts();
+    return products.map((item) => {
+      return ProductResSchema.parse({
+        ...item,
+        thumbnail:
+          item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
+      });
+    });
+  }
 }

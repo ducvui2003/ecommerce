@@ -340,4 +340,29 @@ export class ProductRepositoryImpl implements ProductRepository {
 
     return products;
   }
+
+  async getMostViewProducts(): Promise<ProductType[]> {
+    const products = await this.prisma.product.findMany({
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        views: 'desc',
+      },
+      take: 10,
+      include: {
+        supplier: true,
+        category: true,
+        thumbnail: true,
+        productResource: {
+          include: {
+            resource: true,
+          },
+        },
+        option: true,
+      },
+    });
+
+    return products;
+  }
 }

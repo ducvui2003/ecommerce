@@ -44,8 +44,25 @@ export const productApi = createApi({
         }
       },
     }),
-
+    getMostViewProducts: builder.query<ProductResType[], void>({
+      async queryFn() {
+        try {
+          const response = await httpClient.get<ResponseApi<ProductResType[]>>(
+            `api/v1/products/most-view`,
+            undefined,
+            false);
+          return { data: response.payload.data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
 
   }),
 });
-  export const { useSearchProductQuery, useGetNewProductsQuery } = productApi;
+  export const { useSearchProductQuery, useGetNewProductsQuery, useGetMostViewProductsQuery} = productApi;

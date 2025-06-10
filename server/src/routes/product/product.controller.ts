@@ -20,6 +20,13 @@ export class ProductController {
     @Inject('PRODUCT_SERVICE')
     private readonly productService: ProductServiceImpl,
   ) {}
+
+  @Get('/most-view')
+  getMostViewProducts(): Promise<ProductResType[]> {
+    return this.productService.getMostViewProducts();
+  }
+
+
   @Get('/new')
   getNewProducts(): Promise<ProductResType[]> {
     return this.productService.getNewProducts();
