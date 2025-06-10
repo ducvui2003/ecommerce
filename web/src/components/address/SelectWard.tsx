@@ -53,7 +53,7 @@ const SelectWard = () => {
                     name: item.name,
                   }),
                 );
-                field.onChange(value);
+                field.onChange(item.name);
               }}
             >
               <SelectTrigger className="w-full">
