@@ -1,21 +1,21 @@
 'use client';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetWardsQuery } from '@/features/address/address.api';
-import { setDistrict } from '@/features/address/address.slice';
+import { setWard } from '@/features/address/address.slice';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { uuid } from '@/lib/utils';
 import { useFormContext } from 'react-hook-form';
@@ -48,7 +48,7 @@ const SelectWard = () => {
               onValueChange={(value) => {
                 const item = JSON.parse(value) as Ward;
                 dispatch(
-                  setDistrict({
+                  setWard({
                     id: item.id,
                     name: item.name,
                   }),

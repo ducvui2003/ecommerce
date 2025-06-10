@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PaymentStatusType } from '@shared/constants/payment.constant';
+import {
+  PaymentStatus,
+  PaymentStatusType,
+} from '@shared/constants/payment.constant';
 import { PaymentTransactionType } from '@shared/models/payment-transaction.model';
 import { PaymentType } from '@shared/models/payment.model';
 import { PrismaService } from '@shared/services/prisma.service';
@@ -13,6 +16,8 @@ export interface PaymentRepository {
     paymentId: number,
     status: PaymentStatusType,
   ): Promise<PaymentType>;
+
+  getUserIdByPaymentId(paymentId: number): Promise<number | null>;
 }
 
 @Injectable()
@@ -36,7 +41,22 @@ export class PrismaPaymentRepository implements PaymentRepository {
       },
       where: {
         id: paymentId,
+        status: {
+          in: [PaymentStatus.PENDING],
+        },
       },
     });
+  }
+
+  async getUserIdByPaymentId(paymentId: number): Promise<number | null> {
+    const data = await this.prismaService.payment.findUnique({
+      where: {
+        id: paymentId,
+      },
+      include: {
+        order: true,
+      },
+    });
+    return data?.order?.userId ?? null;
   }
 }

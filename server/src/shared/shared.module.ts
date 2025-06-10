@@ -28,6 +28,7 @@ import { PrismaService } from '@shared/services/prisma.service';
 import { TokenService } from '@shared/services/token.service';
 import { PrismaProductRepository } from '@shared/repositories/shared-product.repository';
 import { PrismaOrderRepository } from '@shared/repositories/shared-order.repository';
+import { WebsocketService } from '@shared/services/websocket.service';
 
 const sharedServices: Provider[] = [
   PrismaService,
@@ -37,7 +38,7 @@ const sharedServices: Provider[] = [
   APIKeyGuard,
   LoggingMiddleware,
   MailFactory,
-
+  WebsocketService,
   {
     provide: SHARED_USER_REPOSITORY,
     useClass: SharedPrismaUserRepository,

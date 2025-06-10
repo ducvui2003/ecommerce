@@ -44,7 +44,7 @@ export default function OrderPayment() {
 
                   <div className="flex items-center space-x-2 rounded-lg border p-4 shadow">
                     <FormControl>
-                      <RadioGroupItem value="SEPAY" id="sepay" disabled />
+                      <RadioGroupItem value="SEPAY" id="sepay" />
                     </FormControl>
                     <label htmlFor="sepay" className="flex items-center gap-2">
                       <Image src={sepay} alt="sepay" className="h-6 w-6" />

@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: ['res.cloudinary.com'],
+    domains: ['res.cloudinary.com', 'qr.sepay.vn'],
   },
   output: 'standalone',
 };
