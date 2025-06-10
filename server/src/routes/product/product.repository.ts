@@ -14,6 +14,17 @@ import { PrismaService } from '@shared/services/prisma.service';
 export class ProductRepositoryImpl implements ProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async increaseView(productId: number): Promise<void> {
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
   async getProductById(id: number): Promise<ProductType> {
     const product = await this.prisma.product.findFirstOrThrow({
       include: {

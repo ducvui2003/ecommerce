@@ -31,6 +31,7 @@ export class ProductServiceImpl implements ProductService {
 
   async findById(id: number): Promise<ProductDetailResType> {
     try {
+      await this.productRepository.increaseView(id);
       const product = await this.productRepository.getProductById(id);
       const temp = product.option?.map((option, index) => ({
         index,

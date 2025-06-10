@@ -12,4 +12,5 @@ export interface ProductRepository {
   create(dto: CreateProductBodyType): Promise<ProductType>;
   update(id: number, dto: UpdateProductBodyType): Promise<ProductType>;
   getNewProducts(): Promise<ProductType[]>;
+  increaseView(id: number): Promise<void>;
 }
