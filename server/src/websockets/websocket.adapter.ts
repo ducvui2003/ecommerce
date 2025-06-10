@@ -3,7 +3,7 @@ import { INestApplicationContext } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { TokenService } from '@shared/services/token.service';
 import { WebsocketService } from '@shared/services/websocket.service';
-import { Server, ServerOptions } from 'socket.io';
+import { Server, ServerOptions, Socket } from 'socket.io';
 
 export class WebsocketAdapter extends IoAdapter {
   private readonly tokenService: TokenService;
@@ -30,7 +30,7 @@ export class WebsocketAdapter extends IoAdapter {
     return server;
   }
 
-  async authMiddleware(socket: any, next: (err?: any) => void) {
+  async authMiddleware(socket: Socket, next: (err?: any) => void) {
     const { authorization } = socket.handshake.headers;
     if (!authorization) {
       return next(new Error('Unauthorized'));
@@ -51,6 +51,5 @@ export class WebsocketAdapter extends IoAdapter {
     } catch (error) {
       next(error);
     }
-    next();
   }
 }

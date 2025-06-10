@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { PaymentRepository } from '@route/payment/payment.repository';
 import {
@@ -36,7 +41,7 @@ export class PaymentService {
     const paymentId = body.code
       ? Number(body.code.split(PREFIX_PAYMENT_CODE)[1])
       : Number(body.content.split(PREFIX_PAYMENT_CODE)[1]);
-    console.log(`Payment ID extracted: ${paymentId}`);
+    Logger.log(`Payment ID extracted: ${paymentId}`, 'PaymentService');
     if (isNaN(paymentId)) {
       throw new BadRequestException('Cannot get payment id from content');
     }

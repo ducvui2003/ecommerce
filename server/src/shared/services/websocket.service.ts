@@ -6,7 +6,7 @@ export class WebsocketService {
   constructor(@Inject() private readonly cacheService: CacheService) {
     this.cacheService = cacheService;
   }
-  createPaymentListener(userId: number, socketId: number) {
+  createPaymentListener(userId: number, socketId: string) {
     this.cacheService.set(`payment:${userId}`, socketId);
   }
 

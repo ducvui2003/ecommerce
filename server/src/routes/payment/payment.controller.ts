@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Logger,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UrlIPNVnPayDto, WebhookSePayReq } from '@route/payment/payment.dto';
 import { PaymentService } from '@route/payment/payment.service';
 import { AuthType } from '@shared/constants/auth.constant';
@@ -13,13 +20,13 @@ export class PaymentController {
   @UseGuards(AuthenticationGuard)
   @Auth([AuthType.APIKey])
   receiverWebhookSepay(@Body() body: WebhookSePayReq) {
-    console.log(body);
+    Logger.log(body, 'WebhookSepay');
     return this.paymentService.handleWebhookSepay(body);
   }
 
   @Post('vn-pay-return')
   public vnPayReturn(@Body() body: UrlIPNVnPayDto) {
-    console.log(body);
+    Logger.log(body, 'VNPayReturn');
     this.paymentService.handleUrlIPNVnPay(body);
   }
 }

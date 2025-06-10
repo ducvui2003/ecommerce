@@ -3,7 +3,6 @@ import OrderInfo from '@/app/order/OrderInfo';
 import OrderPayment from '@/app/order/OrderPayment';
 
 import { Form } from '@/components/ui/form';
-import { setQrCode } from '@/features/order/order.slice';
 import { useAppDispatch } from '@/hooks/use-store';
 import orderService from '@/service/order.service';
 import {
