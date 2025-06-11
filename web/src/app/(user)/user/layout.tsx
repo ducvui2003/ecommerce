@@ -1,12 +1,18 @@
+'use client';
+import UserBreadcrumb from '@/app/(user)/user/user-breadcrumb';
+import UserSidebar from '@/app/(user)/user/user-sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import React from 'react';
 
 const UserLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main>
-      <div className="container grid-cols-12 gap-1">
-        <aside className="col-span-2"></aside>
-      </div>
-    </main>
+    <SidebarProvider>
+      <UserSidebar />
+      <main className="flex w-full flex-col">
+        <UserBreadcrumb />
+        {children}
+      </main>
+    </SidebarProvider>
   );
 };
 

@@ -16,6 +16,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -39,9 +43,19 @@ enum OrderStatus {
   PENDING
   PAID
   DELIVERING
-  DELIVERED
   CANCELED
   COMPLETE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentProvider {
+  VNPAY
+  SEPAY
 }
 
 /**
@@ -97,14 +111,14 @@ model User {
   dob      DateTime?  @db.Date
 
   roleId Int  @map("role_id")
-  Role   Role @relation(fields: [roleId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
 
-  Addresses Address[]
-  Cart      Cart?
-  Order     Order[]
-  Review    Review[]
-  Wishlist  Wishlist[]
-  Comment   Comment[]
+  addresses Address[]
+  cart      Cart?
+  order     Order[]
+  review    Review[]
+  wishlist  Wishlist[]
+  comment   Comment[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -123,23 +137,6 @@ model Role {
   updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@map("roles")
-}
-
-model VerificationCode {
-  id        Int              @id @default(autoincrement())
-  email     String           @unique
-  type      VerificationType
-  code      String
-  expiredAt DateTime         @map("expired_at")
-  createdAt DateTime         @default(now()) @map("created_at")
-
-  @@index([id, email, type])
-  @@map("verification_codes")
-}
-
-enum VerificationType {
-  REGISTER
-  FORGOT_PASSWORD
 }
 
 model Address {
@@ -170,7 +167,7 @@ model Supplier {
   website String
   status  AvailableStatus @default(INACTIVE)
 
-  Product Product[]
+  product Product[]
 
   addressId Int     @unique @map("address_id")
   address   Address @relation(fields: [addressId], references: [id])
@@ -186,26 +183,48 @@ model Product {
   id          Int     @id @default(autoincrement())
   name        String
   description String
-  price       Decimal
-  stock       Int
+  basePrice   Decimal @map("base_price") @db.Decimal(10, 2)
+  salePrice   Decimal @map("sale_price") @db.Decimal(10, 2)
 
-  categoryId Int      @map("category_id")
-  category   Category @relation(fields: [categoryId], references: [id])
-  supplierId Int      @map("supplier_id")
-  supplier   Supplier @relation(fields: [supplierId], references: [id])
-
-  Image     Image[]
-  CartItem  CartItem[]
-  OrderItem OrderItem[]
-  Review    Review[]
-  Wishlist  Wishlist[]
-  Comment   Comment[]
+  categoryId  Int        @map("category_id")
+  category    Category   @relation(fields: [categoryId], references: [id])
+  supplierId  Int        @map("supplier_id")
+  supplier    Supplier   @relation(fields: [supplierId], references: [id])
+  thumbnailId Int?       @map("thumbnail_id")
+  thumbnail   Resource?  @relation(fields: [thumbnailId], references: [id])
+  cartItem    CartItem[]
+  review      Review[]
+  wishlist    Wishlist[]
+  comment     Comment[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
+  productResource ProductResource[]
+  option          Option[]
+
   @@map("products")
+}
+
+model Option {
+  id Int @id @default(autoincrement())
+
+  name  String
+  price Decimal
+  stock Int?    @default(0)
+
+  productId  Int       @map("product_id")
+  product    Product   @relation(fields: [productId], references: [id])
+  resourceId Int?      @map("resource_id")
+  resource   Resource? @relation(fields: [resourceId], references: [id])
+
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime?  @updatedAt @map("updated_at")
+  deletedAt DateTime?  @map("deleted_at")
+  CartItem  CartItem[]
+
+  @@map("options")
 }
 
 model Category {
@@ -222,23 +241,39 @@ model Category {
   @@map("categories")
 }
 
-model Image {
+model Resource {
   id       Int    @id @default(autoincrement())
-  imageUrl String @map("image_url")
-
-  productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  publicId String @map("public_id")
+  type     String
+  format   String
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
+  isDeleted Boolean   @default(false)
 
-  @@map("images")
+  productResource ProductResource[]
+  option          Option[]
+  Product         Product[]
+
+  @@map("resources")
+}
+
+model ProductResource {
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int     @map("product_id")
+
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  resourceId Int      @map("resource_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([productId, resourceId]) // Composite primary key
+  @@map("product_resources") // Rename table in the DB
 }
 
 model Cart {
-  id       Int @id @default(autoincrement())
-  quantity Int @default(0)
+  id Int @id @default(autoincrement())
 
   userId    Int        @unique @map("user_id")
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -246,47 +281,44 @@ model Cart {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
   @@map("carts")
 }
 
 model CartItem {
-  id String @id @default(uuid()) // char(36)
-
-  productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
-
-  cartId Int  @map("cart_id")
-  cart   Cart @relation(fields: [cartId], references: [id], name: "CartToCartItem")
-
+  id        String    @id @default(uuid())
+  productId Int       @map("product_id")
+  product   Product   @relation(fields: [productId], references: [id])
+  selected  Boolean   @default(true) @map("selected")
+  quantity  Int       @default(1)
+  optionId  Int?      @map("option_id")
+  option    Option?   @relation(fields: [optionId], references: [id])
+  cartId    Int       @map("cart_id")
+  cart      Cart      @relation(fields: [cartId], references: [id], name: "CartToCartItem")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
 
+  @@unique([cartId, productId, optionId])
+  @@unique([cartId, productId])
   @@map("cart_items")
 }
 
 model Order {
   id          Int         @id @default(autoincrement())
-  totalAmount Decimal     @map("total_amount")
-  feeShipping Decimal     @map("fee_shipping")
+  totalAmount Decimal     @map("total_amount") @db.Decimal(10, 2)
+  feeShipping Decimal     @map("fee_shipping") @db.Decimal(10, 2)
   status      OrderStatus @default(PENDING)
-  payment     String
 
-  // Address
-  detail   String
-  ward     String
-  district String
-  province String
+  /// [Receiver]
+  receiver Json
+  userId   Int  @map("user_id")
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  OrderItem      OrderItem[]
-  PromotionOrder PromotionOrder[]
+  orderItem      OrderItem[]
+  promotionOrder PromotionOrder[]
 
   createdAt DateTime @default(now()) @map("created_at")
+  payment   Payment?
 
   @@map("orders")
 }
@@ -296,15 +328,41 @@ model OrderItem {
   quantity Int
   price    Decimal
 
-  orderId   Int     @map("order_id")
-  Order     Order   @relation(fields: [orderId], references: [id])
-  productId Int     @map("product_id")
-  Product   Product @relation(fields: [productId], references: [id])
+  orderId Int   @map("order_id")
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  /// [ProductOrderItem]
+  product Json
 
   createdAt          DateTime             @default(now()) @map("created_at")
-  PromotionOrderItem PromotionOrderItem[]
+  promotionOrderItem PromotionOrderItem[]
 
   @@map("order_items")
+}
+
+model Payment {
+  id        Int             @id @default(autoincrement())
+  orderId   Int?            @unique @map("order_id")
+  order     Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    PaymentStatus
+  provider  PaymentProvider
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime?       @updatedAt @map("updated_at")
+
+  @@map("payment")
+}
+
+model PaymentTransaction {
+  id                Int     @id @default(autoincrement())
+  paymentId         Int?    @map("payment_id")
+  providerPaymentId String  @map("provider_payment_id")
+  amount            Decimal @db.Decimal(20, 2)
+
+  /// [PaymentTransactionPayload]
+  payload   Json
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("payment_transaction")
 }
 
 model Promotion {
@@ -318,8 +376,8 @@ model Promotion {
   usageLimit  Int             @map("usage_limit")
   status      AvailableStatus @default(ACTIVE)
 
-  PromotionOrder     PromotionOrder[]
-  PromotionOrderItem PromotionOrderItem[]
+  promotionOrder     PromotionOrder[]
+  promotionOrderItem PromotionOrderItem[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -345,9 +403,9 @@ model PromotionOrderItem {
   id Int @id @default(autoincrement())
 
   promotionId Int       @map("promotion_id")
-  Promotion   Promotion @relation(fields: [promotionId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
   orderItemId Int       @map("order_item_id")
-  OrderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -388,10 +446,12 @@ model Wishlist {
   @@map("wishlists")
 }
 
-model CustomerService {
+model Contact {
   id      Int            @id @default(autoincrement())
   title   String
   email   String
+  phone   String
+  name    String
   message String
   status  CustomerStatus @default(PENDING)
 
@@ -399,7 +459,7 @@ model CustomerService {
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@map("customer_services")
+  @@map("contacts")
 }
 
 model Notification {
@@ -416,10 +476,10 @@ model Notification {
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
+  id       String  @id @default(uuid())
   content  String
   like     Int
-  parentId Int?   @map("parent_id")
+  parentId String? @map("parent_id")
 
   userId    Int     @map("user_id")
   user      User    @relation(fields: [userId], references: [id])
@@ -431,6 +491,15 @@ model Comment {
   deletedAt DateTime? @map("deleted_at")
 
   @@map("comments")
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId])
 }
 
 model Policy {

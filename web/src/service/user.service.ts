@@ -1,12 +1,17 @@
 import envConfig from '@/config/env.config';
+import http from '@/lib/http.client';
 import { ResponseApi } from '@/types/api.type';
-import { UserInfoResType } from '@/types/user.type';
+import {
+  InformationFormType,
+  PasswordFormType,
+  UserInfoResType,
+} from '@/types/user.type';
 
 const userService = {
   getInfo: async (accessToken: string): Promise<UserInfoResType> => {
     try {
       const res = await fetch(
-        `${envConfig.NEXT_PUBLIC_SERVER_URL}/api/v1/user/info`,
+        `${envConfig.NEXT_PUBLIC_SERVER_EXTERNAL}/api/v1/user/info`,
         {
           method: 'GET',
           headers: {
@@ -19,9 +24,30 @@ const userService = {
 
       return body.data;
     } catch (error) {
-      console.error('Renew token failed');
       throw error;
     }
+  },
+  updateInfo: async (req: InformationFormType) => {
+    const res = await http.post<ResponseApi<UserInfoResType>>(
+      `api/v1/user/info`,
+      req,
+    );
+    return res.payload.data;
+  },
+
+  updateAvatar: async (avatarUrl: string) => {
+    const res = await http.post<ResponseApi<UserInfoResType>>(
+      `api/v1/user/info`,
+      {
+        avatar: avatarUrl,
+      },
+    );
+    return res.payload.data;
+  },
+
+  changePassword: async (req: PasswordFormType) => {
+    const res = await http.put<ResponseApi<void>>(`api/v1/auth/password`, req);
+    return res.payload.data;
   },
 };
 

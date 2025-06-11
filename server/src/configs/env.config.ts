@@ -3,13 +3,15 @@ import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
 
-config({
-  path: '.env',
-});
+if (process.env.NODE_ENV !== 'production') {
+  config({
+    path: '.env',
+  });
 
-if (!fs.existsSync(path.resolve('.env'))) {
-  console.error('No .env file found in the root directory');
-  process.exit(1);
+  if (!fs.existsSync(path.resolve('.env'))) {
+    console.error('No .env file found in the root directory');
+    process.exit(1);
+  }
 }
 
 const envSchema = z.object({
@@ -31,6 +33,23 @@ const envSchema = z.object({
   ADDRESS_ACCESS_TOKEN: z.string(),
   ADDRESS_APP_ID: z.string(),
   ADDRESS_BUSINESS_ID: z.string(),
+
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
+
+  PAYMENT_API_KEY: z.string(),
+
+  VNPAY_PAY_URL: z.string(),
+  VNPAY_PAY_RETURN_URL: z.string(),
+  VNPAY_TNN_CODE: z.string(),
+  VNPAY_HASH_SECRET: z.string(),
+  VNPAY_API_URL: z.string(),
+
+  SEPAY_BANK: z.string(),
+  SEPAY_ACCOUNT_NUMBER: z.string(),
+
+  LOG_PRISMA_SQL: z.coerce.boolean().optional().default(false),
 });
 
 const configServer = envSchema.safeParse(process.env);

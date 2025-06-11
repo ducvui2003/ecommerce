@@ -1,7 +1,10 @@
 import { UserStatus } from '@shared/constants/auth.constant';
+import { AddressModel } from '@shared/models/address.model';
+import { TimestampFields } from '@shared/models/base.model';
+import { RoleModel } from '@shared/models/role.model';
 import { z } from 'zod';
 
-export const UserModel = z.object({
+export const UserModel = TimestampFields.extend({
   id: z.number(),
   email: z.string().email(),
   name: z.string().nullable(),
@@ -11,10 +14,8 @@ export const UserModel = z.object({
   avatar: z.string().nullable(),
   status: z.enum([UserStatus.ACTIVE, UserStatus.INACTIVE, UserStatus.BLOCKED]),
   roleId: z.number().positive(),
-
-  createdAt: z.date(),
-  updatedAt: z.date().nullable(),
-  deletedAt: z.date().nullable(),
+  role: RoleModel,
+  addresses: z.array(AddressModel).optional(),
 });
 
 export type UserType = z.infer<typeof UserModel>;

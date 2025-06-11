@@ -1,6 +1,9 @@
+import { MetadataFields } from '@shared/models/base.model';
+import { SupplierModel } from '@shared/models/supplier.model';
+import { UserModel } from '@shared/models/user.model';
 import { z } from 'zod';
 
-export const AddressModel = z.object({
+export const AddressModel = MetadataFields.extend({
   id: z.number(),
   detail: z.string(),
   ward: z.string(),
@@ -8,10 +11,9 @@ export const AddressModel = z.object({
   province: z.string(),
 
   userId: z.number(),
+  user: UserModel,
 
-  createdAt: z.date(),
-  updatedAt: z.date().nullable(),
-  deleteAt: z.date().nullable().optional(),
+  supplier: SupplierModel.optional(),
 });
 
 export type AddressType = z.infer<typeof AddressModel>;

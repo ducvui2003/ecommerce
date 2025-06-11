@@ -1,60 +1,41 @@
-import addressService from '@/service/address.service';
-import { DistrictType, ProvinceType, WardType } from '@/types/address.type';
-import { createApi } from '@reduxjs/toolkit/query/react';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export const addressApi = createApi({
-  reducerPath: 'addressApi', // name field of redux state
-  baseQuery: () => ({ data: {} }),
-  endpoints: (builder) => ({
-    getProvinces: builder.query<ProvinceType[], void>({
-      async queryFn() {
-        try {
-          const data = await addressService.getProvince();
-          return { data };
-        } catch (error: any) {
-          return {
-            error: {
-              status: error?.status || 500,
-              data: error?.message || 'Unknown error',
-            },
-          };
-        }
-      },
-    }),
+type AddressType = {
+  id: number;
+  name: string;
+};
 
-    getDistricts: builder.query<DistrictType[], number>({
-      async queryFn(provinceId) {
-        try {
-          const data = await addressService.getDistrict(provinceId);
-          return { data };
-        } catch (error: any) {
-          return {
-            error: {
-              status: error?.status || 500,
-              data: error?.message || 'Unknown error',
-            },
-          };
-        }
-      },
-    }),
+type AddressState = {
+  province?: AddressType;
+  district?: AddressType;
+  ward?: AddressType;
+  detail?: string;
+  feeShipping?: number;
+};
 
-    getWards: builder.query<WardType[], number>({
-      async queryFn(districtId) {
-        try {
-          const data = await addressService.getWard(districtId);
-          return { data };
-        } catch (error: any) {
-          return {
-            error: {
-              status: error?.status || 500,
-              data: error?.message || 'Unknown error',
-            },
-          };
-        }
-      },
-    }),
-  }),
+const initialState: AddressState = {};
+
+const addressSlice = createSlice({
+  name: 'addressSlice',
+  initialState: initialState,
+  reducers: {
+    setProvince(state: AddressState, action: PayloadAction<AddressType>) {
+      state.province = action.payload;
+    },
+    setDistrict(state: AddressState, action: PayloadAction<AddressType>) {
+      state.district = action.payload;
+    },
+    setWard(state: AddressState, action: PayloadAction<AddressType>) {
+      state.ward = action.payload;
+    },
+    setDetail(state: AddressState, action: PayloadAction<string>) {
+      state.detail = action.payload;
+    },
+  },
 });
+const addressReducer = addressSlice.reducer;
+export const { setProvince, setDistrict, setWard, setDetail } =
+  addressSlice.actions;
 
-export const { useGetProvincesQuery, useGetDistrictsQuery, useGetWardsQuery } =
-  addressApi;
+export default addressReducer;
+export type { AddressState, AddressType };

@@ -10,21 +10,21 @@ RUN apk add --no-cache curl openssl3
 COPY package.json package-lock.json ./ 
 
 # Clean and install dependencies (including dev dependencies)
-RUN npm ci 
+RUN npm ci --force
 
 # Copy the source code (has docker ignore)
 COPY . .
 
-# Prevent RUN command create a new layer
-RUN \
-    # Generate Prisma Client
-    npx prisma generate && \
-    # Build the NestJS application
-    npm run build && \
-    ## Build node_module
-    npm ci --omit=dev && \  
-    curl -sf https://gobinaries.com/tj/node-prune | sh && \
-    node-prune /app/node_modules 
+# Generate Prisma Client and build app
+RUN npx prisma generate && npm run build
+
+# Remove dev dependencies
+RUN npm prune --omit=dev
+
+# Optionally: Use node-prune to trim unused files
+RUN curl -sf https://gobinaries.com/tj/node-prune | sh && node-prune /app/node_modules --whitelist "@nestjs"
+RUN curl -o wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/refs/heads/master/wait-for-it.sh
+RUN chmod +x wait-for-it.sh
 
 # 2️⃣ Production Stage 
 ## node:22-alpine (158MB)
@@ -36,13 +36,13 @@ WORKDIR /app
 # Copy only necessary files from build stage
 ## dist: 1.1 MB
 COPY --from=builder /app/dist ./dist
-## package.json: 4KB
-COPY --from=builder /app/package.json ./
-## package.json: 496KB
-COPY --from=builder /app/package-lock.json ./ 
 ## node_modules: 282MB
 COPY --from=builder /app/node_modules ./node_modules
 
+## wait-for-it.sh: 1.2KB
+COPY --from=builder /app/wait-for-it.sh ./wait-for-it.sh
+RUN apk add --no-cache bash
+RUN chmod +x wait-for-it.sh
 
 # Expose the correct port
 EXPOSE 8000
@@ -50,5 +50,3 @@ EXPOSE 8000
 # Run the application (408MB)
 CMD ["node", "dist/src/main"]
 
-# docker build -t ducvui2003/nestjs-ecommerce:1.0 .                                                  ✔  21:16:34  
-# docker push ducvui2003/nestjs-ecommerce:1.0 

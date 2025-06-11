@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -15,14 +16,17 @@ import { AuthType } from '@shared/constants/auth.constant';
 import { Auth } from '@shared/decorators/auth.decorator';
 import { AuthenticationGuard } from '@shared/guards/authentication.guard';
 import {
+  ChangePasswordBodyDTO,
   ForgetPasswordBodyDTO,
   LoginReqDTO,
   LogoutReqDTO,
   RefreshReqDTO,
   RegisterReqDTO,
   SendOTPBodyDTO,
+  VerifyOTPBodyDTO,
 } from '@route/auth/auth.dto';
 import { AuthService } from '@route/auth/auth.service';
+import { ActiveUser } from '@shared/decorators/active-user.decorator';
 
 @Controller('/api/v1/auth')
 export class AuthController {
@@ -40,12 +44,18 @@ export class AuthController {
   async sendOTP(@Body() body: SendOTPBodyDTO) {
     let res;
     if (body.type === 'REGISTER') {
-      res = await this.authService.sendOTP(body);
+      res = await this.authService.sendOTP(body, 'not-exist');
     }
     if (body.type === 'FORGOT_PASSWORD') {
-      res = await this.authService.sendOTP(body, true);
+      res = await this.authService.sendOTP(body, 'exist');
     }
     return res;
+  }
+
+  @Post('verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyOTP(@Body() body: VerifyOTPBodyDTO) {
+    await this.authService.verifyOTP(body);
   }
 
   @Post('login')
@@ -74,5 +84,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   forgotPassword(@Body() body: ForgetPasswordBodyDTO) {
     return this.authService.forgotPassword(body);
+  }
+
+  @Put('/password')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthenticationGuard)
+  @Auth([AuthType.Bearer])
+  changePassword(
+    @ActiveUser('id') id: number,
+    @Body() body: ChangePasswordBodyDTO,
+  ) {
+    console.log('id', id);
+    return this.authService.changePassword(id, body);
   }
 }

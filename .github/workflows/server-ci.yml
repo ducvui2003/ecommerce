@@ -1,0 +1,59 @@
+name: server-ci
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "server/**"
+      - ".github/actions/setup-node/**"
+      - ".github/workflows/server-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**"
+      - ".github/actions/setup-node/**"
+      - ".github/workflows/server-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+        with:
+          node_version: 22.13.1
+          cache: npm
+          working-directory: server
+
+      - name: Run Prisma generate
+        run: npx prisma generate
+        working-directory: server
+
+      - name: Build NestJS
+        run: npm run build
+        working-directory: server
+
+      - name: Log in to Docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ducvui2003/nestjs-ecommerce:latest
+            ducvui2003/nestjs-ecommerce:${{ env.SHORT_SHA }}

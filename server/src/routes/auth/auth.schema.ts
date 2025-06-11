@@ -63,9 +63,17 @@ export const RefreshResSchema = z.object({
   exp: z.number(),
 });
 
+export type RefreshResType = z.infer<typeof RefreshResSchema>;
+
 // Verification
 export const SendOTPBodySchema = VerificationCodeSchema.pick({
   email: true,
+  type: true,
+}).strict();
+
+export const VerifyOTPBodySchema = VerificationCodeSchema.pick({
+  email: true,
+  code: true,
   type: true,
 }).strict();
 
@@ -77,3 +85,14 @@ export const ForgetPasswordSchema = UserModel.pick({
     password: PasswordSchema,
   })
   .strict();
+
+export const ChangePasswordSchema = UserModel.pick({
+  password: true,
+})
+  .extend({
+    newPassword: PasswordSchema,
+  })
+  .refine((data) => data.password !== data.newPassword, {
+    message: 'Mật khẩu mới không được trùng với mật khẩu cũ',
+    path: ['newPassword'],
+  });

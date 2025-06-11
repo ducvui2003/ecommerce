@@ -1,5 +1,4 @@
 'use client';
-import Link from '@/components/Link';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -8,10 +7,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-  NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
 import { uuid } from '@/lib/utils';
-import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
+import React, { useRef } from 'react';
 
 type NavigationLinkType = {
   title: string;
@@ -21,35 +20,44 @@ type NavigationLinkType = {
 
 type NavigationType = {
   title: string;
-  href: string;
+  href?: string;
   child?: NavigationLinkType[];
 };
 export const components: NavigationType[] = [
   {
     title: 'Trang chủ',
-    href: '/login',
+    href: '/',
   },
   {
-    title: 'Tinh dầu',
-    href: '/',
+    title: 'Sản phẩm',
+    href: '/product',
     child: [
       {
         title: 'Tinh dầu',
-        href: '/',
+        href: '/product?categoryName=Tinh+d%E1%BA%A7u',
       },
       {
-        title: 'Tinh dầu',
-        href: '/',
+        title: 'Lọ đựng tinh dầu',
+        href: '/product?categoryName=L%E1%BB%8D+%C4%91%E1%BB%B1ng+tinh+d%E1%BA%A7u',
+      },
+      {
+        title: 'Máy xông tinh dầu',
+        href: '/product?categoryName=M%C3%A1y+x%C3%B4ng+tinh+d%E1%BA%A7u',
       },
     ],
   },
+
   {
     title: 'Về chúng tôi',
-    href: '/',
+    href: '/about-us',
+  },
+  {
+    title: 'Liên hệ',
+    href: '/contact-us',
   },
   {
     title: 'Tư vấn',
-    href: '/',
+    href: '/consultant',
   },
 ];
 
@@ -59,22 +67,19 @@ type NavigationProps = {
 
 const Navigation = ({ components }: NavigationProps) => {
   const triggerRef = useRef<HTMLButtonElement[]>([]);
-  const viewPortRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    console.log('viewPortRef', viewPortRef.current);
-    console.log('navRefs', triggerRef.current);
-  }, [triggerRef.current, viewPortRef.current]);
+
   return (
-    <NavigationMenu className="mx-auto">
-      <NavigationMenuList>
+    <NavigationMenu>
+      <NavigationMenuList className="gap-x-6 font-medium">
         {components.map((component, index) => {
           return (
             <NavigationMenuItem key={uuid()}>
               {!component.child ? (
-                <Link href={component.href} legacyBehavior passHref>
+                <Link href={component.href!} legacyBehavior passHref>
                   <NavigationMenuLink
                     className={
-                      (navigationMenuTriggerStyle(), 'px-4 py-2 text-xl')
+                      (navigationMenuTriggerStyle(),
+                      'hover:text-primary mx-2 text-lg')
                     }
                   >
                     {component.title}
@@ -83,7 +88,7 @@ const Navigation = ({ components }: NavigationProps) => {
               ) : (
                 <React.Fragment key={uuid()}>
                   <NavigationMenuTrigger
-                    className="text-xl"
+                    className="data-[state=open]:hover:text-primary p-0 text-lg hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent"
                     ref={(ref) => {
                       if (ref) {
                         triggerRef.current[index] = ref;
@@ -93,19 +98,24 @@ const Navigation = ({ components }: NavigationProps) => {
                     {component.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    {component.child.map((item) => {
-                      return (
-                        <Link href={item.href} legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={
-                              (navigationMenuTriggerStyle(), 'text-xl')
-                            }
-                          >
-                            {item.title}
-                          </NavigationMenuLink>
-                        </Link>
-                      );
-                    })}
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      {component.child.map((item, index) => {
+                        return (
+                          <li key={index}>
+                            <Link href={item.href} legacyBehavior passHref>
+                              <NavigationMenuLink
+                                className={
+                                  (navigationMenuTriggerStyle(),
+                                  'hover:text-primary mx-2 text-base')
+                                }
+                              >
+                                {item.title}
+                              </NavigationMenuLink>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </NavigationMenuContent>
                 </React.Fragment>
               )}

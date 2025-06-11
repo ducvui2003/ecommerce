@@ -1,20 +1,17 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core';
 
-import setupCors from 'src/configs/cors.config';
-import setupSwagger from 'src/configs/swagger.config';
-import { SerializerInterceptor } from '@shared/interceptors/serializer.interceptor';
 import envConfig from '@config/env.config';
+import setupExceptionHandling from '@config/exception.config';
+import { AppModule } from 'src/app.module';
+import setupCors from '@config/cors.config';
+import setupWebsocket from '@config/websocker.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  setupExceptionHandling(app);
   setupCors(app);
-
-  // Serializer Response
-  // app.useGlobalInterceptors(new SerializerInterceptor());
-
-  setupSwagger(app);
+  setupWebsocket(app);
   await app.listen(envConfig.PORT);
 }
+
 bootstrap();

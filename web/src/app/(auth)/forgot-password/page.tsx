@@ -1,11 +1,11 @@
-import ForgotPasswordForm from '@/app/(auth)/forgot-password/forgot-password-form';
+import Step from '@/app/(auth)/forgot-password/step';
 import React from 'react';
 
 const ForgotPasswordPage = () => {
   return (
-    <div>
-      <ForgotPasswordForm />
-    </div>
+    <>
+      <Step />
+    </>
   );
 };
 

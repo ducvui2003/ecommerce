@@ -1,14 +1,5 @@
 import z from 'zod';
 
-export const LoginBodyReq = z.object({
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
-  password: z.string(),
-});
-
-export type LoginBodyReqType = z.infer<typeof LoginBodyReq>;
-
 const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
@@ -17,13 +8,23 @@ const passwordSchema = z
   .regex(/[0-9]/, 'Must contain at least one number')
   .regex(/[^A-Za-z0-9]/, 'Must contain at least one special character');
 
-export const RegisterBodyReq = z
+const string = () => z.string().trim().min(1, { message: 'Not Blank' });
+
+const LoginFormSchema = z.object({
+  email: z.string().email({
+    message: 'Please enter a valid email address.',
+  }),
+  password: z.string(),
+});
+
+type LoginFormType = z.infer<typeof LoginFormSchema>;
+
+const RegisterFormSchema = z
   .object({
-    email: z.string().email({
+    email: string().email({
       message: 'Please enter a valid email address.',
     }),
-    otp: z.string().min(6),
-    name: z.string().min(8),
+    name: string().min(8),
     password: passwordSchema,
     'confirm-password': z.string(),
   })
@@ -32,14 +33,11 @@ export const RegisterBodyReq = z
     path: ['confirm-password'],
   });
 
-export type RegisterBodyReqType = z.infer<typeof RegisterBodyReq>;
+const VerifyFormSchema = z.object({ otp: string().length(6) });
 
-export type RegisterResType = {
-  id: string;
-  email: string;
-  name: string;
-  password: string;
-};
+type RegisterFormType = z.infer<typeof RegisterFormSchema>;
+
+type VerifyFormType = z.infer<typeof VerifyFormSchema>;
 
 export const SendOTPReq = z.object({
   email: z.string().email({
@@ -47,23 +45,24 @@ export const SendOTPReq = z.object({
   }),
 });
 
-export type SendOTPReqType = z.infer<typeof SendOTPReq>;
+type SendOTPFormType = z.infer<typeof SendOTPReq>;
 
-export type SendOTPResType = {
-  email: string;
-  type: TypeOTP;
-  expiredAt: Date;
-};
+const ForgotPasswordFormSchema = z.object({
+  email: z.string().email(),
+});
 
-export enum TypeOTP {
-  'REGISTER',
-  'FORGOT_PASSWORD',
-}
+type ForgotPasswordFormType = z.infer<typeof ForgotPasswordFormSchema>;
 
-export const ForgotPasswordReq = z
+const VerifyForgetPasswordFormSchema = z.object({
+  otp: string().length(6),
+});
+
+type VerifyForgetPasswordFormType = z.infer<
+  typeof VerifyForgetPasswordFormSchema
+>;
+
+const ResetPasswordFormSchema = z
   .object({
-    email: z.string(),
-    otp: z.string().min(6),
     password: passwordSchema,
     'confirm-password': z.string(),
   })
@@ -72,4 +71,24 @@ export const ForgotPasswordReq = z
     path: ['confirm-password'],
   });
 
-export type ForgotPasswordType = z.infer<typeof ForgotPasswordReq>;
+type ResetPasswordFormType = z.infer<typeof ResetPasswordFormSchema>;
+
+export type {
+  LoginFormType,
+  RegisterFormType,
+  VerifyFormType,
+  SendOTPFormType,
+  ForgotPasswordFormType,
+  VerifyForgetPasswordFormType,
+  ResetPasswordFormType,
+};
+
+export {
+  LoginFormSchema,
+  RegisterFormSchema,
+  VerifyFormSchema,
+  ForgotPasswordFormSchema,
+  VerifyForgetPasswordFormSchema,
+  ResetPasswordFormSchema,
+  passwordSchema,
+};
