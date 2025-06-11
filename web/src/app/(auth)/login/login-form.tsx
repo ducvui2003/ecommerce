@@ -1,6 +1,7 @@
 'use client';
 import signIn from '@/components/auth/signIn';
 import Link from '@/components/Link';
+import TurnstileWidget from '@/components/TurnstileWidget';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -21,11 +22,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 const LoginForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isError, setIsError] = useState<boolean>(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   // 1. Define your form.
   const form = useForm<LoginFormType>({
     resolver: zodResolver(LoginFormSchema),
@@ -39,6 +42,10 @@ const LoginForm = () => {
 
   // 2. Define a submit handler.
   function onSubmit(values: LoginFormType) {
+    if (!turnstileToken) {
+      toast.warning('Vui lòng xác thực Turnstile trước khi đăng nhập');
+      return;
+    }
     return signIn({
       email: values.email,
       password: values.password,
@@ -128,6 +135,15 @@ const LoginForm = () => {
               </span>
             </FormItem>
           )}
+        />
+
+        <TurnstileWidget
+          onSuccess={(token) => setTurnstileToken(token)}
+          onFail={() => {
+            toast.error(
+              'Xác thực Turnstile không thành công, vui lòng thử lại',
+            );
+          }}
         />
         <Button
           className="w-full"
