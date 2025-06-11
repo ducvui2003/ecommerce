@@ -20,6 +20,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import Logo from '@/components/Logo';
+import TurnstileWidget from '@/components/TurnstileWidget';
+import { useState } from 'react';
 
 type ForgotPasswordFormProps = {
   onUpdate: (data: { email: string }) => void;
@@ -30,6 +32,8 @@ const ForgotPasswordForm = ({
   onUpdate,
   onNextStep,
 }: ForgotPasswordFormProps) => {
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   // 1. Define your form.
   const form = useForm<ForgotPasswordFormType>({
     resolver: zodResolver(ForgotPasswordFormSchema),
@@ -41,6 +45,10 @@ const ForgotPasswordForm = ({
 
   // 2. Define a submit handler.
   function onSubmit(value: ForgotPasswordFormType) {
+    if (!turnstileToken) {
+      toast.warning('Vui lòng xác thực Turnstile trước khi đăng nhập');
+      return;
+    }
     return authService
       .sendOTPForgetPassword(value.email)
       .then(() => {
@@ -83,6 +91,14 @@ const ForgotPasswordForm = ({
                   <FormMessage />
                 </FormItem>
               )}
+            />
+            <TurnstileWidget
+              onSuccess={(token) => setTurnstileToken(token)}
+              onFail={() => {
+                toast.error(
+                  'Xác thực Turnstile không thành công, vui lòng thử lại',
+                );
+              }}
             />
             <Button
               className="w-full"

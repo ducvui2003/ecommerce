@@ -9,6 +9,8 @@ const configSchema = z.object({
   NEXT_PUBLIC_FACEBOOK_CLIENT_ID: z.string(),
   NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET: z.string(),
   NEXT_PUBLIC_LOG_CLIENT: z.string().transform((value) => new Boolean(value)),
+  NEXT_PUBLIC_CLOUDFLARE_SITE_KEY: z.string().optional().default(''),
+  NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY: z.string().optional().default(''),
 });
 
 const configProject = configSchema.safeParse({
@@ -22,6 +24,9 @@ const configProject = configSchema.safeParse({
   NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET:
     process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET,
   NEXT_PUBLIC_LOG_CLIENT: process.env.NEXT_PUBLIC_LOG_CLIENT,
+  NEXT_PUBLIC_CLOUDFLARE_SITE_KEY: process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY,
+  NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY:
+    process.env.NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY,
 });
 
 if (!configProject.success) {
