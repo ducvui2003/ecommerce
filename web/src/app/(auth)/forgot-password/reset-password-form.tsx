@@ -110,6 +110,7 @@ const ResetPasswordForm = ({ data }: ResetPasswordFormProps) => {
                 </FormItem>
               )}
             />
+
             <Button
               className="w-full"
               type="submit"
