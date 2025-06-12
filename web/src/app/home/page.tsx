@@ -7,6 +7,7 @@ import StorySection2 from '@/app/home/StorySection2';
 import VendorSection from '@/app/home/VendorSection';
 import HeaderWrapper from '@/components/HeaderWrapper';
 import NewSection from '@/app/home/NewSection';
+import MostViewSection from '@/app/home/MostViewSection';
 
 const HomePage = () => {
   return (
@@ -15,6 +16,9 @@ const HomePage = () => {
         <Banner />
         <div className="container mt-5">
           <CollectionSection />
+        </div>
+        <div className="mt-10">
+          <MostViewSection />
         </div>
         <div className="mt-10">
           <StorySection />

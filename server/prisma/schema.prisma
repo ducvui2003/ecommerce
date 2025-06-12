@@ -185,6 +185,7 @@ model Product {
   description String
   basePrice   Decimal @map("base_price") @db.Decimal(10, 2)
   salePrice   Decimal @map("sale_price") @db.Decimal(10, 2)
+  views       Int     @default(0)
 
   categoryId  Int        @map("category_id")
   category    Category   @relation(fields: [categoryId], references: [id])

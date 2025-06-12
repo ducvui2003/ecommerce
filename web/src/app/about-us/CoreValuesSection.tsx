@@ -31,7 +31,7 @@ const coreValues: CoreValue[] = [
 const CoreValuesSection = () => {
   return (
     <section className="container py-16 max-w-[7.5]xl mx-auto">
-      <h2 className="text-4xl font-bold text-center text-[#FFAB66] mb-12">
+      <h2 className="text-4xl font-bold text-center text-primary mb-12">
         Giá trị cốt lõi
       </h2>
       {coreValues.map((value, index) => (
@@ -51,7 +51,7 @@ const CoreValuesSection = () => {
             />
           </div>
           <div className="md:w-1/2">
-            <h3 className="text-xl text-[#FFAB66] font-semibold mb-4">
+            <h3 className="text-xl text-primary font-semibold mb-4">
               {value.title}
             </h3>
             <p className="text-gray-700 leading-relaxed">{value.content}</p>

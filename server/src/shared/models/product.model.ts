@@ -16,6 +16,7 @@ export const ProductModel = MetadataFields.extend({
   supplierId: z.number(),
   basePrice: NumberToDecimalSchema,
   salePrice: NumberToDecimalSchema,
+  views: z.number().default(0),
   productResource: z.array(
     z.object({
       productId: z.number(),
