@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { format } from 'date-fns';
 import { match } from 'path-to-regexp';
+import { vi } from 'date-fns/locale';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -113,7 +114,7 @@ const formatDate = (
   const resolvedPattern =
     pattern === 'SHORT' || pattern === 'LONG' ? patterns[pattern] : pattern;
 
-  return format(date, resolvedPattern);
+  return format(date, resolvedPattern, { locale: vi });
 };
 
 const matchPath = (path: string, routePatterns: string[]): boolean => {
