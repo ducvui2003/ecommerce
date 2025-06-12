@@ -6,6 +6,7 @@ const DashboardSchema = z.object({
       user: z.number().int(),
       order: z.number().int(),
       revenue: z.number().int(),
+      product: z.number().int(),
     }),
     revenueTrend: z.array(
       z.object({

@@ -12,6 +12,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
   async getDashboard(): Promise<DashboardType> {
     const totalUser = await this.prismaService.user.count();
     const totalOrder = await this.prismaService.order.count();
+    const totalProduct = await this.prismaService.product.count();
     const totalRevenue = await this.prismaService.$queryRaw<
       { revenue: number | null }[]
     >(Prisma.sql`
@@ -62,6 +63,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
         total: {
           order: totalOrder,
           user: totalUser,
+          product: totalProduct,
           revenue: totalRevenue?.[0].revenue ?? 0,
         },
         orderTrendInWeekly: orderTrendInWeekly,
