@@ -31,6 +31,7 @@ export class ProductServiceImpl implements ProductService {
 
   async findById(id: number): Promise<ProductDetailResType> {
     try {
+      await this.productRepository.increaseView(id);
       const product = await this.productRepository.getProductById(id);
       const temp = product.option?.map((option, index) => ({
         index,
@@ -87,6 +88,17 @@ export class ProductServiceImpl implements ProductService {
 
   async getNewProducts(): Promise<ProductResType[]> {
     const products = await this.productRepository.getNewProducts();
+    return products.map((item) => {
+      return ProductResSchema.parse({
+        ...item,
+        thumbnail:
+          item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
+      });
+    });
+  }
+
+  async getMostViewProducts(): Promise<ProductResType[]> {
+    const products = await this.productRepository.getMostViewProducts();
     return products.map((item) => {
       return ProductResSchema.parse({
         ...item,

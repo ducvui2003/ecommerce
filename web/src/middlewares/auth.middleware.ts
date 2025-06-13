@@ -43,7 +43,7 @@ const authMiddlewareWithRole = (
   };
 };
 
-const routesForUser: string[] = ['/user/*splat', '/order'];
+const routesForUser: string[] = ['/user/*splat', '/order', '/payment'];
 const authMiddlewareWithUser = authMiddlewareWithRole(routesForUser, 'USER');
 
 const routesForSeller: string[] = ['/seller/*splat'];
