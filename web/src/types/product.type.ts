@@ -40,6 +40,7 @@ type ProductDetailRespType = {
   description: string;
   basePrice: number;
   salePrice: number;
+  views: number;
   category: {
     id: number;
     name: string;

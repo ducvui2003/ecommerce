@@ -80,6 +80,7 @@ const ProductDetailResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
+  views: z.number(),
   category: CategoryModel.pick({
     id: true,
     name: true,

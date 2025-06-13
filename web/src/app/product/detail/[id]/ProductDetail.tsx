@@ -42,6 +42,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
   const productInfoData = {
     name: product.name,
+    views: product.views,
     supplierName: product.supplier.name,
     productType: product.category.name,
     description: product.description,
