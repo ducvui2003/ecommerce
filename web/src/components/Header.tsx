@@ -6,26 +6,20 @@ import CartDropdown from '@/components/CartDropdown';
 import ClientIcon from '@/components/ClientIcon';
 import React from 'react';
 import Navigation, { components } from '@/components/Navigation';
+import WishlistDropdown from '@/components/WishlistDropdown';
 
 const Header = async () => {
-
   return (
-    <header className='container flex py-5 bg-white'>
-      <div className='flex flex-wrap items-center justify-between gap-4 w-full'>
+    <header className="container flex bg-white py-5">
+      <div className="flex w-full flex-wrap items-center justify-between gap-4">
         <Logo className="size-16" />
-        <Navigation components={components}/>
-        <div className='flex gap-3 w-2/5'>
-          <SearchBar/>
-          <div className="size-11 p-3 rounded-full bg-muted cursor-pointer hover:opacity-50 border border-gray-200">
-            <Link href="/wishlist" className="relative">
-              <ClientIcon icon={'lucide:heart'} size={22} />
-              <span className="absolute -top-3.5 border-2 border-muted -right-2 text-[10px] rounded-full size-5 text-center place-content-center text-white bg-destructive">0</span>
-            </Link>
-          </div>
+        <Navigation components={components} />
+        <div className="flex w-2/5 gap-3">
+          <SearchBar />
+          <WishlistDropdown />
           <CartDropdown />
           <UserDropdown />
         </div>
-
       </div>
     </header>
   );

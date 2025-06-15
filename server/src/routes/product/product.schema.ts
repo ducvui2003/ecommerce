@@ -101,6 +101,7 @@ const ProductDetailResSchema = ProductModel.pick({
       }),
     )
     .optional(),
+  liked: z.boolean().default(false),
 });
 
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;

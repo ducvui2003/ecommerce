@@ -26,7 +26,6 @@ export class ProductController {
     return this.productService.getMostViewProducts();
   }
 
-
   @Get('/new')
   getNewProducts(): Promise<ProductResType[]> {
     return this.productService.getNewProducts();

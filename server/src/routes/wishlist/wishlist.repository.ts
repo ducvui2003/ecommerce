@@ -7,6 +7,10 @@ export interface WishlistRepository {
   findAll(userId: number): Promise<WishlistType[]>;
   create(userId: number, data: CreateWishlistType): Promise<WishlistType>;
   delete(userId: number, id: number): Promise<void>;
+  findByProductId(
+    userId: number,
+    productId: number,
+  ): Promise<WishlistType | null>;
 }
 @Injectable()
 export class PrismaWishlistRepository implements WishlistRepository {
@@ -36,11 +40,25 @@ export class PrismaWishlistRepository implements WishlistRepository {
     });
   }
 
-  async delete(userId: number, id: number): Promise<void> {
+  async delete(userId: number, productId: number): Promise<void> {
     await this.prismaService.wishlist.delete({
       where: {
-        id: id,
+        userId_productId: {
+          productId: productId,
+          userId: userId,
+        },
+      },
+    });
+  }
+
+  async findByProductId(
+    userId: number,
+    productId: number,
+  ): Promise<WishlistType | null> {
+    return this.prismaService.wishlist.findFirst({
+      where: {
         userId: userId,
+        productId: productId,
       },
     });
   }

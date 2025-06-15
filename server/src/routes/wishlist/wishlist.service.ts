@@ -61,4 +61,12 @@ export class WishlistService {
       throw e;
     }
   }
+
+  async checkIsLiked(userId: number, productId: number): Promise<boolean> {
+    const item = await this.wishlistRepository.findByProductId(
+      userId,
+      productId,
+    );
+    return !!item;
+  }
 }

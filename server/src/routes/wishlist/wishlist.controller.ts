@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   ParseIntPipe,
   Inject,
   UseGuards,
+  Head,
 } from '@nestjs/common';
 import { CreateWishlistDto as dto } from '@route/wishlist/wishlist.dto';
 import { WishlistService } from '@route/wishlist/wishlist.service';
@@ -50,5 +50,19 @@ export class WishlistController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.wishlistService.remove(userId, id);
+  }
+
+  @Get('/check/:id')
+  @UseGuards(AuthenticationGuard)
+  @MessageHttp('Check product is liked')
+  @Auth([AuthType.Bearer])
+  async findById(
+    @ActiveUser('id') userId: number,
+    @Param('id', ParseIntPipe) productId: number,
+  ) {
+    const isExist = await this.wishlistService.checkIsLiked(userId, productId);
+    if (!isExist) {
+      throw new Error('Product not found in wishlist');
+    }
   }
 }
