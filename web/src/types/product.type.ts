@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 import { CategoryType } from './category.type';
 import { SupplierType } from '@/types/supplier.type';
 
@@ -56,6 +56,7 @@ type ProductDetailRespType = {
     price: number;
     resource: string;
   }[];
+  liked: boolean;
 };
 
 type ProductType = {
@@ -188,8 +189,8 @@ type CreateProductResType = {
 };
 
 type SearchProductResType = {
-  items: Pick<ProductResType, 'id' | 'name'>[]
-}
+  items: Pick<ProductResType, 'id' | 'name'>[];
+};
 
 export type {
   ProductCardType,

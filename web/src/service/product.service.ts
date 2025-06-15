@@ -1,17 +1,16 @@
-import {
-  ProductDetailRespType,
-  ProductResType,
-  SearchParams,
-  SearchProductResType,
-} from '@/types/product.type';
+import httpServer from '@/lib/http.server';
+import { toQueryString } from '@/lib/utils';
 import {
   PageReq,
   Paging,
   ResponseApi,
   ResponseApiPaging,
 } from '@/types/api.type';
-import httpServer from '@/lib/http.server';
-import { toQueryString } from '@/lib/utils';
+import {
+  ProductDetailRespType,
+  ProductResType,
+  SearchParams,
+} from '@/types/product.type';
 
 const productService = {
   getAllProducts: async (

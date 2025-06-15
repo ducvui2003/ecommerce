@@ -44,6 +44,7 @@ ALTER TABLE IF EXISTS ONLY public.cart_items DROP CONSTRAINT IF EXISTS cart_item
 ALTER TABLE IF EXISTS ONLY public.cart_items DROP CONSTRAINT IF EXISTS cart_items_option_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.cart_items DROP CONSTRAINT IF EXISTS cart_items_cart_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.addresses DROP CONSTRAINT IF EXISTS addresses_user_id_fkey;
+DROP INDEX IF EXISTS public.wishlists_user_id_product_id_key;
 DROP INDEX IF EXISTS public.users_email_key;
 DROP INDEX IF EXISTS public.suppliers_address_id_key;
 DROP INDEX IF EXISTS public.roles_name_key;
@@ -1123,9 +1124,7 @@ CREATE TABLE public.wishlists (
     id integer NOT NULL,
     user_id integer NOT NULL,
     product_id integer NOT NULL,
-    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp(3) without time zone,
-    deleted_at timestamp(3) without time zone
+    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -1602,6 +1601,13 @@ CREATE UNIQUE INDEX suppliers_address_id_key ON public.suppliers USING btree (ad
 --
 
 CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email);
+
+
+--
+-- Name: wishlists_user_id_product_id_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX wishlists_user_id_product_id_key ON public.wishlists USING btree (user_id, product_id);
 
 
 --
