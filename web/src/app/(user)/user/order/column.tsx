@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import {
   paymentStatus,
   statusOrder,
-  StatusOrderType,
-} from '@/constraint/variable';
+  StatusOrderType} from '@/constraint/variable';
 import { setIsDetailSheet, setOrderId } from '@/features/order/order.slice';
 import { useAppDispatch } from '@/hooks/use-store';
 import { currency, formatDate } from '@/lib/utils';
 import { OrderResType } from '@/types/order.type';
 import { ColumnDef } from '@tanstack/react-table';
-
+import { useCancelOrderMutation } from '@/features/order/order.api';
+import { toast } from 'sonner';
 export const userOrderColumns: ColumnDef<OrderResType>[] = [
   {
     accessorKey: 'id',
@@ -22,8 +22,7 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
   {
     accessorKey: 'createdAt',
     header: ({ column }) => {
-      const isSorted = column.getIsSorted(); // 'asc' | 'desc' | false
-
+      const isSorted = column.getIsSorted();
       return (
         <div className="w-ful relative">
           <span> Ngày đặt hàng</span>
@@ -37,7 +36,6 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
     },
     cell: ({ row }) => {
       const value: Date = row.getValue('createdAt');
-
       return <div className="font-medium">{formatDate(value)}</div>;
     },
   },
@@ -58,7 +56,6 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
     header: 'Trạng thái',
     cell: ({ row }) => {
       const value = row.getValue('status') as StatusOrderType;
-
       return <Badge orderStatus={value}>{statusOrder[value]}</Badge>;
     },
   },
@@ -78,6 +75,36 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
           }}
         >
           Xem chi tiết
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: 'delete',
+    header: 'Thao tác',
+    cell: ({ row }) => {
+      const [cancelOrder, { isLoading }] = useCancelOrderMutation();
+      const status = row.original.status;
+      const orderId = row.original.id;
+
+      const handleCancel = async () => {
+        try {
+          await cancelOrder(orderId).unwrap();
+          toast.success('Hủy đơn hàng thành công');
+        } catch (err: any) {
+          toast.error(err?.data || 'Hủy đơn hàng thất bại');
+        }
+      };
+
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          className="hover:bg-primary px-3 py-1 text-sm transition hover:text-white"
+          disabled={status !== 'PENDING' || isLoading}
+          onClick={handleCancel}
+        >
+          {isLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
         </Button>
       );
     },

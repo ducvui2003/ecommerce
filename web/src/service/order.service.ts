@@ -37,6 +37,12 @@ const orderService = {
     );
     return response.payload.data;
   },
+  cancelOrder: async (id: number): Promise<void> => {
+    const response = await http.put<ResponseApi<void>>(
+      `/api/v1/orders/${id}/cancel`,
+    );
+    return response.payload.data;
+  }
 };
 
 export default orderService;
