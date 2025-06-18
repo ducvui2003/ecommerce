@@ -20,6 +20,7 @@ const UpdateProductForm = ({ id }: UpdateProductFormProps) => {
   const { data } = useGetDetailProductQuery(id, {
     skip: !id,
   });
+  console.log(data);
   const [update] = useUpdateProductMutation();
   const router = useRouter();
   const handleSubmit = (values: BaseProductFormType) => {
