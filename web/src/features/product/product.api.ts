@@ -15,7 +15,7 @@ export const productApi = createApi({
           const response = await httpClient.get<
             ResponseApiPaging<ProductResType>
           >(`api/v1/products/search?${params}`, undefined, false);
-          return { data: response.payload.data};
+          return { data: response.payload.data };
         } catch (error: any) {
           return {
             error: {
@@ -24,7 +24,7 @@ export const productApi = createApi({
             },
           };
         }
-      }
+      },
     }),
     getNewProducts: builder.query<ProductResType[], void>({
       async queryFn() {
@@ -32,7 +32,8 @@ export const productApi = createApi({
           const response = await httpClient.get<ResponseApi<ProductResType[]>>(
             `api/v1/products/new`,
             undefined,
-            false);
+            false,
+          );
           return { data: response.payload.data };
         } catch (error: any) {
           return {
@@ -50,7 +51,8 @@ export const productApi = createApi({
           const response = await httpClient.get<ResponseApi<ProductResType[]>>(
             `api/v1/products/most-view`,
             undefined,
-            false);
+            false,
+          );
           return { data: response.payload.data };
         } catch (error: any) {
           return {
@@ -62,7 +64,11 @@ export const productApi = createApi({
         }
       },
     }),
-
   }),
 });
-  export const { useSearchProductQuery, useGetNewProductsQuery, useGetMostViewProductsQuery} = productApi;
+export const {
+  useSearchProductQuery,
+  useLazySearchProductQuery,
+  useGetNewProductsQuery,
+  useGetMostViewProductsQuery,
+} = productApi;
