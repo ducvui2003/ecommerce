@@ -59,7 +59,7 @@ const OrderDetailSheet = () => {
       <SheetContent className="sm:w-[50vw]">
         <SheetHeader>
           <SheetTitle>Đơn hàng #{data.id}</SheetTitle>
-          <SheetDescription />
+          <SheetDescription></SheetDescription>
         </SheetHeader>
         <section className="px-4 [&>*]:mb-4 [&>*]:py-2">
           <OrderItemList items={data.items} />
@@ -72,13 +72,21 @@ const OrderDetailSheet = () => {
   );
 };
 
-const OrderItemList = ({ items }: { items: OrderDetailItemType[] }) => (
-  <ListView
-    data={items}
-    className="flex-col gap-3"
-    render={(item) => <OrderItem key={item.id} {...item} />}
-  />
-);
+type OrderItemListProps = { items: OrderDetailItemType[] };
+
+const OrderItemList = ({ items }: OrderItemListProps) => {
+  return (
+    <div>
+      <ListView<OrderDetailItemType>
+        data={items}
+        className="flex-col gap-3"
+        render={(item) => {
+          return <OrderItem key={item.id} {...item} />;
+        }}
+      />
+    </div>
+  );
+};
 
 type OrderItemProps = OrderDetailItemType;
 

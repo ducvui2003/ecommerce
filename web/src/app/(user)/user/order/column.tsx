@@ -22,7 +22,7 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
   {
     accessorKey: 'createdAt',
     header: ({ column }) => {
-      const isSorted = column.getIsSorted();
+      const isSorted = column.getIsSorted(); // 'asc' | 'desc' | false
       return (
         <div className="w-ful relative">
           <span> Ngày đặt hàng</span>
