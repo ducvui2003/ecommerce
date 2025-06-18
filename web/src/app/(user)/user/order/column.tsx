@@ -79,34 +79,4 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
       );
     },
   },
-  {
-    accessorKey: 'delete',
-    header: 'Thao tác',
-    cell: ({ row }) => {
-      const [cancelOrder, { isLoading }] = useCancelOrderMutation();
-      const status = row.original.status;
-      const orderId = row.original.id;
-
-      const handleCancel = async () => {
-        try {
-          await cancelOrder(orderId).unwrap();
-          toast.success('Hủy đơn hàng thành công');
-        } catch (err: any) {
-          toast.error(err?.data || 'Hủy đơn hàng thất bại');
-        }
-      };
-
-      return (
-        <Button
-          variant="outline"
-          size="sm"
-          className="hover:bg-primary px-3 py-1 text-sm transition hover:text-white"
-          disabled={status !== 'PENDING' || isLoading}
-          onClick={handleCancel}
-        >
-          {isLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
-        </Button>
-      );
-    },
-  },
 ];
