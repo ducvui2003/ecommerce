@@ -18,7 +18,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { DEFAULT_IMAGE, statusOrder } from '@/constraint/variable';
 import {
@@ -34,16 +38,24 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 const OrderDetailSheet = () => {
-  const { isOpenDetailSheet: open, orderId } = useAppSelector((state) => state.orderSlice);
+  const { isOpenDetailSheet: open, orderId } = useAppSelector(
+    (state) => state.orderSlice,
+  );
   const dispatch = useAppDispatch();
-  const { data, isFetching, refetch } = useGetOrderDetailQuery(orderId as number, {
-    skip: !orderId,
-  });
+  const { data, isFetching, refetch } = useGetOrderDetailQuery(
+    orderId as number,
+    {
+      skip: !orderId,
+    },
+  );
 
   if (!data) return null;
 
   return (
-    <Sheet open={open} onOpenChange={(open) => dispatch(setIsDetailSheet(open))}>
+    <Sheet
+      open={open}
+      onOpenChange={(open) => dispatch(setIsDetailSheet(open))}
+    >
       <SheetContent className="sm:w-[50vw]">
         <SheetHeader>
           <SheetTitle>Đơn hàng #{data.id}</SheetTitle>
@@ -68,16 +80,18 @@ const OrderItemList = ({ items }: { items: OrderDetailItemType[] }) => (
   />
 );
 
+type OrderItemProps = OrderDetailItemType;
+
 const OrderItem = ({
-                     price,
-                     id,
-                     name,
-                     category,
-                     media,
-                     quantity,
-                     supplier,
-                     options,
-                   }: OrderDetailItemType) => {
+  price,
+  id,
+  name,
+  category,
+  media,
+  quantity,
+  supplier,
+  options,
+}: OrderItemProps) => {
   const unitPrice = price + (options?.price ?? 0);
   const totalPrice = unitPrice * quantity;
   return (
@@ -91,9 +105,13 @@ const OrderItem = ({
       />
       <div>
         <span className="text-sm">
-          {category} - <Badge>{supplier}</Badge>
+          {category} - <Badge> {supplier}</Badge>
         </span>
-        <h3 className="w-[300px] truncate py-1 text-base">{name}</h3>
+
+        <h3 className="w-[300px] truncate py-1 text-base text-ellipsis">
+          {name}
+        </h3>
+
         {options && <span className="text-sm">{options.name}</span>}
       </div>
       <div className="ml-auto">
@@ -103,16 +121,18 @@ const OrderItem = ({
   );
 };
 
-const OrderMetadata = ({
-                         status,
-                         createdAt,
-                         totalAmount,
-                         id,
-                         refetch,
-                       }: Omit<OrderDetailResType, 'items' | 'receiver'> & {
+type OrderMetadataProps = Omit<OrderDetailResType, 'items' | 'receiver'> & {
   id: number;
   refetch: () => void;
-}) => {
+};
+
+const OrderMetadata = ({
+  status,
+  createdAt,
+  totalAmount,
+  id,
+  refetch,
+}: OrderMetadataProps) => {
   const [cancelOrder, { isLoading }] = useCancelOrderMutation();
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -139,7 +159,11 @@ const OrderMetadata = ({
 
         {status === 'PENDING' && (
           <div className="col-span-2 flex justify-end pt-2">
-            <Button variant="destructive" size="sm" onClick={() => setOpenDialog(true)}>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setOpenDialog(true)}
+            >
               Hủy đơn hàng
             </Button>
           </div>
@@ -150,13 +174,19 @@ const OrderMetadata = ({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
-            <DialogDescription>Bạn có chắc chắn muốn hủy đơn hàng #{id}?</DialogDescription>
+            <DialogDescription>
+              Bạn có chắc chắn muốn hủy đơn hàng #{id}?
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenDialog(false)}>
               Không
             </Button>
-            <Button variant="destructive" onClick={handleCancel} disabled={isLoading}>
+            <Button
+              variant="destructive"
+              onClick={handleCancel}
+              disabled={isLoading}
+            >
               {isLoading ? 'Đang hủy...' : 'Xác nhận'}
             </Button>
           </DialogFooter>
@@ -166,53 +196,63 @@ const OrderMetadata = ({
   );
 };
 
+type OrderReceiverProps = OrderDetailResType['receiver'];
+
 const OrderReceiver = ({
-                         email,
-                         name,
-                         phone,
-                         detail,
-                         district,
-                         province,
-                         ward,
-                       }: OrderDetailResType['receiver']) => (
-  <div className="border-accent flex items-start gap-3 rounded-md border-2 px-2 shadow-md">
-    <ClientIcon icon={'mynaui:location'} />
-    <div>
-      <span className="flex items-end gap-3 text-base">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="text-accent text-lg">{name}</span>
-          </TooltipTrigger>
-          <TooltipContent>
-            <span>{email}</span>
-          </TooltipContent>
-        </Tooltip>
-        <span className="text-gray-700">{phone}</span>
-      </span>
-      <div className="text-base text-gray-700">
-        {detail}, {ward}, {district}, {province}
+  email,
+  name,
+  phone,
+  detail,
+  district,
+  province,
+  ward,
+}: OrderReceiverProps) => {
+  return (
+    <div className="border-accent flex items-start gap-3 rounded-md border-2 px-2 shadow-md">
+      <ClientIcon icon={'mynaui:location'} />
+      <div>
+        <span className="flex items-end gap-3 text-base">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-accent text-lg">{name}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <span>{email}</span>
+            </TooltipContent>
+          </Tooltip>
+          <span className="text-gray-700">{phone}</span>
+        </span>
+        <div className="text-base text-gray-700">
+          {detail}, {ward}, {district}, {province}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+
+type OrderPaymentProps = OrderDetailResType['payment'];
 
 const OrderPayment = ({
-                        createdAt,
-                        provider,
-                        status,
-                        updatedAt,
-                      }: OrderDetailResType['payment']) => (
-  <div className="bg-secondary flex items-start gap-3 rounded-md px-2 shadow-md">
-    <ClientIcon icon={'tdesign:money'} className="text-green-300" size={30} />
-    <div className="flex flex-1 flex-col gap-2">
-      <span className="flex justify-between">
-        Thanh toán thông qua {provider} <Badge>{status}</Badge>
-      </span>
-      <div>Tạo giao dịch lúc {formatDate(createdAt, 'LONG')}</div>
-      {updatedAt && <div>Cập nhật giao dịch lúc {formatDate(updatedAt, 'LONG')}</div>}
+  createdAt,
+  provider,
+  status,
+  updatedAt,
+}: OrderPaymentProps) => {
+  return (
+    <div className="bg-secondary flex items-start gap-3 rounded-md px-2 shadow-md">
+      <ClientIcon icon={'tdesign:money'} className="text-green-300" size={30} />
+
+      <div className="flex flex-1 flex-col gap-2">
+        <span className="flex justify-between">
+          Thanh toán thông qua {provider} <Badge>{status}</Badge>
+        </span>
+        <div>Tạo giao dịch lúc {formatDate(createdAt, 'LONG')}</div>
+        {updatedAt && (
+          <div>Cập nhập giao dịch lúc {formatDate(updatedAt, 'LONG')}</div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default OrderDetailSheet;
-
