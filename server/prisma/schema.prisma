@@ -216,7 +216,7 @@ model Option {
   stock Int?    @default(0)
 
   productId  Int       @map("product_id")
-  product    Product   @relation(fields: [productId], references: [id])
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   resourceId Int?      @map("resource_id")
   resource   Resource? @relation(fields: [resourceId], references: [id])
 
@@ -261,8 +261,8 @@ model Resource {
 }
 
 model ProductResource {
-  product   Product @relation(fields: [productId], references: [id])
   productId Int     @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   resource   Resource @relation(fields: [resourceId], references: [id])
   resourceId Int      @map("resource_id")
@@ -289,7 +289,7 @@ model Cart {
 model CartItem {
   id        String    @id @default(uuid())
   productId Int       @map("product_id")
-  product   Product   @relation(fields: [productId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   selected  Boolean   @default(true) @map("selected")
   quantity  Int       @default(1)
   optionId  Int?      @map("option_id")
@@ -422,7 +422,7 @@ model Review {
   user   User @relation(fields: [userId], references: [id])
 
   productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -438,7 +438,7 @@ model Wishlist {
   user   User @relation(fields: [userId], references: [id])
 
   productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -484,7 +484,7 @@ model Comment {
   userId    Int     @map("user_id")
   user      User    @relation(fields: [userId], references: [id])
   productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
