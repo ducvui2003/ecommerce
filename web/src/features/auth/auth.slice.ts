@@ -10,7 +10,7 @@ type AuthState = {
     id: number;
     email: string;
     name: string;
-    image?: string;
+    avatar?: string;
     role: Role;
   } | null;
   expiresAt: number | null;

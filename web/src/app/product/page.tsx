@@ -44,19 +44,32 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
       </div>
       <div className="flex-1">
         <div className="filter-header my-3 flex items-center justify-between">
-          <span className="text-xl font-bold">
-            Có {totalItems} sản phẩm hợp
-          </span>
+          {totalItems > 0 && (
+            <span className="text-xl font-bold">
+              Có {totalItems} sản phẩm phù hợp
+            </span>
+          )}
         </div>
         <ScrollArea className="h-3/4">
           <ListView<ProductCardType>
             display="grid"
             data={data}
             className="product grid-cols-4 gap-5"
+            emptyComponent={null}
             render={(item, index) => <ProductCard key={index} {...item} />}
           />
+          {data && data.length === 0 && (
+            <div className="text-center text-xl text-gray-500">
+              Không có sản phẩm nào phù hợp với bộ lọc của bạn.
+            </div>
+          )}
         </ScrollArea>
-        <PaginationProduct currentPage={currentPage} totalPages={totalPages} />
+        {data && data.length > 0 && (
+          <PaginationProduct
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+        )}
       </div>
     </div>
   );
