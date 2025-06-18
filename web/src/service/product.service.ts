@@ -16,7 +16,7 @@ const productService = {
   getAllProducts: async (
     req: PageReq<SearchParams>,
   ): Promise<Paging<ProductResType>> => {
-    const params = toQueryString(req);
+    const params = toQueryString({ ...req, isDeleted: false });
     const res = await httpServer.get<ResponseApiPaging<ProductResType>>(
       `api/v1/products/search?${params}`,
       undefined,

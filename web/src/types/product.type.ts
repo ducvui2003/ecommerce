@@ -11,6 +11,7 @@ type ProductSearchParams = {
   categoryId?: number[] | number;
   supplierId?: number[] | number;
   name?: string;
+  isDeleted?: boolean;
 };
 
 type ProductCardType = {
@@ -103,7 +104,7 @@ const BaseProductFormSchema = z.object({
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
   thumbnail: BaseResourceForm.optional(),
   resources: z.array(BaseResourceForm).optional(),
-  isDeleted: z.boolean().optional().default(false),
+  isDeleted: z.coerce.boolean().optional().default(false),
   options: z.array(BaseOptionForm).optional(),
 });
 
@@ -147,6 +148,7 @@ type ProductManagerResType = {
   category: number;
   supplier: number;
   thumbnail?: string;
+  isDeleted: boolean;
 };
 
 type ResourceResSchema = {
@@ -177,6 +179,7 @@ type ProductDetailManagerResType = {
 
   createdAt: Date;
   updatedAt: Date;
+  isDeleted: boolean;
 };
 
 type CreateProductResType = {

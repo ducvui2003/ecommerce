@@ -16,6 +16,7 @@ import ActionBar from '@/app/admin/product/action-bar';
 import { useProductTable } from '@/hooks/use-manager-product-datatable';
 import { SearchParams } from '@/types/product.type';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 export function DataTable() {
   const [search, setSearch] = useState<SearchParams>({});
@@ -50,21 +51,28 @@ export function DataTable() {
           </TableHeader>
           <TableBody className="h-[50px]">
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} style={{ height: '50px' }}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const isDeleted = row.original.isDeleted;
+                console.log(isDeleted);
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className={cn(
+                      isDeleted ? 'bg-red-500 text-white hover:bg-red-400' : '',
+                    )}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} style={{ height: '50px' }}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell

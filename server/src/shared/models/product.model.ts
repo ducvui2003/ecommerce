@@ -1,6 +1,6 @@
 import {
-  MetadataFields,
   NumberToDecimalSchema,
+  TimestampFields,
 } from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { ResourceModel } from '@shared/models/resource.model';
@@ -8,7 +8,7 @@ import { OptionModel } from '@shared/models/option.model';
 import { SupplierModel } from '@shared/models/supplier.model';
 import { z } from 'zod';
 
-export const ProductModel = MetadataFields.extend({
+export const ProductModel = TimestampFields.extend({
   id: z.number(),
   name: z.string(),
   description: z.string(),
@@ -30,7 +30,7 @@ export const ProductModel = MetadataFields.extend({
   option: z.array(OptionModel).optional(),
   category: CategoryModel,
   supplier: SupplierModel,
-  deletedAt: z.date().nullable(),
+  isDeleted: z.boolean().nullable().default(false),
 });
 
 export type ProductType = z.infer<typeof ProductModel>;

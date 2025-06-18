@@ -81,7 +81,6 @@ const BaseProductForm = ({
   );
 
   const initValueThumbnail = (): MediaType | null => {
-    console.log('init value');
     const data = form.getValues('thumbnail');
     if (data) {
       return {
@@ -215,7 +214,7 @@ const BaseProductForm = ({
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      value={String(field.value)}
+                      value={String(field.value.toString())}
                     >
                       <FormControl>
                         <SelectTrigger>

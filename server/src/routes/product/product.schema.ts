@@ -62,6 +62,17 @@ const SearchProductReqSchema = PageableSchema.extend({
         return { sortBy, orderBy };
       }),
     ),
+  isDeleted: z
+    .union([z.boolean(), z.string(), z.null()])
+    .optional()
+    .transform((val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === 'boolean') return val;
+      const lower = val.toLowerCase();
+      if (lower === 'true') return true;
+      if (lower === 'false') return false;
+      return null; // fallback for unrecognized strings
+    }),
 });
 
 const ProductResSchema = ProductModel.pick({

@@ -25,7 +25,7 @@ export class ProductRepositoryImpl implements ProductRepository {
     });
   }
 
-  async getProductById(id: number): Promise<ProductType> {
+  async getProductById(id: number, isDeleted: boolean): Promise<ProductType> {
     const product = await this.prisma.product.findFirstOrThrow({
       include: {
         supplier: true,
@@ -40,7 +40,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       },
       where: {
         id: id,
-        deletedAt: null,
+        isDeleted: isDeleted,
       },
     });
 
@@ -58,6 +58,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       minPrice,
       maxPrice,
       sort,
+      isDeleted,
     } = dto;
 
     const whereClause: Prisma.ProductWhereInput = {
@@ -70,7 +71,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         supplierId && supplierId.length > 0
           ? { in: supplierId.map(Number) }
           : undefined,
-      deletedAt: null,
+      isDeleted: isDeleted ?? undefined,
       basePrice: {
         gte: minPrice,
         lte: maxPrice,
@@ -139,6 +140,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
           thumbnailId: dto.thumbnailId,
+          isDeleted: dto.isDeleted,
           option: {
             create: dto.options?.map((item) => ({
               name: item.name,
@@ -192,6 +194,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
           thumbnailId: dto.thumbnailId,
+          isDeleted: dto.isDeleted,
         },
         where: {
           id: id,
@@ -319,7 +322,7 @@ export class ProductRepositoryImpl implements ProductRepository {
   async getNewProducts(): Promise<ProductType[]> {
     const products = await this.prisma.product.findMany({
       where: {
-        deletedAt: null,
+        isDeleted: false,
       },
       orderBy: {
         createdAt: 'desc',
@@ -344,7 +347,7 @@ export class ProductRepositoryImpl implements ProductRepository {
   async getMostViewProducts(): Promise<ProductType[]> {
     const products = await this.prisma.product.findMany({
       where: {
-        deletedAt: null,
+        isDeleted: false,
       },
       orderBy: {
         views: 'desc',
