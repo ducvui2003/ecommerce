@@ -10,10 +10,12 @@ import {
 } from '@route/order/order.constant';
 import { OrderManagerService } from '@route/order/order-manager.service';
 import { OrderManagerPrismaRepository } from '@route/order/order-manager.repository';
+import { OrderItemController } from '@route/order/order-item.controller';
+import { ReviewModule } from '@route/review/review.module';
 
 @Module({
-  imports: [ProductModule],
-  controllers: [OrderController, OrderManagerController],
+  imports: [ProductModule, ReviewModule],
+  controllers: [OrderController, OrderItemController, OrderManagerController],
   providers: [
     OrderService,
     OrderManagerService,

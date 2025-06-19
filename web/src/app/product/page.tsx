@@ -3,7 +3,7 @@ import PaginationProduct from '@/app/product/pagination';
 import ListView from '@/components/ListView';
 import ProductCard from '@/components/ProductCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import productService from '@/service/product.service';
+import productService from '@/service/product.server.service';
 import { PageReq } from '@/types/api.type';
 import { ProductCardType, SearchParams } from '@/types/product.type';
 

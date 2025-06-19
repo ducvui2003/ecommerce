@@ -13,12 +13,16 @@ import {
 } from '@route/product/product.schema';
 import { ProductServiceImpl } from '@route/product/product.service';
 import { Paging } from '@shared/common/interfaces/paging.interface';
+import { ReviewService } from '@route/review/review.service';
+import { ReviewItemType } from '@shared/models/review.model';
+import { GetReviewsOfProductQueryDTO } from '@route/review/review.dto';
 
 @Controller('/api/v1/products')
 export class ProductController {
   constructor(
     @Inject('PRODUCT_SERVICE')
     private readonly productService: ProductServiceImpl,
+    private readonly reviewService: ReviewService
   ) {}
   @Get('/new')
   getNewProducts(): Promise<ProductResType[]> {
@@ -37,5 +41,13 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ProductDetailResType> {
     return this.productService.findById(id);
+  }
+
+  @Get('/:id/reviews')
+  getReviewsOfProduct(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: GetReviewsOfProductQueryDTO,
+  ): Promise<Paging<ReviewItemType>> {
+    return this.reviewService.getReviewsOfProduct(id, query)
   }
 }

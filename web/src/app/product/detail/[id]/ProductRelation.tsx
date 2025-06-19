@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import productService from '@/service/product.service';
+import productService from '@/service/product.server.service';
 
 type ProductRelationProps = {
   categoryId: number;

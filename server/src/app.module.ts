@@ -27,6 +27,7 @@ import { OrderModule } from '@route/order/order.module';
 import { ContactModule } from '@route/contact/contact.module';
 import { CommentModule } from '@route/comment/comment.module';
 import { WebsocketModule } from 'src/websockets/websocket.module';
+import { ReviewModule } from '@route/review/review.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { WebsocketModule } from 'src/websockets/websocket.module';
     ContactModule,
     CommentModule,
     WebsocketModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [

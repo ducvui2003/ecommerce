@@ -175,9 +175,10 @@ export class OrderService {
         ...data,
         items:
           data.orderItem?.map((item) => {
+            const {id, product, quantity} = item
+            const {id: productId, ...restProduct} = product;
             return {
-              ...item.product,
-              quantity: item.quantity,
+              ...restProduct, id, productId, quantity,
             };
           }) ?? [],
       };
@@ -187,4 +188,55 @@ export class OrderService {
       throw e;
     }
   }
+
 }
+
+
+// {
+//   id: 11,
+//     totalAmount: 1100000,
+//   feeShipping: 120000,
+//   status: 'PENDING',
+//   receiver: {
+//   name: 'Le Anh Duc',
+//     ward: 'Linh Trung',
+//     email: 'ducvui2003@gmail.com',
+//     phone: '0965809127',
+//     detail: '111',
+//     district: 'Thu Duc',
+//     province: 'TP. HCM'
+// },
+//   userId: 1,
+//     createdAt: 2025-05-23T13:26:48.232Z,
+//   orderItem: [
+//   {
+//     id: 5,
+//     quantity: 11,
+//     price: 1100000,
+//     orderId: 11,
+//     product: [Object],
+//     createdAt: 2025-05-23T13:26:48.243Z
+// }
+// ],
+//   payment: {
+//     id: 5,
+//       orderId: 11,
+//       status: 'PENDING',
+//       provider: 'VNPAY',
+//       createdAt: 2025-05-23T13:26:48.243Z,
+//       updatedAt: 2025-05-23T13:26:48.243Z
+//   },
+//   items: [
+//     {
+//       id: 1,
+//       name: 'Chai Tinh Dầu Trắng Mờ Nắp Bóp Nhỏ Giọt Khuyên ',
+//       media: '',
+//       price: 500000,
+//       options: [Object],
+//       category: 'Lọ đựng tinh dầu',
+//       supplier: 'Jade Bloom',
+//       quantity: 11
+//     }
+//   ]
+// }
+
