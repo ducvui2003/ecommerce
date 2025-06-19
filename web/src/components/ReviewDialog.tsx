@@ -86,7 +86,7 @@ const ReviewDialog = ({ item }: Props) => {
         productId: item.productId,
       });
     }
-  }, [existedReview, item]);
+  }, [existedReview]);
 
   const onSubmit = async (body: SendReviewReqType) => {
     let result = {};
@@ -114,7 +114,9 @@ const ReviewDialog = ({ item }: Props) => {
           <Button
             variant="outline"
             className="hover:text-white"
-            onClick={() => setIsViewMode(true)}
+            onClick={() => {
+              setIsViewMode(true)
+            }}
           >
             Xem đánh giá
           </Button>
@@ -236,6 +238,7 @@ const ReviewDialog = ({ item }: Props) => {
 
               {(() => {
                 const isContainUpdatedAt = existedReview?.updatedAt && existedReview.hasOwnProperty('updatedAt')
+                console.log(existedReview?.updatedAt);
                 const isEditingAllowed = !isViewMode && existedReview && !isContainUpdatedAt;
                 const isNewMode = !existedReview;
                 const canEdit = isViewMode && !isContainUpdatedAt;

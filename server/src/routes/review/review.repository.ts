@@ -148,8 +148,6 @@ export class PrismaReviewRepository implements ReviewRepository {
       ratingStars[item.rating] = item._count.rating;
     }
 
-
-
     return {
       averageRating: parseFloat((computeAvgRating._avg.rating ?? 0).toFixed(1)),
       ratingStars,

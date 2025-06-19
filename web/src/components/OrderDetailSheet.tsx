@@ -51,6 +51,8 @@ const OrderDetailSheet = () => {
 
   if (!data) return null;
 
+  console.log(data);
+
   return (
     <Sheet
       open={open}

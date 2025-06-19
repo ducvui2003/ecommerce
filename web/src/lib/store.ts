@@ -58,7 +58,6 @@ export const makeStore = () => {
         .concat(orderManagerApi.middleware)
         .concat(dashboardApi.middleware)
         .concat(wishlistApi.middleware)
-        .concat(orderManagerApi.middleware)
         .concat(reviewApi.middleware);
     },
   });

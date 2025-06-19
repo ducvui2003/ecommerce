@@ -12,8 +12,6 @@ import {
 } from '@/types/api.type';
 import httpServer from '@/lib/http.server';
 import { toQueryString } from '@/lib/utils';
-import { ReviewFilterParams, ReviewItemType } from '@/types/review.type';
-import httpClient from '@/lib/http.client';
 
 const productService = {
   getAllProducts: async (

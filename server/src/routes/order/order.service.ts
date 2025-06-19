@@ -179,13 +179,13 @@ export class OrderService {
       );
       const dataParse = {
         ...data,
-        items:
-          data.orderItem?.map((item) => {
-            return {
-              ...item.product,
-              quantity: item.quantity,
-            };
-          }) ?? [],
+        items: data.orderItem?.map((item) => {
+        const {id, product, quantity} = item
+        const {id: productId, ...restProduct} = product;
+        return {
+          ...restProduct, id, productId, quantity,
+        };
+      }) ?? [],
       };
       return OrderDetailResSchema.parse(dataParse);
     } catch (e) {
