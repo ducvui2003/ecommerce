@@ -176,7 +176,7 @@ export class AuthService {
       const [accessToken, refreshToken] = await this.generateToken({
         id,
         email,
-        role: role,
+        role,
       });
 
       // 5. Lưu refresh token vào redis
