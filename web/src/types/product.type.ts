@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 import { CategoryType } from './category.type';
 import { SupplierType } from '@/types/supplier.type';
 
@@ -11,6 +11,7 @@ type ProductSearchParams = {
   categoryId?: number[] | number;
   supplierId?: number[] | number;
   name?: string;
+  isDeleted?: boolean;
 };
 
 type ProductCardType = {
@@ -40,6 +41,7 @@ type ProductDetailRespType = {
   description: string;
   basePrice: number;
   salePrice: number;
+  views: number;
   category: {
     id: number;
     name: string;
@@ -55,6 +57,7 @@ type ProductDetailRespType = {
     price: number;
     resource: string;
   }[];
+  liked: boolean;
 };
 
 type ProductType = {
@@ -101,7 +104,7 @@ const BaseProductFormSchema = z.object({
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
   thumbnail: BaseResourceForm.optional(),
   resources: z.array(BaseResourceForm).optional(),
-  isDeleted: z.boolean().optional().default(false),
+  isDeleted: z.coerce.boolean().optional().default(false),
   options: z.array(BaseOptionForm).optional(),
 });
 
@@ -145,6 +148,7 @@ type ProductManagerResType = {
   category: number;
   supplier: number;
   thumbnail?: string;
+  isDeleted: boolean;
 };
 
 type ResourceResSchema = {
@@ -175,6 +179,7 @@ type ProductDetailManagerResType = {
 
   createdAt: Date;
   updatedAt: Date;
+  isDeleted: boolean;
 };
 
 type CreateProductResType = {
@@ -187,8 +192,8 @@ type CreateProductResType = {
 };
 
 type SearchProductResType = {
-  items: Pick<ProductResType, 'id' | 'name'>[]
-}
+  items: Pick<ProductResType, 'id' | 'name'>[];
+};
 
 export type {
   ProductCardType,

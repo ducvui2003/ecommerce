@@ -24,6 +24,12 @@ export class ProductController {
     private readonly productService: ProductServiceImpl,
     private readonly reviewService: ReviewService
   ) {}
+
+  @Get('/most-view')
+  getMostViewProducts(): Promise<ProductResType[]> {
+    return this.productService.getMostViewProducts();
+  }
+
   @Get('/new')
   getNewProducts(): Promise<ProductResType[]> {
     return this.productService.getNewProducts();

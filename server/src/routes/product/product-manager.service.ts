@@ -16,6 +16,7 @@ import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductNotFoundException } from '@shared/exceptions/product.exception';
 import {
+  isNotFoundError,
   isUniqueConstraintError,
   transformItemsPaging,
 } from '@shared/helper.shared';
@@ -91,7 +92,7 @@ export class ProductManagerService {
         }),
       });
     } catch (error) {
-      if (isUniqueConstraintError(error)) {
+      if (isNotFoundError(error)) {
         throw new ProductNotFoundException();
       }
       throw error;

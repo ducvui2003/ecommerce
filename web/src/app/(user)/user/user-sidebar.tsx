@@ -29,6 +29,11 @@ const items: {
     url: '/user/order',
     icon: <ClientIcon icon={'material-symbols:box-outline'} />,
   },
+  {
+    title: 'Yêu thích',
+    url: '/user/wishlist',
+    icon: <ClientIcon icon={'lucide:heart'} />,
+  },
 ];
 
 const UserSidebar = () => {

@@ -69,6 +69,7 @@ const ProductManagerResSchema = ProductModel.pick({
   id: true,
   name: true,
   createdAt: true,
+  isDeleted: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
@@ -85,7 +86,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
   supplierId: true,
   createdAt: true,
   updatedAt: true,
-  deletedAt: true,
+  isDeleted: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,

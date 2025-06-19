@@ -33,6 +33,10 @@ import { OrderType } from '@shared/models/order.model';
 import { FileService } from '@shared/services/file/file.service';
 import { OrderNotFound } from '@route/order/order.error';
 import { ORDER_REPOSITORY } from '@route/order/order.constant';
+import { UserRepository } from '@route/user/user.repository';
+import { UserNotFoundException } from '@shared/exceptions/user.exception';
+import { RoleName } from '@route/auth/auth.const';
+import { USER_REPOSITORY } from '@route/user/user.const';
 
 @Injectable()
 export class OrderService {
@@ -49,6 +53,8 @@ export class OrderService {
     private readonly sharedProductRepository: SharedProductRepository,
     @Inject(FILE_SERVICE)
     private readonly fileService: FileService,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository,
   ) {}
 
   async createOrder(
@@ -175,10 +181,9 @@ export class OrderService {
         ...data,
         items:
           data.orderItem?.map((item) => {
-            const {id, product, quantity} = item
-            const {id: productId, ...restProduct} = product;
             return {
-              ...restProduct, id, productId, quantity,
+              ...item.product,
+              quantity: item.quantity,
             };
           }) ?? [],
       };
@@ -189,54 +194,25 @@ export class OrderService {
     }
   }
 
+  async cancelOrder(id: number, userId: number): Promise<void> {
+    const order = await this.orderRepository.findById(id);
+    const user = await this.userRepository.getInfo(userId);
+
+    if (!order) throw OrderNotFound;
+    if (!user) throw new UserNotFoundException();
+
+    const isAdmin = user.role === RoleName.ADMIN;
+
+    if (!isAdmin && order.userId !== userId) {
+      throw new Error("Not authorized to cancel this order");
+    }
+
+    if (!isAdmin && order.status !== OrderStatus.PENDING) {
+      throw new Error("Order cannot be cancelled unless it is in PENDING status");
+    }
+
+    await this.orderRepository.updateOrderStatus(id);
+  }
+
+
 }
-
-
-// {
-//   id: 11,
-//     totalAmount: 1100000,
-//   feeShipping: 120000,
-//   status: 'PENDING',
-//   receiver: {
-//   name: 'Le Anh Duc',
-//     ward: 'Linh Trung',
-//     email: 'ducvui2003@gmail.com',
-//     phone: '0965809127',
-//     detail: '111',
-//     district: 'Thu Duc',
-//     province: 'TP. HCM'
-// },
-//   userId: 1,
-//     createdAt: 2025-05-23T13:26:48.232Z,
-//   orderItem: [
-//   {
-//     id: 5,
-//     quantity: 11,
-//     price: 1100000,
-//     orderId: 11,
-//     product: [Object],
-//     createdAt: 2025-05-23T13:26:48.243Z
-// }
-// ],
-//   payment: {
-//     id: 5,
-//       orderId: 11,
-//       status: 'PENDING',
-//       provider: 'VNPAY',
-//       createdAt: 2025-05-23T13:26:48.243Z,
-//       updatedAt: 2025-05-23T13:26:48.243Z
-//   },
-//   items: [
-//     {
-//       id: 1,
-//       name: 'Chai Tinh Dầu Trắng Mờ Nắp Bóp Nhỏ Giọt Khuyên ',
-//       media: '',
-//       price: 500000,
-//       options: [Object],
-//       category: 'Lọ đựng tinh dầu',
-//       supplier: 'Jade Bloom',
-//       quantity: 11
-//     }
-//   ]
-// }
-

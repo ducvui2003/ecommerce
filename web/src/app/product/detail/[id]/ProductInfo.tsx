@@ -3,6 +3,7 @@ import { currency } from '@/lib/utils';
 type ProductInfoProps = {
   product: {
     name: string;
+    views: number;
     supplierName: string;
     productType: string;
     basePrice: number;
@@ -16,6 +17,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
         {product.name}
       </h1>
+      <p>Lượt xem: <span>{product.views}</span></p>
       <div className="mt-2 text-sm text-gray-600">
         <p>
           Nhà cung cấp:{' '}

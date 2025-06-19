@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import {
   paymentStatus,
   statusOrder,
-  StatusOrderType,
-} from '@/constraint/variable';
+  StatusOrderType} from '@/constraint/variable';
 import { setIsDetailSheet, setOrderId } from '@/features/order/order.slice';
 import { useAppDispatch } from '@/hooks/use-store';
 import { currency, formatDate } from '@/lib/utils';
 import { OrderResType } from '@/types/order.type';
 import { ColumnDef } from '@tanstack/react-table';
-
+import { useCancelOrderMutation } from '@/features/order/order.api';
+import { toast } from 'sonner';
 export const userOrderColumns: ColumnDef<OrderResType>[] = [
   {
     accessorKey: 'id',
@@ -23,7 +23,6 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
     accessorKey: 'createdAt',
     header: ({ column }) => {
       const isSorted = column.getIsSorted(); // 'asc' | 'desc' | false
-
       return (
         <div className="w-ful relative">
           <span> Ngày đặt hàng</span>
@@ -37,7 +36,6 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
     },
     cell: ({ row }) => {
       const value: Date = row.getValue('createdAt');
-
       return <div className="font-medium">{formatDate(value)}</div>;
     },
   },
@@ -58,7 +56,6 @@ export const userOrderColumns: ColumnDef<OrderResType>[] = [
     header: 'Trạng thái',
     cell: ({ row }) => {
       const value = row.getValue('status') as StatusOrderType;
-
       return <Badge orderStatus={value}>{statusOrder[value]}</Badge>;
     },
   },

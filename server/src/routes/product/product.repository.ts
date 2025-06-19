@@ -14,7 +14,18 @@ import { PrismaService } from '@shared/services/prisma.service';
 export class ProductRepositoryImpl implements ProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getProductById(id: number): Promise<ProductType> {
+  async increaseView(productId: number): Promise<void> {
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
+  async getProductById(id: number, isDeleted: boolean): Promise<ProductType> {
     const product = await this.prisma.product.findFirstOrThrow({
       include: {
         supplier: true,
@@ -29,7 +40,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       },
       where: {
         id: id,
-        deletedAt: null,
+        isDeleted: isDeleted,
       },
     });
 
@@ -47,6 +58,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       minPrice,
       maxPrice,
       sort,
+      isDeleted,
     } = dto;
 
     const whereClause: Prisma.ProductWhereInput = {
@@ -59,7 +71,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         supplierId && supplierId.length > 0
           ? { in: supplierId.map(Number) }
           : undefined,
-      deletedAt: null,
+      isDeleted: isDeleted ?? undefined,
       basePrice: {
         gte: minPrice,
         lte: maxPrice,
@@ -128,6 +140,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
           thumbnailId: dto.thumbnailId,
+          isDeleted: dto.isDeleted,
           option: {
             create: dto.options?.map((item) => ({
               name: item.name,
@@ -181,6 +194,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
           thumbnailId: dto.thumbnailId,
+          isDeleted: dto.isDeleted,
         },
         where: {
           id: id,
@@ -308,10 +322,35 @@ export class ProductRepositoryImpl implements ProductRepository {
   async getNewProducts(): Promise<ProductType[]> {
     const products = await this.prisma.product.findMany({
       where: {
-        deletedAt: null,
+        isDeleted: false,
       },
       orderBy: {
         createdAt: 'desc',
+      },
+      take: 10,
+      include: {
+        supplier: true,
+        category: true,
+        thumbnail: true,
+        productResource: {
+          include: {
+            resource: true,
+          },
+        },
+        option: true,
+      },
+    });
+
+    return products;
+  }
+
+  async getMostViewProducts(): Promise<ProductType[]> {
+    const products = await this.prisma.product.findMany({
+      where: {
+        isDeleted: false,
+      },
+      orderBy: {
+        views: 'desc',
       },
       take: 10,
       include: {

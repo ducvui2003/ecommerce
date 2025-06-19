@@ -68,6 +68,22 @@ export const orderApi = createApi({
         }
       },
     }),
+    cancelOrder: builder.mutation<void, number>({
+      async queryFn(orderId) {
+        try {
+          await orderService.cancelOrder(orderId);
+          return { data: undefined };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      invalidatesTags: [{ type: 'Order', id: 'LIST' }],
+    }),
 
     getReviewOfOrderItem: builder.query<GetReviewOfOrderItemResType, number>({
       async queryFn(orderItemId) {
@@ -92,4 +108,5 @@ export const {
   useGetOrderTableQuery,
   useGetOrderDetailQuery,
   useGetReviewOfOrderItemQuery,
+  useCancelOrderMutation
 } = orderApi;

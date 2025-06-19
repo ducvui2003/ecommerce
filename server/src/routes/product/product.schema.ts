@@ -62,6 +62,17 @@ const SearchProductReqSchema = PageableSchema.extend({
         return { sortBy, orderBy };
       }),
     ),
+  isDeleted: z
+    .union([z.boolean(), z.string(), z.null()])
+    .optional()
+    .transform((val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === 'boolean') return val;
+      const lower = val.toLowerCase();
+      if (lower === 'true') return true;
+      if (lower === 'false') return false;
+      return null; // fallback for unrecognized strings
+    }),
 });
 
 const ProductResSchema = ProductModel.pick({
@@ -80,6 +91,7 @@ const ProductDetailResSchema = ProductModel.pick({
 }).extend({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
+  views: z.number(),
   category: CategoryModel.pick({
     id: true,
     name: true,
@@ -100,6 +112,7 @@ const ProductDetailResSchema = ProductModel.pick({
       }),
     )
     .optional(),
+  liked: z.boolean().default(false),
 });
 
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;

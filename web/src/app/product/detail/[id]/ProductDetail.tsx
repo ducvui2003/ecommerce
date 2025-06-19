@@ -3,7 +3,7 @@
 import notFound from '@/app/not-found';
 import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
 import ProductReview from '@/app/product/detail/[id]/ProductReview';
-import WishlistButton from '@/components/button/WishlistButton';
+import WishlistButton from '@/components/WishlistButton';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -31,6 +31,8 @@ import {
 import { toast } from 'sonner';
 import ProductImages from './ProductImages';
 import ProductInfo from './ProductInfo';
+import useSession from '@/components/auth/useSession';
+import Link from '@/components/Link';
 import { useGetReviewsOfProductQuery } from '@/features/product/product.api';
 import { RatingSortKeysType } from '@/types/review.type';
 
@@ -41,6 +43,7 @@ type ProductDetailProps = {
 export default function ProductDetail({ product }: ProductDetailProps) {
   if (!product) return notFound();
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
+  const { status } = useSession();
   const [page, setPage] = useState(1);
   const [ratings, setRatings] = useState<number[]>([]);
   const [sort, setSort] = useState<(RatingSortKeysType)[number] | undefined>(undefined);
@@ -63,6 +66,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
   const productInfoData = {
     name: product.name,
+    views: product.views,
     supplierName: product.supplier.name,
     productType: product.category.name,
     description: product.description,
@@ -103,6 +107,16 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const onSummitAddCartItemForm = async (body: AddCartItemReqType) => {
+    if (status !== 'authenticated') {
+      toast.warning('Vui lòng đăng nhập để sử dụng tính năng này', {
+        description: (
+          <Button>
+            <Link href="/login">Đăng nhập</Link>
+          </Button>
+        ),
+      });
+      return;
+    }
     const { hasOption, ...data } = body;
     try {
       const result = await addCartItem(data);

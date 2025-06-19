@@ -1,12 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { ProductResType, SearchProductResType } from '@/types/product.type';
 import { toQueryString } from '@/lib/utils';
-import {
-  PageReq,
-  Paging,
-  ResponseApi,
-  ResponseApiPaging,
-} from '@/types/api.type';
+import { PageReq, ResponseApi, ResponseApiPaging } from '@/types/api.type';
 import httpClient from '@/lib/http.client';
 import { GetReviewsOfProductResType, FilterReviewQueryType } from '@/types/review.type';
 import productService from '@/service/product.service';
@@ -52,6 +47,25 @@ export const productApi = createApi({
         }
       },
     }),
+    getMostViewProducts: builder.query<ProductResType[], void>({
+      async queryFn() {
+        try {
+          const response = await httpClient.get<ResponseApi<ProductResType[]>>(
+            `api/v1/products/most-view`,
+            undefined,
+            false,
+          );
+          return { data: response.payload.data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
 
     getReviewsOfProduct: builder.query<
       GetReviewsOfProductResType,
@@ -81,6 +95,8 @@ export const productApi = createApi({
 });
 export const {
   useSearchProductQuery,
+  useLazySearchProductQuery,
   useGetNewProductsQuery,
+  useGetMostViewProductsQuery,
   useGetReviewsOfProductQuery,
 } = productApi;

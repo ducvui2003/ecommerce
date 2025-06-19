@@ -185,6 +185,7 @@ model Product {
   description String
   basePrice   Decimal @map("base_price") @db.Decimal(10, 2)
   salePrice   Decimal @map("sale_price") @db.Decimal(10, 2)
+  views       Int     @default(0)
 
   categoryId  Int        @map("category_id")
   category    Category   @relation(fields: [categoryId], references: [id])
@@ -199,7 +200,7 @@ model Product {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  isDeleted Boolean?  @default(false) @map("is_deleted")
 
   productResource ProductResource[]
   option          Option[]
@@ -215,7 +216,7 @@ model Option {
   stock Int?    @default(0)
 
   productId  Int       @map("product_id")
-  product    Product   @relation(fields: [productId], references: [id])
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   resourceId Int?      @map("resource_id")
   resource   Resource? @relation(fields: [resourceId], references: [id])
 
@@ -260,8 +261,8 @@ model Resource {
 }
 
 model ProductResource {
-  product   Product @relation(fields: [productId], references: [id])
   productId Int     @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   resource   Resource @relation(fields: [resourceId], references: [id])
   resourceId Int      @map("resource_id")
@@ -288,7 +289,7 @@ model Cart {
 model CartItem {
   id        String    @id @default(uuid())
   productId Int       @map("product_id")
-  product   Product   @relation(fields: [productId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   selected  Boolean   @default(true) @map("selected")
   quantity  Int       @default(1)
   optionId  Int?      @map("option_id")
@@ -422,7 +423,7 @@ model Review {
   user   User @relation(fields: [userId], references: [id])
 
   productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   orderItemId Int       @map("order_item_id")
   orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
@@ -444,12 +445,11 @@ model Wishlist {
   user   User @relation(fields: [userId], references: [id])
 
   productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
+  @@unique([userId, productId])
   @@map("wishlists")
 }
 
@@ -491,7 +491,7 @@ model Comment {
   userId    Int     @map("user_id")
   user      User    @relation(fields: [userId], references: [id])
   productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")

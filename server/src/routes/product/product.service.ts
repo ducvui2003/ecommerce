@@ -5,6 +5,7 @@ import { ProductService } from '@route/product/interfaces/product-service.interf
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductNotFoundException } from '@shared/exceptions/product.exception';
 import {
+  isNotFoundError,
   isUniqueConstraintError,
   transformItemsPaging,
 } from '@shared/helper.shared';
@@ -31,7 +32,8 @@ export class ProductServiceImpl implements ProductService {
 
   async findById(id: number): Promise<ProductDetailResType> {
     try {
-      const product = await this.productRepository.getProductById(id);
+      await this.productRepository.increaseView(id);
+      const product = await this.productRepository.getProductById(id, false);
       const temp = product.option?.map((option, index) => ({
         index,
         resourceId: option.resourceId,
@@ -67,7 +69,7 @@ export class ProductServiceImpl implements ProductService {
         }),
       });
     } catch (error) {
-      if (isUniqueConstraintError(error)) {
+      if (isNotFoundError(error)) {
         throw new ProductNotFoundException();
       }
       throw error;
@@ -87,6 +89,17 @@ export class ProductServiceImpl implements ProductService {
 
   async getNewProducts(): Promise<ProductResType[]> {
     const products = await this.productRepository.getNewProducts();
+    return products.map((item) => {
+      return ProductResSchema.parse({
+        ...item,
+        thumbnail:
+          item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
+      });
+    });
+  }
+
+  async getMostViewProducts(): Promise<ProductResType[]> {
+    const products = await this.productRepository.getMostViewProducts();
     return products.map((item) => {
       return ProductResSchema.parse({
         ...item,

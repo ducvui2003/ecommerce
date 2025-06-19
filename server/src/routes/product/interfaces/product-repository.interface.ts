@@ -7,9 +7,11 @@ import {
 } from '@route/product/product-manager.schema';
 
 export interface ProductRepository {
-  getProductById(id: number): Promise<ProductType>;
+  getProductById(id: number, isDeleted?: boolean): Promise<ProductType>;
   search(dto: SearchProductDto): Promise<Paging<ProductType>>;
   create(dto: CreateProductBodyType): Promise<ProductType>;
   update(id: number, dto: UpdateProductBodyType): Promise<ProductType>;
   getNewProducts(): Promise<ProductType[]>;
+  increaseView(id: number): Promise<void>;
+  getMostViewProducts(): Promise<ProductType[]>;
 }

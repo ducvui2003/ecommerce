@@ -16,6 +16,8 @@ import { commentApi } from '@/features/comment/comment.api';
 import { orderManagerApi } from '@/features/manager/order/order.api';
 import orderManagerReducer from '@/features/manager/order/order.slice';
 import { productApi } from '@/features/product/product.api';
+import { dashboardApi } from '@/features/manager/dashboard/dashboard.api';
+import { wishlistApi } from '@/features/wishlist/wishlist.api';
 import { reviewApi } from '@/features/review/review.api';
 
 export const makeStore = () => {
@@ -37,6 +39,8 @@ export const makeStore = () => {
       [orderApi.reducerPath]: orderApi.reducer,
       [commentApi.reducerPath]: commentApi.reducer,
       [orderManagerApi.reducerPath]: orderManagerApi.reducer,
+      [dashboardApi.reducerPath]: dashboardApi.reducer,
+      [wishlistApi.reducerPath]: wishlistApi.reducer,
       [reviewApi.reducerPath]: reviewApi.reducer,
     },
     middleware(getDefaultMiddleware) {
@@ -51,6 +55,9 @@ export const makeStore = () => {
         .concat(contactApi.middleware)
         .concat(orderApi.middleware)
         .concat(commentApi.middleware)
+        .concat(orderManagerApi.middleware)
+        .concat(dashboardApi.middleware)
+        .concat(wishlistApi.middleware)
         .concat(orderManagerApi.middleware)
         .concat(reviewApi.middleware);
     },
