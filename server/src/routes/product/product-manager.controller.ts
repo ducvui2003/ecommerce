@@ -21,7 +21,9 @@ import { Paging } from '@shared/common/interfaces/paging.interface';
 import { AuthType } from '@shared/constants/auth.constant';
 import { Auth } from '@shared/decorators/auth.decorator';
 import { MessageHttp } from '@shared/decorators/message.decorator';
+import { Roles } from '@shared/decorators/roles.decorator';
 import { AuthenticationGuard } from '@shared/guards/authentication.guard';
+import { RolesGuard } from '@shared/guards/role.guard';
 
 @Controller('/api/v1/manager/products')
 export class ProductManagerController {
@@ -29,9 +31,10 @@ export class ProductManagerController {
     @Inject() private readonly productManagerService: ProductManagerService,
   ) {}
   @Get('/search')
-  @UseGuards(AuthenticationGuard)
+  @UseGuards(AuthenticationGuard, RolesGuard)
   @MessageHttp('Paging product for manager')
   @Auth([AuthType.Bearer])
+  @Roles('ADMIN')
   searchProducts(
     @Query() query: SearchProductDto,
   ): Promise<Paging<ProductManagerResType>> {
@@ -40,7 +43,7 @@ export class ProductManagerController {
   }
 
   @Post()
-  @UseGuards(AuthenticationGuard)
+  @UseGuards(AuthenticationGuard, RolesGuard)
   @MessageHttp('Create product for manager')
   @Auth([AuthType.Bearer])
   createProduct(@Body() body: CreateProductBodyDto) {

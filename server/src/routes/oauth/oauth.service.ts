@@ -58,6 +58,7 @@ export abstract class OauthService {
       await this.authService.generateToken({
         id: user.id,
         email: user.email,
+        role: user.role.name,
       });
 
     const ttl = appRefreshToken.exp - appRefreshToken.iat;

@@ -1,7 +1,7 @@
 export const REQUEST_USER_KEY = 'user';
 export const API_KEY = 'apikey';
 export const AUTH_TYPE_KEY = 'authType';
-
+export const ROLES_KEY = 'role';
 export const AuthType = {
   Bearer: 'Bearer',
   None: 'None',
@@ -29,6 +29,13 @@ export const VerificationType = {
   REGISTER: 'REGISTER',
   FORGOT_PASSWORD: 'FORGOT_PASSWORD',
 } as const;
+
+export const RoleName = {
+  ADMIN: 'ADMIN',
+  USER: 'USER',
+} as const;
+
+export type RoleName = (typeof RoleName)[keyof typeof RoleName];
 
 export type TypeOfVerificationType =
   (typeof VerificationType)[keyof typeof VerificationType];
