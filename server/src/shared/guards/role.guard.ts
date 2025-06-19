@@ -33,6 +33,10 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    throw new ForbiddenException();
+    throw new ForbiddenException({
+      message: `${requiredRoles.join(', ')} role is required to access this resource.`,
+      errorCode: 'FORBIDDEN',
+      statusCode: 403,
+    });
   }
 }
