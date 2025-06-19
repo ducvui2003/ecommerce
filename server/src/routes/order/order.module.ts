@@ -10,9 +10,10 @@ import {
 } from '@route/order/order.constant';
 import { OrderManagerService } from '@route/order/order-manager.service';
 import { OrderManagerPrismaRepository } from '@route/order/order-manager.repository';
+import { UserModule } from '@route/user/user.module';
 
 @Module({
-  imports: [ProductModule],
+  imports: [ProductModule, UserModule],
   controllers: [OrderController, OrderManagerController],
   providers: [
     OrderService,
