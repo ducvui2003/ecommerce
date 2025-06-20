@@ -6,6 +6,7 @@ import { CartItemModel } from '@shared/models/cart-item.model';
 export const CartModel = TimestampFields.extend({
   id: z.number().int().positive(),
   userId: z.number().int().positive(),
+  rating: z.number().int().positive(),
   user: UserModel.optional(),
   cartItems: z.array(CartItemModel).optional(),
 });

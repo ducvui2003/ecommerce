@@ -1,6 +1,6 @@
 import ListView from '@/components/ListView';
 import ProductCard from '@/components/ProductCard';
-import productService from '@/service/product.service';
+import productService from '@/service/product.server.service';
 import { ProductCardType } from '@/types/product.type';
 type ProductRelatedProps = {
   categoryId: number;

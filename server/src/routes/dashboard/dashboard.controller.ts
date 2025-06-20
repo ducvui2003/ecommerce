@@ -20,7 +20,6 @@ import { AuthType } from '@shared/constants/auth.constant';
 import { AuthenticationGuard } from '@shared/guards/authentication.guard';
 import { RolesGuard } from '@shared/guards/role.guard';
 import { Roles } from '@shared/decorators/roles.decorator';
-import { z } from 'zod';
 import {
   RevenueByTimeAndCategoryRequestDto,
   RevenueByTimeRequestDto,

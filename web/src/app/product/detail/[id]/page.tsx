@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import ProductDetail from './ProductDetail';
-import productService from '@/service/product.service';
+import productService from '@/service/product.server.service';
 import { notFound } from 'next/navigation';
 
 type ProductPage = {

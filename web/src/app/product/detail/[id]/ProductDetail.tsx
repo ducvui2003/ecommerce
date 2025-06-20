@@ -2,7 +2,7 @@
 
 import notFound from '@/app/not-found';
 import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
-import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
+import ProductReview from '@/app/product/detail/[id]/ProductReview';
 import WishlistButton from '@/components/WishlistButton';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,7 +21,7 @@ import { ProductDetailRespType } from '@/types/product.type';
 import { AddCartItemSchema } from '@/types/schema/cart.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ControllerRenderProps,
   FieldErrors,
@@ -33,6 +33,8 @@ import ProductImages from './ProductImages';
 import ProductInfo from './ProductInfo';
 import useSession from '@/components/auth/useSession';
 import Link from '@/components/Link';
+import { useGetReviewsOfProductQuery } from '@/features/product/product.api';
+import { RatingSortKeysType } from '@/types/review.type';
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
@@ -42,6 +44,25 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   if (!product) return notFound();
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
   const { status } = useSession();
+  const [page, setPage] = useState(1);
+  const [ratings, setRatings] = useState<number[]>([]);
+  const [sort, setSort] = useState<(RatingSortKeysType)[number] | undefined>(undefined);
+  const [onlyHasResponse, setOnlyHasResponse] = useState<boolean>(false);
+  const [onlyHasBuyAgain, setOnlyHasBuyAgain] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>('');
+
+  const { data: reviews } = useGetReviewsOfProductQuery({
+    productId: product.id,
+    query: {
+      size: 5,
+      page,
+      ratings,
+      ...(sort && { sort }),
+      ...(search && {search}),
+      ...(onlyHasResponse && { onlyHasResponse }),
+      ...(onlyHasBuyAgain && { onlyHasBuyAgain }),
+    },
+  });
 
   const productInfoData = {
     name: product.name,
@@ -240,7 +261,19 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           productId={product.id}
         />
       </div>
-      <RatingSummary />
+      {
+        reviews && (
+          <ProductReview
+            reviews={reviews}
+            setPage={setPage}
+            setRatings={setRatings}
+            setSort={setSort}
+            setOnlyHasResponse={setOnlyHasResponse}
+            setOnlyHasBuyAgain={setOnlyHasBuyAgain}
+            setSearch={setSearch}
+          />
+        )
+      }
     </div>
   );
 }

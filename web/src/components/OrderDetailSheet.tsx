@@ -9,32 +9,49 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 import { DEFAULT_IMAGE, statusOrder } from '@/constraint/variable';
-import { useGetOrderDetailQuery } from '@/features/order/order.api';
+import {
+  useCancelOrderMutation,
+  useGetOrderDetailQuery
+} from '@/features/order/order.api';
 import { setIsDetailSheet } from '@/features/order/order.slice';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { currency, formatDate } from '@/lib/utils';
 import { OrderDetailItemType, OrderDetailResType } from '@/types/order.type';
 import Image from 'next/image';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import ReviewDialog from '@/components/ReviewDialog';
 
 const OrderDetailSheet = () => {
   const { isOpenDetailSheet: open, orderId } = useAppSelector(
     (state) => state.orderSlice,
   );
-
   const dispatch = useAppDispatch();
-
-  const { data, isFetching } = useGetOrderDetailQuery(orderId as number, {
-    skip: !orderId,
-  });
+  const { data, isFetching, refetch } = useGetOrderDetailQuery(
+    orderId as number,
+    {
+      skip: !orderId,
+    },
+  );
 
   if (!data) return null;
+
+  console.log(data);
 
   return (
     <Sheet
@@ -47,8 +64,8 @@ const OrderDetailSheet = () => {
           <SheetDescription></SheetDescription>
         </SheetHeader>
         <section className="px-4 [&>*]:mb-4 [&>*]:py-2">
-          <OrderItemList items={data.items} />
-          <OrderMetadata {...data} />
+          <OrderItemList items={data.items} status={data.status} />
+          <OrderMetadata {...data}  id={data.id} refetch={refetch}/>
           <OrderReceiver {...data.receiver} />
           <OrderPayment {...data.payment} />
         </section>
@@ -57,34 +74,29 @@ const OrderDetailSheet = () => {
   );
 };
 
-type OrderItemListProps = { items: OrderDetailItemType[] };
+type OrderItemListProps = { items: OrderDetailItemType[] } & Pick<
+  OrderMetadataProps,
+  'status'
+>;
 
-const OrderItemList = ({ items }: OrderItemListProps) => {
+const OrderItemList = ({ items, status }: OrderItemListProps) => {
   return (
     <div>
       <ListView<OrderDetailItemType>
         data={items}
         className="flex-col gap-3"
         render={(item) => {
-          return <OrderItem key={item.id} {...item} />;
+          return <OrderItem key={item.id} status={status} {...item} />;
         }}
       />
     </div>
   );
 };
 
-type OrderItemProps = OrderDetailItemType;
+type OrderItemProps = OrderDetailItemType & Pick<OrderMetadataProps, 'status'>;
 
-const OrderItem = ({
-  price,
-  id,
-  name,
-  category,
-  media,
-  quantity,
-  supplier,
-  options,
-}: OrderItemProps) => {
+const OrderItem = ({status, ...item }: OrderItemProps) => {
+  const { price, options, media, category, supplier, name, quantity } = item;
   const unitPrice = price + (options?.price ?? 0);
   const totalPrice = unitPrice * quantity;
   return (
@@ -110,26 +122,86 @@ const OrderItem = ({
       <div className="ml-auto">
         {currency(unitPrice)} x {quantity} = {currency(totalPrice)}
       </div>
+      {
+        (status === 'COMPLETE') &&
+        <ReviewDialog item={item} />
+      }
     </div>
   );
 };
 
-type OrderMetadataProps = Omit<OrderDetailResType, 'items' | 'receiver'>;
+type OrderMetadataProps = Omit<OrderDetailResType, 'items' | 'receiver'> & {
+  id: number;
+  refetch: () => void;
+};
 
 const OrderMetadata = ({
   status,
   createdAt,
   totalAmount,
+  id,
+  refetch,
 }: OrderMetadataProps) => {
+  const [cancelOrder, { isLoading }] = useCancelOrderMutation();
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleCancel = async () => {
+    try {
+      await cancelOrder(id).unwrap();
+      toast.success('Hủy đơn hàng thành công');
+      setOpenDialog(false);
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Hủy đơn hàng thất bại');
+    }
+  };
+
   return (
-    <div className="grid grid-cols-2 gap-4 border-t-2">
-      <div>Tổng tiền</div>
-      <div>{currency(totalAmount)}</div>
-      <div className="text-base text-gray-700">Ngày đặt hàng</div>
-      <div>{formatDate(createdAt)}</div>
-      <div className="text-base text-gray-700">Trạng thái đơn hàng</div>
-      <div>{statusOrder[status]}</div>
-    </div>
+    <>
+      <div className="grid grid-cols-2 gap-4 border-t-2">
+        <div>Tổng tiền</div>
+        <div>{currency(totalAmount)}</div>
+        <div className="text-base text-gray-700">Ngày đặt hàng</div>
+        <div>{formatDate(createdAt)}</div>
+        <div className="text-base text-gray-700">Trạng thái đơn hàng</div>
+        <div>{statusOrder[status]}</div>
+
+        {status === 'PENDING' && (
+          <div className="col-span-2 flex justify-end pt-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setOpenDialog(true)}
+            >
+              Hủy đơn hàng
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn hủy đơn hàng #{id}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+              Không
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancel}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Đang hủy...' : 'Xác nhận'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
@@ -147,7 +219,7 @@ const OrderReceiver = ({
   return (
     <div className="border-accent flex items-start gap-3 rounded-md border-2 px-2 shadow-md">
       <ClientIcon icon={'mynaui:location'} />
-      <div className="">
+      <div>
         <span className="flex items-end gap-3 text-base">
           <Tooltip>
             <TooltipTrigger asChild>
