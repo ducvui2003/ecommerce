@@ -1,8 +1,10 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { ProductResType, SearchProductResType } from '@/types/product.type';
 import { toQueryString } from '@/lib/utils';
-import { ResponseApi, ResponseApiPaging } from '@/types/api.type';
+import { PageReq, ResponseApi, ResponseApiPaging } from '@/types/api.type';
 import httpClient from '@/lib/http.client';
+import { GetReviewsOfProductResType, FilterReviewQueryType } from '@/types/review.type';
+import productService from '@/service/product.service';
 
 export const productApi = createApi({
   reducerPath: 'productApi',
@@ -64,6 +66,31 @@ export const productApi = createApi({
         }
       },
     }),
+
+    getReviewsOfProduct: builder.query<
+      GetReviewsOfProductResType,
+      {
+        productId: number;
+        query: PageReq<FilterReviewQueryType>;
+      }
+    >({
+      async queryFn({ productId, query }) {
+        try {
+          const data = await productService.getReviewsOfProduct(
+            productId,
+            query,
+          );
+          return { data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+    }),
   }),
 });
 export const {
@@ -71,4 +98,5 @@ export const {
   useLazySearchProductQuery,
   useGetNewProductsQuery,
   useGetMostViewProductsQuery,
+  useGetReviewsOfProductQuery,
 } = productApi;

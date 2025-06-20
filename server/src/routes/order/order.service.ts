@@ -33,6 +33,10 @@ import { OrderType } from '@shared/models/order.model';
 import { FileService } from '@shared/services/file/file.service';
 import { OrderNotFound } from '@route/order/order.error';
 import { ORDER_REPOSITORY } from '@route/order/order.constant';
+import { UserRepository } from '@route/user/user.repository';
+import { UserNotFoundException } from '@shared/exceptions/user.exception';
+import { RoleName } from '@route/auth/auth.const';
+import { USER_REPOSITORY } from '@route/user/user.const';
 
 @Injectable()
 export class OrderService {
@@ -49,6 +53,8 @@ export class OrderService {
     private readonly sharedProductRepository: SharedProductRepository,
     @Inject(FILE_SERVICE)
     private readonly fileService: FileService,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository,
   ) {}
 
   async createOrder(
@@ -173,13 +179,13 @@ export class OrderService {
       );
       const dataParse = {
         ...data,
-        items:
-          data.orderItem?.map((item) => {
-            return {
-              ...item.product,
-              quantity: item.quantity,
-            };
-          }) ?? [],
+        items: data.orderItem?.map((item) => {
+        const {id, product, quantity} = item
+        const {id: productId, ...restProduct} = product;
+        return {
+          ...restProduct, id, productId, quantity,
+        };
+      }) ?? [],
       };
       return OrderDetailResSchema.parse(dataParse);
     } catch (e) {
@@ -187,4 +193,26 @@ export class OrderService {
       throw e;
     }
   }
+
+  async cancelOrder(id: number, userId: number): Promise<void> {
+    const order = await this.orderRepository.findById(id);
+    const user = await this.userRepository.getInfo(userId);
+
+    if (!order) throw OrderNotFound;
+    if (!user) throw new UserNotFoundException();
+
+    const isAdmin = user.role === RoleName.ADMIN;
+
+    if (!isAdmin && order.userId !== userId) {
+      throw new Error("Not authorized to cancel this order");
+    }
+
+    if (!isAdmin && order.status !== OrderStatus.PENDING) {
+      throw new Error("Order cannot be cancelled unless it is in PENDING status");
+    }
+
+    await this.orderRepository.updateOrderStatus(id);
+  }
+
+
 }

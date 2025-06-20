@@ -36,37 +36,18 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         <h2 className="sr-only">Product information</h2>
         <div className="mt-2 flex items-baseline gap-x-3">
           <span className="text-2xl font-semibold text-red-600">
-            {currency(product.basePrice)}
+            {currency(product.salePrice)}
           </span>
           <span className="text-sm text-gray-400 line-through">
-            {currency(product.salePrice)}
+            {currency(product.basePrice)}
           </span>
           <span className="ml-2 text-sm font-medium text-green-600">
             -
-            {Math.round(
-              ((product.basePrice - product.salePrice) / product.basePrice) *
-                100,
-            )}
+            {
+              Math.round(((product.basePrice - product.salePrice) / product.basePrice) * 100,)
+            }
             %
           </span>
-        </div>
-
-        <div className="mt-6">
-          <h3 className="sr-only">Reviews</h3>
-          <div className="flex items-center">
-            <div className="flex items-center">
-              {[...Array(4)].map((_, idx) => (
-                <Star key={idx} filled />
-              ))}
-              <Star filled={false} />
-            </div>
-            <a
-              href="#"
-              className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              117 reviews
-            </a>
-          </div>
         </div>
       </div>
     </div>

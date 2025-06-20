@@ -63,18 +63,6 @@ export default function CartPage() {
 
   const [inputQuantities, setInputQuantities] = useState<{ [key: string]: string }>({});
 
-  // const temporaryTotalPrice = useMemo<number>(
-  //   (): number =>
-  //     cart?.cartItems
-  //       .filter((item) => item.selected)
-  //       .reduce((accumulator, currentItem) =>
-  //           accumulator + currentItem.quantity * (
-  //             Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option?.price ?? 0)
-  //           ), 0,
-  //       )!,
-  //   [cart],
-  // );
-
   const handleToggleCartItem = async (cartItemId: string | 'all') => {
     try {
       await toggleCartItem(cartItemId);

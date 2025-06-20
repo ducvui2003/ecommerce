@@ -20,6 +20,8 @@ export interface OrderRepository {
   );
   getDetail(userId: number, orderId: number): Promise<OrderType>;
   search(userId: number, dto: SearchOrderType): Promise<Paging<OrderResType>>;
+  findById(id: number): Promise<OrderType | null>;
+  updateOrderStatus(id: number): Promise<void>;
 }
 @Injectable()
 export class OrderPrismaRepository implements OrderRepository {
@@ -144,6 +146,18 @@ export class OrderPrismaRepository implements OrderRepository {
         userId: userId,
         id: orderId,
       },
+    });
+  }
+
+  async findById(id: number): Promise<OrderType | null> {
+    return this.prismaService.order.findUnique({
+      where: { id: id },
+    });
+  }
+  async updateOrderStatus(id: number): Promise<void> {
+    await this.prismaService.order.update({
+      where: { id: id },
+      data: { status: OrderStatus.CANCELED },
     });
   }
 }

@@ -83,8 +83,13 @@ const OrderDetailResSchema = OrderModel.pick({
   feeShipping: DecimalToNumberSchema,
   items: z.array(
     OrderItemModel.pick({
+      id: true,
       quantity: true,
-    }).merge(ProductOrderItemModel),
+    }).merge(
+      ProductOrderItemModel.omit({id: true})
+    ).extend({
+      productId: ProductOrderItemModel.shape.id
+    }),
   ),
   payment: PaymentModel.pick({
     provider: true,
