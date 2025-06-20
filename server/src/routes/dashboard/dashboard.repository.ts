@@ -1,10 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { DashboardType } from '@route/dashboard/dashboard.schema';
+import {
+  DashboardType,
+  RevenueByTimeAndCategoryResponseType,
+  RevenueByTimeRequestType,
+  RevenueByTimeResponseType,
+} from '@route/dashboard/dashboard.schema';
 import { PrismaService } from '@shared/services/prisma.service';
 
 export interface DashboardRepository {
   getDashboard(): Promise<DashboardType>;
+
+  getRevenueByTime(from: Date, to: Date): Promise<RevenueByTimeResponseType>;
+
+  getRevenueByTimeAndCategory(
+    from: Date,
+  ): Promise<RevenueByTimeAndCategoryResponseType>;
 }
 @Injectable()
 export class PrismaDashboardRepository implements DashboardRepository {
@@ -72,5 +83,52 @@ export class PrismaDashboardRepository implements DashboardRepository {
     };
 
     return response;
+  }
+
+  async getRevenueByTime(
+    from: Date,
+    to: Date,
+  ): Promise<RevenueByTimeResponseType> {
+    const revenueTrend = await this.prismaService
+      .$queryRaw<RevenueByTimeResponseType>(Prisma.sql`
+           WITH months AS (
+              SELECT to_char(d, 'YYYY-MM') AS month
+              FROM generate_series (
+                ${from}::date,
+                ${to}::date,
+                interval '1 month'
+              ) d
+            )
+            SELECT 
+              m.month,
+              COALESCE(SUM(o.total_amount + o.fee_shipping), 0) AS revenue
+            FROM months m
+            LEFT JOIN orders o
+              ON to_char(o.created_at, 'YYYY-MM') = m.month
+              AND o.created_at BETWEEN ${from} AND ${to}
+            GROUP BY m.month
+            ORDER BY m.month;
+        `);
+    return revenueTrend;
+  }
+
+  getRevenueByTimeAndCategory(
+    from: Date,
+  ): Promise<RevenueByTimeAndCategoryResponseType> {
+    return this.prismaService.$queryRaw<RevenueByTimeAndCategoryResponseType>(
+      Prisma.sql`
+        SELECT 
+          product->>'category' AS category,
+          SUM(
+            (product->>'price')::numeric + 
+            COALESCE((product->'options'->>'price')::numeric, 0)
+          ) AS revenue
+        FROM order_items
+        WHERE EXTRACT(MONTH FROM created_at) = ${from.getMonth() + 1}
+          AND EXTRACT(YEAR FROM created_at) = ${from.getFullYear()}
+        GROUP BY category
+        ORDER BY revenue DESC;
+  `,
+    );
   }
 }
