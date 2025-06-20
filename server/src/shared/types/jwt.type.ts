@@ -1,6 +1,9 @@
+import { RoleName } from '@shared/constants/auth.constant';
+
 export type JwtCustomClaims = {
   id: number;
   email: string;
+  role: string;
 };
 
 export type JwtPayload = JwtCustomClaims & {
