@@ -1,7 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  CreateOrderType,
+  OrderDetailResSchema,
+  OrderDetailResType,
+  OrderResSchema,
+  OrderResType,
+  SearchOrderType,
+} from '@route/order/order.schema';
+import {
   FILE_SERVICE,
-  SHARED_CART_ITEM_REPOSITORY,
   SHARED_PAYMENT_REPOSITORY,
   SHARED_PRODUCT_REPOSITORY,
 } from '@shared/constants/dependency.constant';
@@ -11,40 +18,29 @@ import {
   transformItemsPaging,
 } from '@shared/helper.shared';
 import { OrderItemType } from '@shared/models/order-item.model';
-import { SharedCartItemRepository } from '@shared/repositories/shared-cart-item.repository';
-import { PrismaService } from '@shared/services/prisma.service';
-import { OrderPrismaRepository, OrderRepository } from './order.repository';
 import { SharedPrismaPaymentRepository } from '@shared/repositories/shared-payment.repository';
 import { SharedProductRepository } from '@shared/repositories/shared-product.repository';
-import { ProductType } from '@shared/models/product.model';
-import {
-  CreateOrderType,
-  OrderDetailResSchema,
-  OrderDetailResType,
-  OrderResSchema,
-  OrderResType,
-  SearchOrderType,
-} from '@route/order/order.schema';
+import { PrismaService } from '@shared/services/prisma.service';
+import { OrderRepository } from './order.repository';
 
-import { PaymentType } from '@shared/models/payment.model';
-import { OrderStatus } from '@shared/constants/order.constant';
-import { Paging } from '@shared/common/interfaces/paging.interface';
-import { OrderType } from '@shared/models/order.model';
-import { FileService } from '@shared/services/file/file.service';
-import { OrderNotFound } from '@route/order/order.error';
-import { ORDER_REPOSITORY } from '@route/order/order.constant';
-import { UserRepository } from '@route/user/user.repository';
-import { UserNotFoundException } from '@shared/exceptions/user.exception';
 import { RoleName } from '@route/auth/auth.const';
+import { ORDER_REPOSITORY } from '@route/order/order.constant';
+import { OrderNotFound } from '@route/order/order.error';
 import { USER_REPOSITORY } from '@route/user/user.const';
+import { UserRepository } from '@route/user/user.repository';
+import { Paging } from '@shared/common/interfaces/paging.interface';
+import { OrderStatus } from '@shared/constants/order.constant';
+import { UserNotFoundException } from '@shared/exceptions/user.exception';
+import { OrderType } from '@shared/models/order.model';
+import { PaymentType } from '@shared/models/payment.model';
+import { FileService } from '@shared/services/file/file.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     @Inject(ORDER_REPOSITORY)
     private readonly orderRepository: OrderRepository,
-    @Inject(SHARED_CART_ITEM_REPOSITORY)
-    private readonly sharedCartItemRepository: SharedCartItemRepository,
+
     @Inject()
     private readonly prismaService: PrismaService,
     @Inject(SHARED_PAYMENT_REPOSITORY)
@@ -67,12 +63,13 @@ export class OrderService {
     }
   > {
     // 1. Calculate price
-    const cartItems = await this.sharedCartItemRepository.findCartItemByIdIn(
+    const cartItems = await this.orderRepository.findCartItemByIdIn(
       dto.cartItemIds,
     );
 
     let totalAmount = 0;
     const recordPriceOrderItem: Record<number, number> = {};
+
     cartItems.forEach((item) => {
       const basePrice = item.product?.basePrice?.toNumber() ?? 0;
       let price = 0;
@@ -146,6 +143,7 @@ export class OrderService {
       );
 
       // 4. Delete cart item
+      this.orderRepository.deleteCartItemByIdIn(dto.cartItemIds, tx);
 
       return {
         ...payment,
@@ -179,13 +177,17 @@ export class OrderService {
       );
       const dataParse = {
         ...data,
-        items: data.orderItem?.map((item) => {
-        const {id, product, quantity} = item
-        const {id: productId, ...restProduct} = product;
-        return {
-          ...restProduct, id, productId, quantity,
-        };
-      }) ?? [],
+        items:
+          data.orderItem?.map((item) => {
+            const { id, product, quantity } = item;
+            const { id: productId, ...restProduct } = product;
+            return {
+              ...restProduct,
+              id,
+              productId,
+              quantity,
+            };
+          }) ?? [],
       };
       return OrderDetailResSchema.parse(dataParse);
     } catch (e) {
@@ -204,15 +206,15 @@ export class OrderService {
     const isAdmin = user.role === RoleName.ADMIN;
 
     if (!isAdmin && order.userId !== userId) {
-      throw new Error("Not authorized to cancel this order");
+      throw new Error('Not authorized to cancel this order');
     }
 
     if (!isAdmin && order.status !== OrderStatus.PENDING) {
-      throw new Error("Order cannot be cancelled unless it is in PENDING status");
+      throw new Error(
+        'Order cannot be cancelled unless it is in PENDING status',
+      );
     }
 
     await this.orderRepository.updateOrderStatus(id);
   }
-
-
 }

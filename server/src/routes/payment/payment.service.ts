@@ -14,7 +14,6 @@ import { SHARED_ORDER_REPOSITORY } from '@shared/constants/dependency.constant';
 import { PREFIX_PAYMENT_CODE, VNPAY } from '@shared/constants/payment.constant';
 import { toDecimalSchema } from '@shared/helper.shared';
 import {
-  PaymentTransactionType,
   SePaymentTransactionModel,
   VnPayPaymentTransactionModel,
 } from '@shared/models/payment-transaction.model';
@@ -129,8 +128,9 @@ export class PaymentService {
       // 3. Update status in Order
       if (payment.orderId)
         this.sharedOrderRepository.updateStatusOrder(payment.orderId, 'PAID');
-    } else {
-      await this.paymentRepository.updatePayment(paymentId, 'FAILED');
     }
+    // else {
+    //   await this.paymentRepository.updatePayment(paymentId, 'FAILED');
+    // }
   }
 }

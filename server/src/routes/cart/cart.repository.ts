@@ -34,7 +34,10 @@ export class PrismaCartRepository implements CartRepository {
     private readonly fileService: FileService,
   ) {}
 
-  async getCart(userId: number, onlySelected: boolean = false): Promise<GetCartResDTO> {
+  async getCart(
+    userId: number,
+    onlySelected: boolean = false,
+  ): Promise<GetCartResDTO> {
     await this.upsertCart(userId);
     const cart = await this.manifestCart(userId, onlySelected);
     return {
@@ -47,6 +50,7 @@ export class PrismaCartRepository implements CartRepository {
           selected: item.selected,
           createdAt: item.createdAt,
           product: {
+            id: item.productId,
             name: item.product.name,
             basePrice: item.product.basePrice,
             salePrice: item.product.salePrice,
@@ -64,16 +68,19 @@ export class PrismaCartRepository implements CartRepository {
           (itemFirst, itemSecond) =>
             new Date(itemSecond.createdAt).getTime() -
             new Date(itemFirst.createdAt).getTime(),
-        )
-      ,
+        ),
       temporaryTotalPrice: cart.cartItems
-        .filter(item => item.selected)
-        .reduce((accumulator, currentItem) =>
-            accumulator + currentItem.quantity * (
-              Number(currentItem.product.salePrice ?? currentItem.product.basePrice) + Number(currentItem.option?.price ?? 0)
-            ), 0,
-        )
-      ,
+        .filter((item) => item.selected)
+        .reduce(
+          (accumulator, currentItem) =>
+            accumulator +
+            currentItem.quantity *
+              (Number(
+                currentItem.product.salePrice ?? currentItem.product.basePrice,
+              ) +
+                Number(currentItem.option?.price ?? 0)),
+          0,
+        ),
     };
   }
 

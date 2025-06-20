@@ -18,12 +18,15 @@ export const ProductModel = TimestampFields.extend({
   salePrice: NumberToDecimalSchema,
   views: z.number().default(0),
   productResource: z.array(
-    z.object({
-      productId: z.number(),
-      resourceId: z.number(),
-      resource: ResourceModel,
-      createdAt: z.date(),
-    }),
+    z
+      .object({
+        productId: z.number(),
+        resourceId: z.number(),
+        resource: ResourceModel,
+        createdAt: z.date(),
+      })
+      .nullable()
+      .optional(),
   ),
   thumbnailId: z.number().nullable().optional(),
   thumbnail: ResourceModel.nullable().optional(),

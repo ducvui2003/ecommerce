@@ -93,7 +93,6 @@ export class OrderController {
     return this.orderService.getDetail(userId, orderId);
   }
 
-
   @Put('/:id')
   @UseGuards(AuthenticationGuard)
   @MessageHttp('Cancel order for customer')
@@ -104,5 +103,4 @@ export class OrderController {
   ): Promise<void> {
     return await this.orderService.cancelOrder(orderId, userId);
   }
-
 }
