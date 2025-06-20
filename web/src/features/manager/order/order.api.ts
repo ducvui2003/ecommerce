@@ -1,18 +1,11 @@
 import { StatusOrderType } from '@/constraint/variable';
 import orderManagerService from '@/service/manager/order-manager.service';
-import userManagerService from '@/service/manager/user-manager.service';
-import { PageReq, Paging, ResponseApiPaging } from '@/types/api.type';
+import { PageReq, Paging } from '@/types/api.type';
 import {
   OrderDetailResType,
   OrderManagerResType,
   OrderManagerSearchParamsType,
 } from '@/types/order.type';
-import {
-  GetUserDetailResType,
-  GetUserQueryReqType,
-  GetUserResType,
-  UserStatus,
-} from '@/types/user.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
 export const orderManagerApi = createApi({
   reducerPath: 'orderManagerApi', // name field of redux state

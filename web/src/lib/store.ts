@@ -42,7 +42,9 @@ export const makeStore = () => {
       [wishlistApi.reducerPath]: wishlistApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      return getDefaultMiddleware()
+      return getDefaultMiddleware({
+        serializableCheck: false, // Disable serializable check for RTK Query
+      })
         .concat(addressApi.middleware)
         .concat(mediaApi.middleware)
         .concat(userApi.middleware)

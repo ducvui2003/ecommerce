@@ -41,18 +41,12 @@ const RevenueByTimeAndCategoryResponseSchema = z.object({
 });
 
 const RevenueByTimeAndCategoryRequestSchema = z.object({
-  month: z
-    .string()
-    .transform(Number)
-    .refine((m) => m >= 1 && m <= 12, {
-      message: 'Month must be between 1 and 12',
-    }),
-  year: z
-    .string()
-    .transform(Number)
-    .refine((y) => y >= 2000 && y <= 2100, {
-      message: 'Year must be a valid year',
-    }),
+  month: z.number().refine((m) => m >= 1 && m <= 12, {
+    message: 'Month must be between 1 and 12',
+  }),
+  year: z.number().refine((y) => y >= 2000 && y <= 2100, {
+    message: 'Year must be a valid year',
+  }),
 });
 
 type RevenueByTimeAndCategoryResponseType = z.infer<

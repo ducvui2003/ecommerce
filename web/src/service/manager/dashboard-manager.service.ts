@@ -1,13 +1,26 @@
-import httpServer from '@/lib/http.server';
+import http from '@/lib/http.client';
 import { ResponseApi } from '@/types/api.type';
-import { DashboardResType } from '@/types/dashboard.type';
+import {
+  RevenueByTimeAndCategoryRequestType,
+  RevenueByTimeAndCategoryResponseType,
+  RevenueByTimeRequestType,
+  RevenueByTimeResponseType,
+} from '@/types/dashboard.type';
 
 const dashboardService = {
-  getDashboard: async () => {
-    const res = await httpServer.get<ResponseApi<DashboardResType>>(
-      `api/v1/manager/dashboard/stats`,
-      undefined,
+  getRevenueByTime: async (req: RevenueByTimeRequestType) => {
+    const res = await http.post<ResponseApi<RevenueByTimeResponseType | null>>(
+      `api/v1/manager/dashboard/revenue-by-time`,
+      req,
     );
+    return res.payload.data;
+  },
+  getRevenueByTimeAndCategory: async (
+    req: RevenueByTimeAndCategoryRequestType,
+  ) => {
+    const res = await http.post<
+      ResponseApi<RevenueByTimeAndCategoryResponseType | null>
+    >(`api/v1/manager/dashboard/revenue-by-time-and-category`, req);
     return res.payload.data;
   },
 };
