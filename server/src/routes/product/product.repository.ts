@@ -6,6 +6,7 @@ import {
   UpdateProductBodyType,
 } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
+import { ProductSitemapType } from '@route/product/product.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductType } from '@shared/models/product.model';
 import { PrismaService } from '@shared/services/prisma.service';
@@ -367,5 +368,26 @@ export class ProductRepositoryImpl implements ProductRepository {
     });
 
     return products;
+  }
+
+  getAllId(): Promise<ProductSitemapType> {
+    return this.prisma.product
+      .findMany({
+        where: {
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+        },
+      })
+      .then((products) => {
+        return products.map((product) => {
+          return {
+            id: product.id,
+            createdAt: product.createdAt,
+          };
+        });
+      });
   }
 }

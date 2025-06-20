@@ -15,6 +15,7 @@ import {
   ProductDetailResType,
   ProductResSchema,
   ProductResType,
+  ProductSitemapType,
 } from '@route/product/product.schema';
 import { ProductType } from '@shared/models/product.model';
 import { SharedResourceRepository } from '@shared/repositories/shared-resource.repository';
@@ -107,5 +108,9 @@ export class ProductServiceImpl implements ProductService {
           item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
       });
     });
+  }
+
+  getSitemap(): Promise<ProductSitemapType> {
+    return this.productRepository.getAllId();
   }
 }

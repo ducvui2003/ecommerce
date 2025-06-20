@@ -118,5 +118,10 @@ const ProductDetailResSchema = ProductModel.pick({
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
 
+type ProductSitemapType = {
+  id: number;
+  createdAt: Date;
+}[];
+
 export { ProductDetailResSchema, ProductResSchema, SearchProductReqSchema };
-export type { ProductDetailResType, ProductResType };
+export type { ProductDetailResType, ProductResType, ProductSitemapType };

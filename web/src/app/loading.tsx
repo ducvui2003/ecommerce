@@ -1,12 +1,9 @@
-import Logo from '@/components/Logo';
+import Loading from '@/components/loading/Loading';
 
 const RootLoading = () => {
   return (
-    <div className="bg-primary grid h-screen w-screen animate-pulse place-items-center">
-      <div>
-        <Logo />
-        <span>Loading...</span>
-      </div>
+    <div className="h-screen w-screen">
+      <Loading />
     </div>
   );
 };

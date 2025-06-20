@@ -7,6 +7,7 @@ const middlewares = [
   middlewarePreventAfterAuth,
   middlewareRefreshToken,
   middlewarePayment,
+  middleWareAuth.authMiddlewareWithRoutesNeedAuth,
   middleWareAuth.authMiddlewareWithUser,
   middleWareAuth.authMiddlewareWithSeller,
   middleWareAuth.authMiddlewareWithAdmin,
