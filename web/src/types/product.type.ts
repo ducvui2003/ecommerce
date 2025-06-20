@@ -88,7 +88,7 @@ const BaseResourceForm = z.object({
 });
 
 const BaseOptionForm = z.object({
-  id: z.number().nullable().default(null),
+  id: z.number().nullable(),
   name: string,
   price: z.coerce.number().min(1, 'Price must be >= 0'),
   resource: BaseResourceForm.optional(),
@@ -104,7 +104,7 @@ const BaseProductFormSchema = z.object({
   salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
   thumbnail: BaseResourceForm.optional(),
   resources: z.array(BaseResourceForm).optional(),
-  isDeleted: z.coerce.boolean().optional().default(false),
+  isDeleted: z.boolean(),
   options: z.array(BaseOptionForm).optional(),
 });
 

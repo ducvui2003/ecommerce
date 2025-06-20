@@ -54,7 +54,7 @@ const BaseProductForm = ({
       description: '',
       thumbnail: undefined,
       resources: [],
-      options: [],
+      options: undefined,
       isDeleted: false,
     },
   });
@@ -214,7 +214,7 @@ const BaseProductForm = ({
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      value={String(field.value.toString())}
+                      value={String(field.value?.toString())}
                     >
                       <FormControl>
                         <SelectTrigger>
