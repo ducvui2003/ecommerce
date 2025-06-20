@@ -6,13 +6,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { HTTP_STATUS_CODE } from '@/constraint/variable';
@@ -35,7 +33,6 @@ type VerificationFormProps = {
 };
 
 const VerificationForm = ({ registerInfo }: VerificationFormProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
   const router = useRouter();
   const form = useForm<VerifyFormType>({
@@ -45,22 +42,13 @@ const VerificationForm = ({ registerInfo }: VerificationFormProps) => {
     },
   });
 
+  const { isSubmitting } = form.formState;
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     }
   }, [countdown]);
-
-  useEffect(() => {
-    if (loading) {
-      const timer = setTimeout(() => {
-        setLoading(false);
-        console.log('Stopped loading after 5 minutes');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
 
   async function onSubmit(values: VerifyFormType) {
     try {
@@ -72,12 +60,19 @@ const VerificationForm = ({ registerInfo }: VerificationFormProps) => {
       });
       if (res.status === HTTP_STATUS_CODE.SUCCESS) {
         toast.success('Đăng ký thành công', {
-          description: 'You have logged in successfully.',
+          description:
+            'Bạn đã đăng ký thành công. Đang chuyển hướng trong 3 giây...',
           action: {
-            label: 'Login',
+            label: 'Đăng nhập ',
             onClick: () => router.push('/login'),
           },
         });
+
+        const timeout = setTimeout(() => {
+          router.push('/login');
+        }, 3000);
+
+        return () => clearTimeout(timeout);
       }
     } catch (err) {
       handleErrorApi({
@@ -125,7 +120,7 @@ const VerificationForm = ({ registerInfo }: VerificationFormProps) => {
           />
 
           <Button
-            loading={loading}
+            loading={isSubmitting}
             type="submit"
             className="mx-auto mt-8! flex gap-1"
           >
