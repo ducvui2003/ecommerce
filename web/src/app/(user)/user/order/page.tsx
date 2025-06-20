@@ -1,4 +1,5 @@
-import ActionBar from '@/app/(user)/user/order/action-bar';
+'use client';
+
 import { DataTable } from '@/app/(user)/user/order/data-table';
 import OrderDetailSheet from '@/components/OrderDetailSheet';
 

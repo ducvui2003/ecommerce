@@ -6,10 +6,11 @@ import {
   OrderSearchParamsType,
 } from '@/types/order.type';
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { GetReviewOfOrderItemResType } from '@/types/review.type';
 
 export const orderApi = createApi({
   reducerPath: 'orderApi',
-  tagTypes: ['Order'],
+  tagTypes: ['Order', 'OrderItem'],
   baseQuery: () => ({ data: {} }),
   endpoints: (builder) => ({
     getOrderTable: builder.query<
@@ -83,7 +84,29 @@ export const orderApi = createApi({
       },
       invalidatesTags: [{ type: 'Order', id: 'LIST' }],
     }),
+
+    getReviewOfOrderItem: builder.query<GetReviewOfOrderItemResType, number>({
+      async queryFn(orderItemId) {
+        try {
+          const data = await orderService.getReviewOfOrderItem(orderItemId);
+          return { data };
+        } catch (error: any) {
+          return {
+            error: {
+              status: error?.status || 500,
+              data: error?.message || 'Unknown error',
+            },
+          };
+        }
+      },
+      providesTags: (result, error, orderItemId) => [{ type: 'OrderItem', id: orderItemId }],
+    }),
   }),
 });
 
-export const { useGetOrderTableQuery, useGetOrderDetailQuery, useCancelOrderMutation } = orderApi;
+export const {
+  useGetOrderTableQuery,
+  useGetOrderDetailQuery,
+  useGetReviewOfOrderItemQuery,
+  useCancelOrderMutation
+} = orderApi;

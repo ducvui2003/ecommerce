@@ -85,6 +85,7 @@ type OrderDetailResType = {
 
 type OrderDetailItemType = {
   id: number;
+  productId: number;
   name: string;
   category: string;
   supplier: string;
