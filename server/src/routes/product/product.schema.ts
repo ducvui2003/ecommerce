@@ -82,6 +82,8 @@ const ProductResSchema = ProductModel.pick({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
   thumbnail: z.string().optional(),
+  numSell: z.number().default(0),
+  avgStar: z.number().default(0),
 });
 
 const ProductDetailResSchema = ProductModel.pick({

@@ -57,8 +57,10 @@ export class ProductServiceImpl implements ProductService {
         thumbnail:
           product.thumbnail &&
           this.fileService.getUrl(product.thumbnail.publicId),
-        resources: product.productResource.map(({ resource }) => {
-          return this.fileService.getUrl(resource.publicId);
+        resources: product.productResource.map((item) => {
+          if (item?.resource)
+            return this.fileService.getUrl(item.resource.publicId);
+          return '';
         }),
         option: product.option?.map((option, index) => {
           return {
@@ -79,12 +81,19 @@ export class ProductServiceImpl implements ProductService {
 
   async search(dto: SearchProductDto): Promise<Paging<ProductResType>> {
     const page: Paging<ProductType> = await this.productRepository.search(dto);
+    const productIds = page.items.map((item) => item.id);
+    const avgStar = await this.productRepository.countAvgStar(productIds);
+    const numSell = await this.productRepository.countNumSell(productIds);
+
     return transformItemsPaging<ProductResType, ProductType>(page, (item) => {
-      return ProductResSchema.parse({
+      const itemParser: ProductResType = {
         ...item,
         thumbnail:
           item.thumbnail && this.fileService.getUrl(item.thumbnail.publicId),
-      });
+        avgStar: avgStar.find((i) => i.productId === item.id)?.avgStar ?? 0,
+        numSell: numSell.find((i) => i.productId === item.id)?.numSell ?? 0,
+      };
+      return ProductResSchema.parse(itemParser);
     });
   }
 

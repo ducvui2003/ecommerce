@@ -9,6 +9,7 @@ import {
   Inject,
   UseGuards,
   Head,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateWishlistDto as dto } from '@route/wishlist/wishlist.dto';
 import { WishlistService } from '@route/wishlist/wishlist.service';
@@ -62,7 +63,7 @@ export class WishlistController {
   ) {
     const isExist = await this.wishlistService.checkIsLiked(userId, productId);
     if (!isExist) {
-      throw new Error('Product not found in wishlist');
+      throw new NotFoundException('Product not found in wishlist');
     }
   }
 }

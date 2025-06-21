@@ -213,7 +213,9 @@ const BaseProductForm = ({
                       Trạng thái
                     </FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) =>
+                        field.onChange(value === 'true')
+                      }
                       value={String(field.value?.toString())}
                     >
                       <FormControl>

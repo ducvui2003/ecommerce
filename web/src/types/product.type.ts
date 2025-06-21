@@ -31,7 +31,7 @@ type ProductResType = {
   thumbnail?: string;
   basePrice: number;
   salePrice?: number;
-  star: number;
+  avgStar: number;
   numSell: number;
 };
 

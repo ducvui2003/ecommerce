@@ -12,7 +12,6 @@ import {
   ProductResType,
   ProductSitemapType,
 } from '@route/product/product.schema';
-import { ProductServiceImpl } from '@route/product/product.service';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ReviewService } from '@route/review/review.service';
 import { ReviewItemType } from '@shared/models/review.model';

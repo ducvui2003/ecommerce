@@ -9,9 +9,7 @@ import { DEFAULT_IMAGE } from '@/constraint/variable';
 type ProductCardProps = ProductCardType & {
   className?: string;
 };
-const getDiscountedPrice = (base: number, percent?: number) => {
-  return percent ? base - (base * percent) / 100 : base;
-};
+
 const ProductCard = ({
   id,
   thumbnail,

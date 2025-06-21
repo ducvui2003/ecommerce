@@ -1,3 +1,4 @@
+import OrderTotal from '@/app/admin/dashboard/order-total';
 import OrderTrendChart from '@/app/admin/dashboard/order-trend-chart';
 import RevenueChart from '@/app/admin/dashboard/revenue-chart';
 import DashboardCard from '@/components/DashboardCard';
@@ -17,9 +18,7 @@ const DashboardPage = async () => {
   return (
     <section>
       <div className="mt-5 mb-4 flex gap-5">
-        <DashboardCard icon={'fluent-mdl2:product-variant'}>
-          <span>{data.stats.total.order} Đơn hàng</span>
-        </DashboardCard>
+        <OrderTotal order={data.stats.total.order} />
         <DashboardCard icon={'gridicons:product'}>
           <span>{data.stats.total.product} Sản phẩm</span>
         </DashboardCard>
@@ -42,4 +41,5 @@ const DashboardPage = async () => {
     </section>
   );
 };
+
 export default DashboardPage;

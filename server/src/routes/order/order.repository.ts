@@ -103,6 +103,7 @@ export class OrderPrismaRepository implements OrderRepository {
     });
     const limit = size;
     const offset = (page - 1) * limit;
+    console.log('whereRaw', limit, offset);
 
     const items = await this.prismaService.$queryRaw<OrderResType[]>(
       Prisma.sql`SELECT o.id, o.total_amount AS "totalAmount", o.status, o.created_at as "createdAt", SUM(oi.quantity)::INT as "quantity", first_item.product ->> 'media' AS "thumbnail"
@@ -121,7 +122,7 @@ export class OrderPrismaRepository implements OrderRepository {
     );
 
     const resultCount = await this.prismaService.$queryRaw<{ count: number }>(
-      Prisma.sql`SELECT COUNT(o.id)::INT as count
+      Prisma.sql`SELECT COUNT(DISTINCT o.id)::INT as count
                   FROM orders o JOIN order_items oi ON o.id = oi.order_id 
                   JOIN LATERAL (
                     SELECT oi2.product
@@ -134,7 +135,8 @@ export class OrderPrismaRepository implements OrderRepository {
     );
 
     const totalItems: number = resultCount?.[0]?.count ?? 0;
-
+    console.log('totalItems', totalItems);
+    console.log(Math.ceil(totalItems / size));
     return {
       items,
       pagination: {

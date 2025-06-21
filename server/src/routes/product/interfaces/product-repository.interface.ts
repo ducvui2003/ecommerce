@@ -15,6 +15,17 @@ export interface ProductRepository {
   getNewProducts(): Promise<ProductType[]>;
   increaseView(id: number): Promise<void>;
   getMostViewProducts(): Promise<ProductType[]>;
-
   getAllId(): Promise<ProductSitemapType>;
+  countNumSell(productIds: number[]): Promise<
+    {
+      productId: number;
+      numSell: number;
+    }[]
+  >;
+  countAvgStar(productIds: number[]): Promise<
+    {
+      productId: number;
+      avgStar: number;
+    }[]
+  >;
 }

@@ -390,4 +390,36 @@ export class ProductRepositoryImpl implements ProductRepository {
         });
       });
   }
+
+  countAvgStar(
+    productIds: number[],
+  ): Promise<{ productId: number; avgStar: number }[]> {
+    return this.prisma.review
+      .groupBy({
+        by: ['productId'],
+        where: {
+          productId: { in: productIds },
+        },
+        _avg: {
+          rating: true,
+        },
+      })
+      .then((results) => {
+        return results.map((item) => ({
+          productId: item.productId,
+          avgStar: parseFloat((item._avg.rating ?? 0).toFixed(1)),
+        }));
+      });
+  }
+
+  countNumSell(
+    productIds: number[],
+  ): Promise<{ productId: number; numSell: number }[]> {
+    return this.prisma.$queryRaw<{ productId: number; numSell: number }[]>(
+      Prisma.sql`   SELECT (oi.product ->> 'id')::INT AS "productId", COUNT(*)::INT AS "numSell"
+                    FROM order_items oi 
+                    WHERE (oi.product ->> 'id')::INT IN (${Prisma.join(productIds)})
+                    GROUP BY oi.product ->> 'id'`,
+    );
+  }
 }
