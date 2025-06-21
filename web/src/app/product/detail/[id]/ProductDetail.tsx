@@ -46,7 +46,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const { status } = useSession();
   const [page, setPage] = useState(1);
   const [ratings, setRatings] = useState<number[]>([]);
-  const [sort, setSort] = useState<(RatingSortKeysType)[number] | undefined>(undefined);
+  const [sort, setSort] = useState<RatingSortKeysType[number] | undefined>(
+    undefined,
+  );
   const [onlyHasResponse, setOnlyHasResponse] = useState<boolean>(false);
   const [onlyHasBuyAgain, setOnlyHasBuyAgain] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
@@ -58,7 +60,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       page,
       ratings,
       ...(sort && { sort }),
-      ...(search && {search}),
+      ...(search && { search }),
       ...(onlyHasResponse && { onlyHasResponse }),
       ...(onlyHasBuyAgain && { onlyHasBuyAgain }),
     },
@@ -261,19 +263,17 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           productId={product.id}
         />
       </div>
-      {
-        reviews && (
-          <ProductReview
-            reviews={reviews}
-            setPage={setPage}
-            setRatings={setRatings}
-            setSort={setSort}
-            setOnlyHasResponse={setOnlyHasResponse}
-            setOnlyHasBuyAgain={setOnlyHasBuyAgain}
-            setSearch={setSearch}
-          />
-        )
-      }
+      {reviews && (
+        <ProductReview
+          reviews={reviews}
+          setPage={setPage}
+          setRatings={setRatings}
+          setSort={setSort}
+          setOnlyHasResponse={setOnlyHasResponse}
+          setOnlyHasBuyAgain={setOnlyHasBuyAgain}
+          setSearch={setSearch}
+        />
+      )}
     </div>
   );
 }

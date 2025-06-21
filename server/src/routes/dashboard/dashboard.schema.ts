@@ -4,7 +4,7 @@ const DashboardSchema = z.object({
   stats: z.object({
     total: z.object({
       user: z.number().int(),
-      order: z.number().int(),
+      order: z.record(z.number()),
       revenue: z.number().int(),
       product: z.number().int(),
     }),

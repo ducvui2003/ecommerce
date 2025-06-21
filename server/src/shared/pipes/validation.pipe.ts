@@ -7,6 +7,7 @@ import { ZodError } from 'zod';
 export const ZodValidationPipe = createZodValidationPipe({
   createValidationException: (error: ZodError) => {
     // When Zod can not parse a schema, it auto throw error UnprocessableEntityException
+    console.log(error);
     return new UnprocessableEntityException(
       error.errors.map((err) => ({
         field: err.path.join('.'),

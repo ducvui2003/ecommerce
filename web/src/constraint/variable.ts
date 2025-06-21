@@ -11,7 +11,10 @@ export const LOCAL_STORAGE = {
   LOGOUT: 'logout-action',
 } as const;
 
-export const ALT = 'An Nhiem';
+export const ALT = 'An Nhien';
+export const TITLE = 'An Nhien';
+export const DESCRIPTION =
+  'An Nhien - Cửa hàng nước hoa chính hãng, chất lượng cao, giá cả hợp lý. Đặt hàng ngay hôm nay để trải nghiệm hương thơm tuyệt vời!';
 export const DEFAULT_IMAGE = '/images/product.png';
 export const PAYMENT_COOKIE = 'payment';
 

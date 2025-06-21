@@ -38,7 +38,6 @@ export class OrderManagerController {
   search(
     @Query() search: SearchOrderManagerDto,
   ): Promise<Paging<OrderResType>> {
-    console.log(search);
     return this.orderService.search(search);
   }
 
@@ -50,7 +49,7 @@ export class OrderManagerController {
     return this.orderService.getDetail(orderId);
   }
   @Get('/status/:id')
-  @MessageHttp('Get order detail for customer')
+  @MessageHttp('Get order status can change for manager')
   getStatus(
     @Param('id', ParseIntPipe) orderId: number,
   ): Promise<OrderStatusType[]> {
@@ -58,7 +57,7 @@ export class OrderManagerController {
   }
 
   @Put('/status/:id')
-  @MessageHttp('Get order detail for customer')
+  @MessageHttp('Update order status for manager')
   changeStatus(
     @Param('id', ParseIntPipe) orderId: number,
     @Body() body: ChangeOrderManagerDto,

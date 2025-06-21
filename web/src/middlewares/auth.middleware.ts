@@ -21,14 +21,12 @@ import { matchPath } from '@/lib/utils';
 //     return null;
 //   });
 // };
-const authMiddlewareWithRole = (
+const authMiddleware = (
   routes: string[] = [],
   allowedRole?: Role,
 ): Middleware => {
   return async (req: NextRequest, _, session) => {
     const path = req.nextUrl.pathname;
-    if (!allowedRole) return undefined;
-
     if (matchPath(path, routes)) {
       if (!session) {
         if (!allowedRole)
@@ -43,23 +41,26 @@ const authMiddlewareWithRole = (
   };
 };
 
-const routesForUser: string[] = ['/user/*splat', '/order', '/payment'];
-const authMiddlewareWithUser = authMiddlewareWithRole(routesForUser, 'USER');
+const routesForUser: string[] = ['/user/*splat', '/order', '/payment', '/cart'];
+const authMiddlewareWithUser = authMiddleware(routesForUser, 'USER');
 
 const routesForSeller: string[] = ['/seller/*splat'];
 
-const authMiddlewareWithSeller = authMiddlewareWithRole(
-  routesForSeller,
-  'SELLER',
-);
+const authMiddlewareWithSeller = authMiddleware(routesForSeller, 'SELLER');
 
 const routesForAdmin: string[] = ['/admin/*splat'];
-const authMiddlewareWithAdmin = authMiddlewareWithRole(routesForAdmin, 'ADMIN');
+const authMiddlewareWithAdmin = authMiddleware(routesForAdmin, 'ADMIN');
+
+const routesNeedAuth: string[] = routesForUser
+  .concat(routesForSeller)
+  .concat(routesForAdmin);
+const authMiddlewareWithRoutesNeedAuth = authMiddleware(routesNeedAuth);
 
 const middleWareAuth = {
   authMiddlewareWithUser,
   authMiddlewareWithSeller,
   authMiddlewareWithAdmin,
+  authMiddlewareWithRoutesNeedAuth,
 };
 
 export default middleWareAuth;

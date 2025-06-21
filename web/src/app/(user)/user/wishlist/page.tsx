@@ -29,7 +29,7 @@ const WishlistPage = ({}: WishlistPageProps) => {
           </div>
         </div>
       }
-      render={(item) => <WishlistCard data={item} />}
+      render={(item) => <WishlistCard key={item.id} data={item} />}
     />
   );
 };

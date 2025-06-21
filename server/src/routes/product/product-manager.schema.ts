@@ -1,11 +1,13 @@
 import {
+  DecimalToNumberOptionalSchema,
   DecimalToNumberSchema,
+  NumberToDecimalOptionalSchema,
   NumberToDecimalSchema,
 } from '@shared/models/base.model';
 import { ResourceModel } from '@shared/models/resource.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel } from '@shared/models/product.model';
-import { z } from 'zod';
+import z3, { z } from 'zod';
 
 const CreateOptionBodySchema = OptionModel.pick({
   name: true,
@@ -31,7 +33,7 @@ const CreateProductBodySchema = ProductModel.pick({
   supplierId: true,
 }).extend({
   basePrice: NumberToDecimalSchema,
-  salePrice: NumberToDecimalSchema,
+  salePrice: NumberToDecimalOptionalSchema,
   thumbnailId: z.coerce.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),
@@ -44,7 +46,7 @@ const CreateProductResSchema = ProductModel.pick({
   createdAt: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
-  salePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberOptionalSchema,
 });
 
 const UpdateProductResSchema = CreateProductResSchema;
@@ -72,7 +74,7 @@ const ProductManagerResSchema = ProductModel.pick({
   isDeleted: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
-  salePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberOptionalSchema,
   category: z.string(),
   supplier: z.string(),
   thumbnail: z.string().optional(),
@@ -89,7 +91,7 @@ const ProductDetailManagerResSchema = ProductModel.pick({
   isDeleted: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
-  salePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberOptionalSchema,
   thumbnail: ResourceResSchema,
   resources: z.array(ResourceResSchema),
   options: z.array(OptionResSchema).optional(),
@@ -102,7 +104,7 @@ const UpdateProductBodySchema = ProductModel.pick({
   supplierId: true,
 }).extend({
   basePrice: NumberToDecimalSchema,
-  salePrice: NumberToDecimalSchema,
+  salePrice: NumberToDecimalOptionalSchema,
   thumbnailId: z.coerce.number().optional(),
   resourceIds: z.array(z.number()).optional(),
   isDeleted: z.boolean().optional().default(false),

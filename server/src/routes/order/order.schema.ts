@@ -2,10 +2,12 @@ import { OrderStatus, SortBy } from '@shared/constants/order.constant';
 import { PaymentProvider } from '@shared/constants/payment.constant';
 import { OrderBy, orderBySchema } from '@shared/constants/search.constant';
 import { DecimalToNumberSchema } from '@shared/models/base.model';
+import { CartItemModel } from '@shared/models/cart-item.model';
 import { OrderItemModel } from '@shared/models/order-item.model';
 import { OrderModel } from '@shared/models/order.model';
 import { PaymentModel } from '@shared/models/payment.model';
 import { ProductOrderItemModel } from '@shared/models/product-order-item.model';
+import { ProductModel } from '@shared/models/product.model';
 import { PageableSchema } from '@shared/types/request.type';
 import { z } from 'zod';
 
@@ -85,11 +87,11 @@ const OrderDetailResSchema = OrderModel.pick({
     OrderItemModel.pick({
       id: true,
       quantity: true,
-    }).merge(
-      ProductOrderItemModel.omit({id: true})
-    ).extend({
-      productId: ProductOrderItemModel.shape.id
-    }),
+    })
+      .merge(ProductOrderItemModel.omit({ id: true }))
+      .extend({
+        productId: ProductOrderItemModel.shape.id,
+      }),
   ),
   payment: PaymentModel.pick({
     provider: true,
@@ -98,6 +100,24 @@ const OrderDetailResSchema = OrderModel.pick({
     status: true,
   }),
 });
+
+const CartItemSchema = CartItemModel.pick({
+  id: true,
+  cartId: true,
+  option: true,
+  optionId: true,
+  quantity: true,
+  productId: true,
+}).extend({
+  product: ProductModel.pick({
+    id: true,
+    name: true,
+    basePrice: true,
+    salePrice: true,
+  }),
+});
+
+type CartItemType = z.infer<typeof CartItemSchema>;
 
 type CreateOrderType = z.infer<typeof CreateOrderSchema>;
 type OrderResType = z.infer<typeof OrderResSchema>;
@@ -116,4 +136,5 @@ export type {
   OrderResType,
   OrderDetailResType,
   SearchOrderType,
+  CartItemType,
 };

@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import { DEFAULT_IMAGE, statusOrder } from '@/constraint/variable';
 import {
   useCancelOrderMutation,
-  useGetOrderDetailQuery
+  useGetOrderDetailQuery,
 } from '@/features/order/order.api';
 import { setIsDetailSheet } from '@/features/order/order.slice';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
@@ -36,6 +36,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import ReviewDialog from '@/components/ReviewDialog';
+import Link from '@/components/Link';
 
 const OrderDetailSheet = () => {
   const { isOpenDetailSheet: open, orderId } = useAppSelector(
@@ -65,7 +66,7 @@ const OrderDetailSheet = () => {
         </SheetHeader>
         <section className="px-4 [&>*]:mb-4 [&>*]:py-2">
           <OrderItemList items={data.items} status={data.status} />
-          <OrderMetadata {...data}  id={data.id} refetch={refetch}/>
+          <OrderMetadata {...data} id={data.id} refetch={refetch} />
           <OrderReceiver {...data.receiver} />
           <OrderPayment {...data.payment} />
         </section>
@@ -95,7 +96,7 @@ const OrderItemList = ({ items, status }: OrderItemListProps) => {
 
 type OrderItemProps = OrderDetailItemType & Pick<OrderMetadataProps, 'status'>;
 
-const OrderItem = ({status, ...item }: OrderItemProps) => {
+const OrderItem = ({ status, ...item }: OrderItemProps) => {
   const { price, options, media, category, supplier, name, quantity } = item;
   const unitPrice = price + (options?.price ?? 0);
   const totalPrice = unitPrice * quantity;
@@ -113,19 +114,17 @@ const OrderItem = ({status, ...item }: OrderItemProps) => {
           {category} - <Badge> {supplier}</Badge>
         </span>
 
-        <h3 className="w-[300px] truncate py-1 text-base text-ellipsis">
-          {name}
-        </h3>
-
+        <Link href={`/product/detail/${item.productId}`}>
+          <h3 className="w-[300px] truncate py-1 text-base text-ellipsis">
+            {name}
+          </h3>
+        </Link>
         {options && <span className="text-sm">{options.name}</span>}
       </div>
       <div className="ml-auto">
         {currency(unitPrice)} x {quantity} = {currency(totalPrice)}
       </div>
-      {
-        (status === 'COMPLETE') &&
-        <ReviewDialog item={item} />
-      }
+      {status === 'COMPLETE' && <ReviewDialog item={item} />}
     </div>
   );
 };

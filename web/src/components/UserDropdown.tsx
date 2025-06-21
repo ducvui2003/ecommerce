@@ -18,7 +18,6 @@ import useSession from '@/components/auth/useSession';
 const UserDropdown = () => {
   const [open, setOpen] = useState<boolean>(false);
   const { user } = useSession();
-  console.log('UserDropdown', user);
   return (
     <>
       <DropdownMenu>

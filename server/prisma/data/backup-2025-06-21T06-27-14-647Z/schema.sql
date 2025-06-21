@@ -1,7 +1,7 @@
 --
 -- PostgreSQL database dump
 --
-\connect ecommerce;
+
 -- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
 -- Dumped by pg_dump version 17.4 (Ubuntu 17.4-1.pgdg24.04+2)
 
@@ -23,6 +23,7 @@ ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_role_id_
 ALTER TABLE IF EXISTS ONLY public.suppliers DROP CONSTRAINT IF EXISTS suppliers_address_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.reviews DROP CONSTRAINT IF EXISTS reviews_user_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.reviews DROP CONSTRAINT IF EXISTS reviews_product_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.reviews DROP CONSTRAINT IF EXISTS reviews_order_item_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.promotion_orders DROP CONSTRAINT IF EXISTS promotion_orders_promotion_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.promotion_orders DROP CONSTRAINT IF EXISTS promotion_orders_order_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.promotion_order_items DROP CONSTRAINT IF EXISTS promotion_order_items_promotion_id_fkey;
@@ -44,9 +45,11 @@ ALTER TABLE IF EXISTS ONLY public.cart_items DROP CONSTRAINT IF EXISTS cart_item
 ALTER TABLE IF EXISTS ONLY public.cart_items DROP CONSTRAINT IF EXISTS cart_items_option_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.cart_items DROP CONSTRAINT IF EXISTS cart_items_cart_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.addresses DROP CONSTRAINT IF EXISTS addresses_user_id_fkey;
+DROP INDEX IF EXISTS public.wishlists_user_id_product_id_key;
 DROP INDEX IF EXISTS public.users_email_key;
 DROP INDEX IF EXISTS public.suppliers_address_id_key;
 DROP INDEX IF EXISTS public.roles_name_key;
+DROP INDEX IF EXISTS public.reviews_order_item_id_user_id_key;
 DROP INDEX IF EXISTS public.promotions_code_key;
 DROP INDEX IF EXISTS public.payment_order_id_key;
 DROP INDEX IF EXISTS public.carts_user_id_key;
@@ -802,9 +805,9 @@ CREATE TABLE public.products (
     supplier_id integer NOT NULL,
     created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp(3) without time zone,
-    deleted_at timestamp(3) without time zone,
     thumbnail_id integer,
-    views integer DEFAULT 0 NOT NULL
+    views integer DEFAULT 0 NOT NULL,
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -980,7 +983,9 @@ CREATE TABLE public.reviews (
     product_id integer NOT NULL,
     created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp(3) without time zone,
-    deleted_at timestamp(3) without time zone
+    deleted_at timestamp(3) without time zone,
+    order_item_id integer NOT NULL,
+    response text
 );
 
 
@@ -1123,9 +1128,7 @@ CREATE TABLE public.wishlists (
     id integer NOT NULL,
     user_id integer NOT NULL,
     product_id integer NOT NULL,
-    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp(3) without time zone,
-    deleted_at timestamp(3) without time zone
+    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -1584,6 +1587,13 @@ CREATE UNIQUE INDEX promotions_code_key ON public.promotions USING btree (code);
 
 
 --
+-- Name: reviews_order_item_id_user_id_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX reviews_order_item_id_user_id_key ON public.reviews USING btree (order_item_id, user_id);
+
+
+--
 -- Name: roles_name_key; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1602,6 +1612,13 @@ CREATE UNIQUE INDEX suppliers_address_id_key ON public.suppliers USING btree (ad
 --
 
 CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email);
+
+
+--
+-- Name: wishlists_user_id_product_id_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX wishlists_user_id_product_id_key ON public.wishlists USING btree (user_id, product_id);
 
 
 --
@@ -1633,7 +1650,7 @@ ALTER TABLE ONLY public.cart_items
 --
 
 ALTER TABLE ONLY public.cart_items
-    ADD CONSTRAINT cart_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT cart_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1649,7 +1666,7 @@ ALTER TABLE ONLY public.carts
 --
 
 ALTER TABLE ONLY public.comments
-    ADD CONSTRAINT comments_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT comments_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1665,7 +1682,7 @@ ALTER TABLE ONLY public.comments
 --
 
 ALTER TABLE ONLY public.options
-    ADD CONSTRAINT options_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT options_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1705,7 +1722,7 @@ ALTER TABLE ONLY public.payment
 --
 
 ALTER TABLE ONLY public.product_resources
-    ADD CONSTRAINT product_resources_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT product_resources_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1773,11 +1790,19 @@ ALTER TABLE ONLY public.promotion_orders
 
 
 --
+-- Name: reviews reviews_order_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_order_item_id_fkey FOREIGN KEY (order_item_id) REFERENCES public.order_items(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
 -- Name: reviews reviews_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reviews
-    ADD CONSTRAINT reviews_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT reviews_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1809,7 +1834,7 @@ ALTER TABLE ONLY public.users
 --
 
 ALTER TABLE ONLY public.wishlists
-    ADD CONSTRAINT wishlists_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT wishlists_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

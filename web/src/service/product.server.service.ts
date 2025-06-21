@@ -34,6 +34,13 @@ const productService = {
     );
     return res.payload.data;
   },
+
+  getSitemap: async (): Promise<{ id: number; createdAt: Date }[]> => {
+    const res = await httpServer.get<
+      ResponseApi<{ id: number; createdAt: Date }[]>
+    >(`api/v1/products/metadata/sitemap`, undefined, false);
+    return res.payload.data;
+  },
 };
 
 export default productService;

@@ -76,9 +76,7 @@ const InformationFormSchema = z.object({
     .regex(/^[0-9]+$/, 'Số điện thoại không hợp lệ')
     .optional(),
   dob: z.coerce.date().optional(),
-  gender: z
-    .enum([Gender.FEMALE, Gender.MALE, Gender.UNKNOWN])
-    .default(Gender.UNKNOWN),
+  gender: z.enum([Gender.FEMALE, Gender.MALE, Gender.UNKNOWN]).optional(),
 });
 
 const PasswordFormSchema = z

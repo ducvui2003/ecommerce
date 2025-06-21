@@ -1,10 +1,11 @@
+import { StatusOrderType } from '@/constraint/variable';
 import { z } from 'zod';
 
 type DashboardResType = {
   stats: {
     total: {
       user: number;
-      order: number;
+      order: Record<StatusOrderType, number>;
       revenue: number;
       product: number;
     };

@@ -6,6 +6,7 @@ import {
   UpdateProductBodyType,
 } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
+import { ProductSitemapType } from '@route/product/product.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductType } from '@shared/models/product.model';
 import { PrismaService } from '@shared/services/prisma.service';
@@ -367,5 +368,58 @@ export class ProductRepositoryImpl implements ProductRepository {
     });
 
     return products;
+  }
+
+  getAllId(): Promise<ProductSitemapType> {
+    return this.prisma.product
+      .findMany({
+        where: {
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+        },
+      })
+      .then((products) => {
+        return products.map((product) => {
+          return {
+            id: product.id,
+            createdAt: product.createdAt,
+          };
+        });
+      });
+  }
+
+  countAvgStar(
+    productIds: number[],
+  ): Promise<{ productId: number; avgStar: number }[]> {
+    return this.prisma.review
+      .groupBy({
+        by: ['productId'],
+        where: {
+          productId: { in: productIds },
+        },
+        _avg: {
+          rating: true,
+        },
+      })
+      .then((results) => {
+        return results.map((item) => ({
+          productId: item.productId,
+          avgStar: parseFloat((item._avg.rating ?? 0).toFixed(1)),
+        }));
+      });
+  }
+
+  countNumSell(
+    productIds: number[],
+  ): Promise<{ productId: number; numSell: number }[]> {
+    return this.prisma.$queryRaw<{ productId: number; numSell: number }[]>(
+      Prisma.sql`   SELECT (oi.product ->> 'id')::INT AS "productId", COUNT(*)::INT AS "numSell"
+                    FROM order_items oi 
+                    WHERE (oi.product ->> 'id')::INT IN (${Prisma.join(productIds)})
+                    GROUP BY oi.product ->> 'id'`,
+    );
   }
 }

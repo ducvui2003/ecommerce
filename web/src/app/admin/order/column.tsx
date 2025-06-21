@@ -1,14 +1,5 @@
-import Link from '@/components/Link';
+import DialogChangeStatus from '@/app/admin/order/action';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import sepay from 'public/images/sepay.png';
-import vnpay from 'public/images/VNpay.png';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   PaymentProvider,
   paymentStatus,
@@ -19,10 +10,9 @@ import {
 import { currency, formatDate } from '@/lib/utils';
 import { OrderManagerResType } from '@/types/order.type';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
-import { useAppDispatch } from '@/hooks/use-store';
-import DialogChangeStatus from '@/app/admin/order/action';
+import sepay from 'public/images/sepay.png';
+import vnpay from 'public/images/VNpay.png';
 
 const orderColumns: ColumnDef<OrderManagerResType>[] = [
   {

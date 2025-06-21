@@ -38,7 +38,6 @@ export class ProductManagerController {
   searchProducts(
     @Query() query: SearchProductDto,
   ): Promise<Paging<ProductManagerResType>> {
-    console.log('Search query:', query);
     return this.productManagerService.search(query);
   }
 

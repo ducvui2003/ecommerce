@@ -8,7 +8,11 @@ import { PrismaService } from '@shared/services/prisma.service';
 import { Inject } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 export interface ReviewRepository {
-  sendReview(userId: number, body: SendReviewReqDTO, reviewId?: number): Promise<void>;
+  sendReview(
+    userId: number,
+    body: SendReviewReqDTO,
+    reviewId?: number,
+  ): Promise<void>;
 
   getReviewsOfProduct(
     productId: number,
@@ -32,8 +36,8 @@ export class PrismaReviewRepository implements ReviewRepository {
       where: { orderItemId_userId: { userId, orderItemId } },
     });
 
-    const {rating, content, id, createdAt, updatedAt} = data;
-    return {rating, orderItemId, content, id, createdAt, updatedAt,}
+    const { rating, content, id, createdAt, updatedAt } = data;
+    return { rating, orderItemId, content, id, createdAt, updatedAt };
   }
 
   async getReviewsOfProduct(
@@ -120,9 +124,9 @@ export class PrismaReviewRepository implements ReviewRepository {
             },
             orderItem: {
               select: {
-                product: true
-              }
-            }
+                product: true,
+              },
+            },
           },
         }),
         this.prismaService.review.count({ where }),
@@ -151,11 +155,11 @@ export class PrismaReviewRepository implements ReviewRepository {
     return {
       averageRating: parseFloat((computeAvgRating._avg.rating ?? 0).toFixed(1)),
       ratingStars,
-      items: collectItems.map(({orderItem, ...rest}) => {
+      items: collectItems.map(({ orderItem, ...rest }) => {
         return {
           ...rest,
-          options: orderItem.product.options
-        }
+          options: orderItem.product.options,
+        };
       }),
       pagination: {
         page,
@@ -166,19 +170,22 @@ export class PrismaReviewRepository implements ReviewRepository {
     };
   }
 
-  async sendReview(userId: number, body: SendReviewReqDTO, reviewId?: number): Promise<void> {
+  async sendReview(
+    userId: number,
+    body: SendReviewReqDTO,
+    reviewId?: number,
+  ): Promise<void> {
     const { productId, orderItemId, content, rating } = body;
     await this.upsertReview(
       {
-        orderItemId_userId: {orderItemId, userId},
+        orderItemId_userId: { orderItemId, userId },
         ...(reviewId && { id: reviewId }),
         productId,
       },
       { content, rating },
-      { productId, orderItemId, content, rating, userId , updatedAt: null}
-    )
+      { productId, orderItemId, content, rating, userId, updatedAt: null },
+    );
   }
-
 
   async upsertReview(
     where: Prisma.ReviewWhereUniqueInput,

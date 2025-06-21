@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { HTTP_STATUS_CODE } from '@/constraint/variable';
 import { handleErrorApi } from '@/lib/utils';
 import authService from '@/service/auth.service';
 import {
@@ -21,7 +20,7 @@ import {
   RegisterFormType,
 } from '@/types/schema/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -65,7 +64,7 @@ const RegisterForm = () => {
   return !registerValue ? (
     <>
       <div className="mx-auto">
-        <Logo className='size-[125px]'/>
+        <Logo className="size-[125px]" />
       </div>
       <div className="py-2">
         <Form {...form}>
@@ -75,7 +74,7 @@ const RegisterForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel  className='text-base'>Email</FormLabel>
+                  <FormLabel className="text-base">Email</FormLabel>
                   <FormControl>
                     <Input placeholder="Vui lòng không để trống" {...field} />
                   </FormControl>
@@ -88,9 +87,9 @@ const RegisterForm = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel  className='text-base'>Họ và tên</FormLabel>
+                  <FormLabel className="text-base">Họ và tên</FormLabel>
                   <FormControl>
-                    <Input  placeholder="Vui lòng không để trống" {...field} />
+                    <Input placeholder="Vui lòng không để trống" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -102,7 +101,7 @@ const RegisterForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel  className='text-base'>Mật khẩu</FormLabel>
+                  <FormLabel className="text-base">Mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -119,7 +118,7 @@ const RegisterForm = () => {
               name="confirm-password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel  className='text-base'>Nhập lại mật khẩu</FormLabel>
+                  <FormLabel className="text-base">Nhập lại mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"

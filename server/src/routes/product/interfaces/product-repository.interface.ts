@@ -5,6 +5,7 @@ import {
   CreateProductBodyType,
   UpdateProductBodyType,
 } from '@route/product/product-manager.schema';
+import { ProductSitemapType } from '@route/product/product.schema';
 
 export interface ProductRepository {
   getProductById(id: number, isDeleted?: boolean): Promise<ProductType>;
@@ -14,4 +15,17 @@ export interface ProductRepository {
   getNewProducts(): Promise<ProductType[]>;
   increaseView(id: number): Promise<void>;
   getMostViewProducts(): Promise<ProductType[]>;
+  getAllId(): Promise<ProductSitemapType>;
+  countNumSell(productIds: number[]): Promise<
+    {
+      productId: number;
+      numSell: number;
+    }[]
+  >;
+  countAvgStar(productIds: number[]): Promise<
+    {
+      productId: number;
+      avgStar: number;
+    }[]
+  >;
 }

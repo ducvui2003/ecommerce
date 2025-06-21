@@ -27,9 +27,9 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
     page: currentPage,
     size: currentSize,
   });
-
   const data: ProductCardType[] = response.items.map((item) => ({
     ...item,
+    star: item.avgStar || 0,
   }));
 
   const { limit, page, totalItems = 0, totalPages } = response.pagination;

@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 import {
   DashboardType,
   RevenueByTimeAndCategoryResponseType,
-  RevenueByTimeRequestType,
   RevenueByTimeResponseType,
 } from '@route/dashboard/dashboard.schema';
 import { PrismaService } from '@shared/services/prisma.service';
@@ -22,7 +21,15 @@ export class PrismaDashboardRepository implements DashboardRepository {
   constructor(private readonly prismaService: PrismaService) {}
   async getDashboard(): Promise<DashboardType> {
     const totalUser = await this.prismaService.user.count();
-    const totalOrder = await this.prismaService.order.count();
+    const totalOrder = await this.prismaService.$queryRaw<
+      {
+        status: string;
+        quantity: number;
+      }[]
+    >(Prisma.sql`
+        SELECT o.status, count (*)::INT as "quantity" FROM orders o
+        GROUP BY o.status;
+      `);
     const totalProduct = await this.prismaService.product.count();
     const totalRevenue = await this.prismaService.$queryRaw<
       { revenue: number | null }[]
@@ -72,7 +79,13 @@ export class PrismaDashboardRepository implements DashboardRepository {
     const response: DashboardType = {
       stats: {
         total: {
-          order: totalOrder,
+          order: totalOrder.reduce(
+            (acc, item) => {
+              acc[item.status] = item.quantity;
+              return acc;
+            },
+            {} as Record<string, number>,
+          ),
           user: totalUser,
           product: totalProduct,
           revenue: totalRevenue?.[0].revenue ?? 0,
