@@ -71,12 +71,14 @@ export class ProductManagerService {
           publicId: product.thumbnail.publicId,
           url: this.fileService.getUrl(product.thumbnail.publicId),
         },
-        resources: product.productResource.map(({ resource }) => {
-          return {
-            id: resource.id,
-            publicId: resource.publicId,
-            url: this.fileService.getUrl(resource.publicId),
-          };
+        resources: product.productResource.map((item) => {
+          if (item?.resource)
+            return {
+              id: item.resource.id,
+              publicId: item.resource.publicId,
+              url: this.fileService.getUrl(item.resource.publicId),
+            };
+          return null;
         }),
         options: product.option?.map((option, index) => {
           return {

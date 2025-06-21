@@ -71,8 +71,14 @@ export class OrderService {
     const recordPriceOrderItem: Record<number, number> = {};
 
     cartItems.forEach((item) => {
-      const basePrice = item.product?.basePrice?.toNumber() ?? 0;
       let price = 0;
+      const { basePrice, salePrice } = item.product;
+      let productPrice = 0;
+      if (salePrice) {
+        productPrice = Math.min(basePrice.toNumber(), salePrice.toNumber());
+      } else {
+        productPrice = basePrice.toNumber();
+      }
       if (item.optionId) {
         const optionPrice = item.option?.price?.toNumber() ?? 0;
         price = (basePrice + optionPrice) * item.quantity;
@@ -143,7 +149,7 @@ export class OrderService {
       );
 
       // 4. Delete cart item
-      this.orderRepository.deleteCartItemByIdIn(dto.cartItemIds, tx);
+      await this.orderRepository.deleteCartItemByIdIn(dto.cartItemIds, tx);
 
       return {
         ...payment,

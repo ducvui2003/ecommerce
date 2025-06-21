@@ -40,7 +40,7 @@ type ProductDetailRespType = {
   name: string;
   description: string;
   basePrice: number;
-  salePrice: number;
+  salePrice?: number;
   views: number;
   category: {
     id: number;
@@ -95,44 +95,57 @@ const BaseOptionForm = z.object({
   stock: z.coerce.number(),
 });
 
-const BaseProductFormSchema = z.object({
-  name: string,
-  description: z.string(),
-  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
-  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
-  thumbnail: BaseResourceForm.optional(),
-  resources: z.array(BaseResourceForm).optional(),
-  isDeleted: z.boolean(),
-  options: z.array(BaseOptionForm).optional(),
-});
+const BaseProductFormSchema = z
+  .object({
+    name: string,
+    description: z.string(),
+    categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
+    supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
+    basePrice: z.coerce.number().min(1000, 'Price must be >= 1000'),
+    salePrice: z.coerce.number().min(0, 'Price must be >= 0').optional(),
+    thumbnail: BaseResourceForm.optional(),
+    resources: z.array(BaseResourceForm).optional(),
+    isDeleted: z.boolean(),
+    options: z.array(BaseOptionForm).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.salePrice != null && data.salePrice > data.basePrice) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Giá giảm cần phải nhỏ hơn giá cơ bản',
+      path: ['salePrice'],
+    },
+  );
 
 type BaseProductFormType = z.infer<typeof BaseProductFormSchema>;
 
 const CreateProductBodySchema = z.object({
-  name: string,
+  name: z.string(),
   description: z.string(),
-  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
-  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  categoryId: z.number(),
+  supplierId: z.number(),
+  basePrice: z.number(),
+  salePrice: z.number(),
   thumbnailId: z.number().optional(),
   resourceIds: z.array(z.number()).optional(),
-  isDeleted: z.boolean().optional().default(false),
+  isDeleted: z.boolean(),
   options: z.array(CreateOptionBodySchema).optional(),
 });
 
 const UpdateProductBodySchema = z.object({
   name: string,
   description: z.string(),
-  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
-  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
-  thumbnail: z.number().optional(),
+  categoryId: z.number(),
+  supplierId: z.number(),
+  basePrice: z.number(),
+  salePrice: z.number().optional(),
+  thumbnailId: z.number().optional(),
   resourceIds: z.array(z.number()).optional(),
-  isDeleted: z.boolean().optional().default(false),
+  isDeleted: z.boolean(),
   options: z.array(BaseOptionForm).optional(),
 });
 

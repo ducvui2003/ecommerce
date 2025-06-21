@@ -1,4 +1,5 @@
 import {
+  NumberToDecimalOptionalSchema,
   NumberToDecimalSchema,
   TimestampFields,
 } from '@shared/models/base.model';
@@ -15,7 +16,7 @@ export const ProductModel = TimestampFields.extend({
   categoryId: z.number(),
   supplierId: z.number(),
   basePrice: NumberToDecimalSchema,
-  salePrice: NumberToDecimalSchema,
+  salePrice: NumberToDecimalOptionalSchema,
   views: z.number().default(0),
   productResource: z.array(
     z

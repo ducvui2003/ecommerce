@@ -1,6 +1,9 @@
 import { OrderBy, SortBy } from '@shared/constants/product.constant';
 import { orderBySchema } from '@shared/constants/search.constant';
-import { DecimalToNumberSchema } from '@shared/models/base.model';
+import {
+  DecimalToNumberOptionalSchema,
+  DecimalToNumberSchema,
+} from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel } from '@shared/models/product.model';
@@ -92,7 +95,7 @@ const ProductDetailResSchema = ProductModel.pick({
   description: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
-  salePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberOptionalSchema,
   views: z.number(),
   category: CategoryModel.pick({
     id: true,

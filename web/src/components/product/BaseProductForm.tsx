@@ -48,7 +48,7 @@ const BaseProductForm = ({
     defaultValues: initialValue ?? {
       name: '',
       basePrice: 0,
-      salePrice: 0,
+      salePrice: undefined,
       supplierId: 0,
       categoryId: 0,
       description: '',
@@ -95,7 +95,6 @@ const BaseProductForm = ({
   const { isSubmitting } = form.formState;
 
   const onSubmit = (values: BaseProductFormType) => {
-    console.log(values);
     handleSubmit(values);
   };
 
@@ -252,11 +251,10 @@ const BaseProductForm = ({
                         }
                       />
                     </FormControl>
-
+                    <div className="text-xs text-green-400">
+                      {currency(field.value)}
+                    </div>
                     <span className="item-center flex h-[25px] justify-between">
-                      <span className="text-xs text-green-400">
-                        {currency(field.value)}
-                      </span>
                       <FormMessage />
                     </span>
                   </FormItem>
@@ -271,17 +269,16 @@ const BaseProductForm = ({
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="Vui lòng không để trống"
                         {...field}
                         onChange={(event) =>
                           form.setValue('salePrice', event.target.valueAsNumber)
                         }
                       />
                     </FormControl>
+                    <div className="text-xs text-green-400">
+                      {currency(field.value ?? 0)}
+                    </div>
                     <span className="item-center flex h-[25px] justify-between">
-                      <span className="text-xs text-green-400">
-                        {currency(field.value)}
-                      </span>
                       <FormMessage />
                     </span>
                   </FormItem>
