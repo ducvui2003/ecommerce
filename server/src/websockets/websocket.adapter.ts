@@ -31,11 +31,12 @@ export class WebsocketAdapter extends IoAdapter {
   }
 
   async authMiddleware(socket: Socket, next: (err?: any) => void) {
-    const { authorization } = socket.handshake.headers;
-    if (!authorization) {
+    const token = socket.handshake.query.token as string;
+    console.log('Authorization header:', token);
+    if (!token) {
       return next(new Error('Unauthorized'));
     }
-    const accessToken = authorization.split(' ')[1];
+    const accessToken = token.split(' ')[1];
     if (!accessToken) {
       return next(new Error('Unauthorized'));
     }
