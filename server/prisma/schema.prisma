@@ -20,6 +20,19 @@ generator json {
   provider = "prisma-json-types-generator"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./erd/ERD.pdf"
+}
+
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  output              = "./dbml"
+  outputName          = "awesome.dbml"
+  projectName         = "An Nhien E-commerce"
+  projectDatabaseType = "PostgreSQL"
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE

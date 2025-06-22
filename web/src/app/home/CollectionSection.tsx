@@ -9,10 +9,9 @@ const CollectionSection = () => {
     <section>
       <h2 className="text-center">Bộ sưu tập mới</h2>
       <p className="mx-auto w-1/2 pt-3 pb-10 text-center">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas
-        ut dolorum consequuntur, adipisci repellat! Eveniet commodi voluptatem
-        voluptate, eum minima, in suscipit explicabo voluptatibus harum,
-        quibusdam ex repellat eaque!
+        Khám phá bộ sưu tập tinh dầu mới nhất – sự hòa quyện tinh tế giữa thiên
+        nhiên và cảm xúc. Mỗi sản phẩm mang đến một trải nghiệm thư giãn và
+        thanh lọc tuyệt vời cho không gian sống của bạn.
       </p>
       <div className="flex justify-between">
         {products.map((item, index) => (
@@ -26,17 +25,17 @@ const CollectionSection = () => {
 const products: ProductProps[] = [
   {
     title: 'Hương Lavender quyến rũ',
-    desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas ut dolorum consequuntur, adipisci repellat',
+    desc: 'Tinh dầu Lavender giúp thư giãn tinh thần, giảm căng thẳng và mang đến giấc ngủ sâu tự nhiên.',
     thumbnail: '/images/collection_section.png',
   },
   {
     title: 'Hương Lavender quyến rũ',
-    desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas ut dolorum consequuntur, adipisci repellat',
+    desc: 'Sảng khoái tức thì với hương bạc hà tươi mát – hỗ trợ làm sạch không khí và giảm mệt mỏi.',
     thumbnail: '/images/collection_section.png',
   },
   {
     title: 'Hương Lavender quyến rũ',
-    desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe voluptas ut dolorum consequuntur, adipisci repellat',
+    desc: 'Tinh dầu gỗ đàn hương mang đến cảm giác ấm áp, an yên và hỗ trợ thiền định hiệu quả.',
     thumbnail: '/images/collection_section.png',
   },
 ];
