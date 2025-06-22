@@ -17,7 +17,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 export const productManagerApi = createApi({
   reducerPath: 'productManagerApi',
   baseQuery: () => ({ data: {} }),
-  tagTypes: ['ProductManager'],
+  tagTypes: ['ProductManager', 'ProductDetailManager'],
   endpoints: (builder) => ({
     getProductTable: builder.query<
       Paging<ProductManagerResType>,
@@ -127,6 +127,9 @@ export const productManagerApi = createApi({
           };
         }
       },
+      providesTags: (result, error, id) => {
+        return [{ type: 'ProductDetailManager' as const, id }];
+      },
     }),
 
     updateProduct: builder.mutation<
@@ -150,7 +153,14 @@ export const productManagerApi = createApi({
         }
       },
       invalidatesTags: (_, __, { id }) => {
-        return [{ type: 'ProductManager', id: id }];
+        console.log('Invalidating ProductManager cache for id:', id);
+        return [
+          { type: 'ProductManager', id: id },
+          {
+            type: 'ProductDetailManager',
+            id: id
+          },
+        ];
       },
     }),
   }),

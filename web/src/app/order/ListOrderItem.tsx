@@ -19,7 +19,7 @@ const ListOrderItem = ({ data }: ListOrderItemProps) => {
             <Card key={item.id}>
               <CardContent className="flex items-center gap-4 p-4">
                 <Image
-                  src={tinhdau2}
+                  src={item.thumbnail ?? tinhdau2}
                   alt="product"
                   width={60}
                   height={60}
