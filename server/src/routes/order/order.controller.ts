@@ -39,6 +39,7 @@ export class OrderController {
     @Body() dto: CreateOrderDto,
     @Ip() ip: string,
   ): Promise<CreateOrderResType | null> {
+    console.log(dto);
     const payment = await this.orderService.createOrder(userId, dto);
     const orderId = payment.orderId;
     const paymentId = payment.id;

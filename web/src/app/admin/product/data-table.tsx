@@ -53,7 +53,6 @@ export function DataTable() {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
                 const isDeleted = row.original.isDeleted;
-                console.log(isDeleted);
                 return (
                   <TableRow
                     key={row.id}

@@ -39,6 +39,7 @@ const UpdateProductForm = ({ id }: UpdateProductFormProps) => {
     })
       .unwrap()
       .then((response) => {
+        console.log('Update response:', response);
         toast.success('Cập nhập sản phẩm thành công', {
           description: `${response.id} - ${response.name}`,
         });

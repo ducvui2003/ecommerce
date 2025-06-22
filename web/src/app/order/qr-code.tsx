@@ -10,9 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useAppSelector } from '@/hooks/use-store';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type PaymentQrCodeProps = {
   url: string;
@@ -23,10 +22,12 @@ type PaymentQrCodeProps = {
 const PaymentQrCode = ({ url, orderId, paymentId }: PaymentQrCodeProps) => {
   const socket = useSocket();
   const [success, setSuccess] = useState(false);
+  const attached = useRef<boolean>(false);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || attached.current) return;
 
+    console.log('Socket connected:', socket.id);
     function onPaymentEvent(value: { message: string; status: string }) {
       console.log('Payment event received:', value);
       if (value.status === 'success') {
@@ -35,8 +36,11 @@ const PaymentQrCode = ({ url, orderId, paymentId }: PaymentQrCodeProps) => {
     }
 
     socket.on('paymentEvent', onPaymentEvent);
+    attached.current = true;
+    console.log('Socket listeners attached');
 
     return () => {
+      console.log('Cleaning up socket listeners');
       socket.off('paymentEvent', onPaymentEvent);
     };
   }, [socket]);
