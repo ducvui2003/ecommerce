@@ -18,7 +18,7 @@ const NumberToDecimalOptionalSchema = z
   .optional()
   .transform((val) => {
     console.log('Transforming number to Decimal:', val);
-    return val !== undefined && val !== null ? new Decimal(val) : undefined;
+    return val !== undefined && val !== null ? new Decimal(val) : null;
   });
 const DecimalToNumberSchema = z
   .instanceof(Decimal)
@@ -26,7 +26,7 @@ const DecimalToNumberSchema = z
 
 const DecimalToNumberOptionalSchema = z
   .union([z.instanceof(Decimal), z.null(), z.undefined()])
-  .transform((val) => (val instanceof Decimal ? val.toNumber() : undefined));
+  .transform((val) => (val instanceof Decimal ? val.toNumber() : null));
 
 const MetadataFields = TimestampFields.extend(SoftDeleteFields);
 

@@ -226,7 +226,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         (id) => !existProductResource.some((item) => item.resourceId === id),
       );
 
-      if (deleteProductResource)
+      if (deleteProductResource.length!=0)
         await this.prisma.productResource.deleteMany({
           where: {
             resourceId: {
@@ -235,7 +235,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           },
         });
 
-      if (createProductResource)
+      if (createProductResource.length!=0)
         await this.prisma.productResource.createMany({
           data: createProductResource.map((item) => {
             return {
@@ -260,7 +260,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       );
 
       // Keep/Update: in both DB and DTO
-      const keepOption = existOption.filter((item) =>
+      const keepOption = dto.options?.filter((item) =>
         existOption.some((eo) => eo.id === item.id),
       );
 
@@ -381,7 +381,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           createdAt: true,
         },
       })
-      .then((products) => {
+      .then((products) =>{
         return products.map((product) => {
           return {
             id: product.id,
