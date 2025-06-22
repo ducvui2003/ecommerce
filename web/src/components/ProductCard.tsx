@@ -16,7 +16,7 @@ const ProductCard = ({
   name,
   basePrice,
   salePrice,
-  star,
+  avgStar,
   numSell,
   className,
 }: ProductCardProps) => {
@@ -60,9 +60,9 @@ const ProductCard = ({
             </span>
           )}
         </div>
-        <StarRating star={star} />
+        <StarRating star={avgStar} />
         <span className="text-gray-600">
-          {star} | Đã bán {numSell}
+          {avgStar} | Đã bán {numSell}
         </span>
       </div>
     </div>
