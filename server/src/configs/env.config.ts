@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 import fs from 'fs';
+import { StringValue } from 'ms';
 import path from 'path';
 import { z } from 'zod';
 
@@ -19,12 +20,12 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
 
   ACCESS_TOKEN_SECRET: z.string(),
-  ACCESS_TOKEN_EXPIRY: z.string(),
+  ACCESS_TOKEN_EXPIRY: z.string().transform((value) => value as StringValue),
   REFRESH_TOKEN_SECRET: z.string(),
-  REFRESH_TOKEN_EXPIRY: z.string(),
+  REFRESH_TOKEN_EXPIRY: z.string().transform((value) => value as StringValue),
   SECRET_KEY: z.string(),
   ORIGIN_ALLOWED: z.string().transform((value) => value.split(',')),
-  OTP_EXPIRY: z.string(),
+  OTP_EXPIRY: z.string().transform((value) => value as StringValue),
 
   REDIS_URL: z.string(),
 
