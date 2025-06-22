@@ -1,0 +1,496 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "An Nhien E-commerce" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table users {
+  id Int [pk, increment]
+  email String [unique, not null]
+  name String [default: '']
+  password String [not null]
+  phone String [default: '']
+  avatar String [default: '']
+  status UserStatus [not null, default: 'INACTIVE']
+  dob DateTime
+  roleId Int [not null]
+  role roles [not null]
+  addresses addresses [not null]
+  cart carts
+  order orders [not null]
+  review reviews [not null]
+  wishlist wishlists [not null]
+  comment comments [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+
+  Note: '*
+ * - Role 1 - M User
+ * - User 1 - M Address
+ * - User 1 - 1 Cart
+ * - User 1 - M Order
+ * - User 1 - M Review
+ * - User 1 - M Wishlist
+ * - User 1 - M Comment
+ * ----------------------
+ * - Supplier 1 - 1 Address
+ * - Supplier 1 - M Product
+ * ----------------------
+ * - Product 1 - M Image
+ * - Product 1 - M CartItem
+ * - Product 1 - M OrderItem
+ * - Product 1 - M Review
+ * - Product 1 - M Comment
+ * -----------------------
+ * - Category 1 - M Product
+ * -----------------------
+ * - Cart 1 - 1 User
+ * - Cart 1 - M CartItem
+ * - CartItem M - 1 Product
+ * -----------------------
+ * - Order 1 - M OrderItem
+ * - Order M - 1 User
+ * - OrderItem M - 1 Product
+ * ------------------------
+ * // Mã giảm giá áp dụng cho 1 đơn hàng hoặc cho từng sản phẩm trong đơn hàng
+ * // Có thể áp dụng cả 2 trong 1 đơn hàng
+ * - Promotion 1 - M PromotionOrder
+ * - Promotion 1 - M PromotionOrderItem
+ * ------------------------
+ * - Review M - 1 User
+ * - Review M - 1 Product
+ * ------------------------
+ * - Wishlist M - 1 User
+ * - Wishlist M - 1 Product
+ * ------------------------
+ * - Comment M - 1 User
+ * - Comment M - 1 Product'
+}
+
+Table roles {
+  id Int [pk, increment]
+  name String [unique, not null]
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table addresses {
+  id Int [pk, increment]
+  detail String [not null]
+  ward String [not null]
+  district String [not null]
+  province String [not null]
+  userId Int [not null]
+  user users [not null]
+  supplier suppliers
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table suppliers {
+  id Int [pk, increment]
+  name String [not null]
+  email String [not null]
+  phone String [not null]
+  country String [not null]
+  website String [not null]
+  status AvailableStatus [not null, default: 'INACTIVE']
+  product products [not null]
+  addressId Int [unique, not null]
+  address addresses [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table products {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  basePrice Decimal [not null]
+  salePrice Decimal
+  views Int [not null, default: 0]
+  categoryId Int [not null]
+  category categories [not null]
+  supplierId Int [not null]
+  supplier suppliers [not null]
+  thumbnailId Int
+  thumbnail resources
+  cartItem cart_items [not null]
+  review reviews [not null]
+  wishlist wishlists [not null]
+  comment comments [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  isDeleted Boolean [default: false]
+  productResource product_resources [not null]
+  option options [not null]
+}
+
+Table options {
+  id Int [pk, increment]
+  name String [not null]
+  price Decimal [not null]
+  stock Int [default: 0]
+  productId Int [not null]
+  product products [not null]
+  resourceId Int
+  resource resources
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+  CartItem cart_items [not null]
+}
+
+Table categories {
+  id Int [pk, increment]
+  name String [not null]
+  status AvailableStatus [not null, default: 'INACTIVE']
+  product products [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table resources {
+  id Int [pk, increment]
+  publicId String [not null]
+  type String [not null]
+  format String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+  isDeleted Boolean [not null, default: false]
+  productResource product_resources [not null]
+  option options [not null]
+  Product products [not null]
+}
+
+Table product_resources {
+  productId Int [not null]
+  product products [not null]
+  resource resources [not null]
+  resourceId Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (productId, resourceId) [pk]
+  }
+}
+
+Table carts {
+  id Int [pk, increment]
+  userId Int [unique, not null]
+  user users [not null]
+  cartItems cart_items [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table cart_items {
+  id String [pk]
+  productId Int [not null]
+  product products [not null]
+  selected Boolean [not null, default: true]
+  quantity Int [not null, default: 1]
+  optionId Int
+  option options
+  cartId Int [not null]
+  cart carts [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+
+  indexes {
+    (cartId, productId, optionId) [unique]
+    (cartId, productId) [unique]
+  }
+}
+
+Table orders {
+  id Int [pk, increment]
+  totalAmount Decimal [not null]
+  feeShipping Decimal [not null]
+  status OrderStatus [not null, default: 'PENDING']
+  receiver Json [not null, note: '[Receiver]']
+  userId Int [not null]
+  user users [not null]
+  orderItem order_items [not null]
+  promotionOrder promotion_orders [not null]
+  createdAt DateTime [default: `now()`, not null]
+  payment payment
+}
+
+Table order_items {
+  id Int [pk, increment]
+  quantity Int [not null]
+  price Decimal [not null]
+  orderId Int [not null]
+  order orders [not null]
+  product Json [not null, note: '[ProductOrderItem]']
+  createdAt DateTime [default: `now()`, not null]
+  promotionOrderItem promotion_order_items [not null]
+  Review reviews [not null]
+}
+
+Table payment {
+  id Int [pk, increment]
+  orderId Int [unique]
+  order orders
+  status PaymentStatus [not null]
+  provider PaymentProvider [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table payment_transaction {
+  id Int [pk, increment]
+  paymentId Int
+  providerPaymentId String [not null]
+  amount Decimal [not null]
+  payload Json [not null, note: '[PaymentTransactionPayload]']
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table promotions {
+  id Int [pk, increment]
+  code String [unique, not null]
+  description String [not null]
+  percent Decimal [not null]
+  maxAmount Decimal [not null]
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  usageLimit Int [not null]
+  status AvailableStatus [not null, default: 'ACTIVE']
+  promotionOrder promotion_orders [not null]
+  promotionOrderItem promotion_order_items [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table promotion_orders {
+  id Int [pk, increment]
+  promotionId Int [not null]
+  Promotion promotions [not null]
+  orderId Int [not null]
+  Order orders [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table promotion_order_items {
+  id Int [pk, increment]
+  promotionId Int [not null]
+  promotion promotions [not null]
+  orderItemId Int [not null]
+  orderItem order_items [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table reviews {
+  id Int [pk, increment]
+  content String [not null]
+  rating Int [not null]
+  userId Int [not null]
+  user users [not null]
+  productId Int [not null]
+  product products [not null]
+  orderItemId Int [not null]
+  orderItem order_items [not null]
+  response String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+
+  indexes {
+    (orderItemId, userId) [unique]
+  }
+}
+
+Table wishlists {
+  id Int [pk, increment]
+  userId Int [not null]
+  user users [not null]
+  productId Int [not null]
+  product products [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (userId, productId) [unique]
+  }
+}
+
+Table contacts {
+  id Int [pk, increment]
+  title String [not null]
+  email String [not null]
+  phone String [not null]
+  name String [not null]
+  message String [not null]
+  status CustomerStatus [not null, default: 'PENDING']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table notifications {
+  id Int [pk, increment]
+  title String [not null]
+  content String [not null]
+  status AvailableStatus [not null, default: 'ACTIVE']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table comments {
+  id String [pk]
+  content String [not null]
+  like Int [not null]
+  parentId String
+  userId Int [not null]
+  user users [not null]
+  productId Int [not null]
+  product products [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table CommentLike {
+  id Int [pk, increment]
+  userId Int [not null]
+  commentId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (userId, commentId) [unique]
+  }
+}
+
+Table policies {
+  id Int [pk, increment]
+  title String [not null]
+  content String [not null]
+  status AvailableStatus [not null, default: 'ACTIVE']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table abouts {
+  id Int [pk, increment]
+  title String [not null]
+  content String [not null]
+  status AvailableStatus [not null, default: 'ACTIVE']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table faqs {
+  id Int [pk, increment]
+  title String [not null]
+  content String [not null]
+  status AvailableStatus [not null, default: 'ACTIVE']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+Enum AvailableStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum CustomerStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+Enum OrderStatus {
+  PENDING
+  PAID
+  DELIVERING
+  CANCELED
+  COMPLETE
+}
+
+Enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+Enum PaymentProvider {
+  VNPAY
+  SEPAY
+}
+
+Ref: users.roleId > roles.id
+
+Ref: addresses.userId > users.id [delete: Cascade]
+
+Ref: suppliers.addressId - addresses.id
+
+Ref: products.categoryId > categories.id
+
+Ref: products.supplierId > suppliers.id
+
+Ref: products.thumbnailId > resources.id
+
+Ref: options.productId > products.id [delete: Cascade]
+
+Ref: options.resourceId > resources.id
+
+Ref: product_resources.productId > products.id [delete: Cascade]
+
+Ref: product_resources.resourceId > resources.id
+
+Ref: carts.userId - users.id [delete: Cascade]
+
+Ref: cart_items.productId > products.id [delete: Cascade]
+
+Ref: cart_items.optionId > options.id
+
+Ref: cart_items.cartId > carts.id
+
+Ref: orders.userId > users.id [delete: Cascade]
+
+Ref: order_items.orderId > orders.id [delete: Cascade]
+
+Ref: payment.orderId - orders.id [delete: Cascade]
+
+Ref: promotion_orders.promotionId > promotions.id
+
+Ref: promotion_orders.orderId > orders.id
+
+Ref: promotion_order_items.promotionId > promotions.id
+
+Ref: promotion_order_items.orderItemId > order_items.id
+
+Ref: reviews.userId > users.id
+
+Ref: reviews.productId > products.id [delete: Cascade]
+
+Ref: reviews.orderItemId > order_items.id
+
+Ref: wishlists.userId > users.id
+
+Ref: wishlists.productId > products.id [delete: Cascade]
+
+Ref: comments.userId > users.id
+
+Ref: comments.productId > products.id [delete: Cascade]
