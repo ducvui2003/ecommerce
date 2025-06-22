@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -90,5 +91,16 @@ export class OrderController {
     @Param('id', ParseIntPipe) orderId: number,
   ): Promise<OrderDetailResType> {
     return this.orderService.getDetail(userId, orderId);
+  }
+
+  @Put('/:id')
+  @UseGuards(AuthenticationGuard)
+  @MessageHttp('Cancel order for customer')
+  @Auth([AuthType.Bearer])
+  async cancelOrder(
+    @ActiveUser('id') userId: number,
+    @Param('id', ParseIntPipe) orderId: number,
+  ): Promise<void> {
+    return await this.orderService.cancelOrder(orderId, userId);
   }
 }

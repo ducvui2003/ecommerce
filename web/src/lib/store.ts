@@ -17,6 +17,8 @@ import { orderManagerApi } from '@/features/manager/order/order.api';
 import orderManagerReducer from '@/features/manager/order/order.slice';
 import { productApi } from '@/features/product/product.api';
 import { dashboardApi } from '@/features/manager/dashboard/dashboard.api';
+import { wishlistApi } from '@/features/wishlist/wishlist.api';
+import { reviewApi } from '@/features/review/review.api';
 
 export const makeStore = () => {
   const store = configureStore({
@@ -38,9 +40,13 @@ export const makeStore = () => {
       [commentApi.reducerPath]: commentApi.reducer,
       [orderManagerApi.reducerPath]: orderManagerApi.reducer,
       [dashboardApi.reducerPath]: dashboardApi.reducer,
+      [wishlistApi.reducerPath]: wishlistApi.reducer,
+      [reviewApi.reducerPath]: reviewApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      return getDefaultMiddleware()
+      return getDefaultMiddleware({
+        serializableCheck: false, // Disable serializable check for RTK Query
+      })
         .concat(addressApi.middleware)
         .concat(mediaApi.middleware)
         .concat(userApi.middleware)
@@ -52,7 +58,9 @@ export const makeStore = () => {
         .concat(orderApi.middleware)
         .concat(commentApi.middleware)
         .concat(orderManagerApi.middleware)
-        .concat(dashboardApi.middleware);
+        .concat(dashboardApi.middleware)
+        .concat(wishlistApi.middleware)
+        .concat(reviewApi.middleware);
     },
   });
 

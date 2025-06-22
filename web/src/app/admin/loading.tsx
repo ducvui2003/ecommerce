@@ -1,7 +1,11 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import Loading from '@/components/loading/Loading';
 
 const AdminLoading = () => {
-  return <Skeleton className="bg-primary h-full opacity-50" />;
+  return (
+    <div className="absolute inset-0 bottom-2">
+      <Loading />
+    </div>
+  );
 };
 
 export default AdminLoading;

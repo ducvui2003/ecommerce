@@ -17,6 +17,7 @@ const pathMap: Record<string, string> = {
   'user/info': 'Cài đặt/Thông tin cá nhân',
   'user/security': 'Cài đặt/Bảo mật',
   'user/order': 'Cài đặt/Đơn hàng',
+  'user/wishlist': 'Cài đặt/Yêu thích',
 };
 
 const UserBreadcrumb = () => {

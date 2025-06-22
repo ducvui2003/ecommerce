@@ -12,9 +12,21 @@ const SoftDeleteFields = {
 };
 
 const NumberToDecimalSchema = z.number().transform((val) => new Decimal(val));
+const NumberToDecimalOptionalSchema = z
+  .number()
+  .nullable()
+  .optional()
+  .transform((val) => {
+    console.log('Transforming number to Decimal:', val);
+    return val !== undefined && val !== null ? new Decimal(val) : undefined;
+  });
 const DecimalToNumberSchema = z
   .instanceof(Decimal)
   .transform((val) => val.toNumber());
+
+const DecimalToNumberOptionalSchema = z
+  .union([z.instanceof(Decimal), z.null(), z.undefined()])
+  .transform((val) => (val instanceof Decimal ? val.toNumber() : undefined));
 
 const MetadataFields = TimestampFields.extend(SoftDeleteFields);
 
@@ -24,4 +36,6 @@ export {
   MetadataFields,
   NumberToDecimalSchema,
   DecimalToNumberSchema,
+  NumberToDecimalOptionalSchema,
+  DecimalToNumberOptionalSchema,
 };

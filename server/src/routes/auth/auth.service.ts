@@ -142,6 +142,7 @@ export class AuthService {
     const [accessToken, refreshToken] = await this.generateToken({
       id: user.id,
       email: user.email,
+      role: user.role.name,
     });
 
     // 4. Lưu refresh token vào redis
@@ -159,7 +160,7 @@ export class AuthService {
   async refreshToken(token: string): Promise<RefreshResType> {
     try {
       // 1. Decode refresh token
-      const { id, email, jti } =
+      const { id, email, jti, role } =
         await this.jwtService.verifyRefreshToken(token);
 
       // 2. Kiểm tra refresh token có tồn tại trong redis không?
@@ -175,6 +176,7 @@ export class AuthService {
       const [accessToken, refreshToken] = await this.generateToken({
         id,
         email,
+        role,
       });
 
       // 5. Lưu refresh token vào redis

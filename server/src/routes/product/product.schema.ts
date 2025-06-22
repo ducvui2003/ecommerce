@@ -1,6 +1,9 @@
 import { OrderBy, SortBy } from '@shared/constants/product.constant';
 import { orderBySchema } from '@shared/constants/search.constant';
-import { DecimalToNumberSchema } from '@shared/models/base.model';
+import {
+  DecimalToNumberOptionalSchema,
+  DecimalToNumberSchema,
+} from '@shared/models/base.model';
 import { CategoryModel } from '@shared/models/category.model';
 import { OptionModel } from '@shared/models/option.model';
 import { ProductModel } from '@shared/models/product.model';
@@ -62,6 +65,17 @@ const SearchProductReqSchema = PageableSchema.extend({
         return { sortBy, orderBy };
       }),
     ),
+  isDeleted: z
+    .union([z.boolean(), z.string(), z.null()])
+    .optional()
+    .transform((val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === 'boolean') return val;
+      const lower = val.toLowerCase();
+      if (lower === 'true') return true;
+      if (lower === 'false') return false;
+      return null; // fallback for unrecognized strings
+    }),
 });
 
 const ProductResSchema = ProductModel.pick({
@@ -71,6 +85,8 @@ const ProductResSchema = ProductModel.pick({
   basePrice: DecimalToNumberSchema,
   salePrice: DecimalToNumberSchema,
   thumbnail: z.string().optional(),
+  numSell: z.number().default(0),
+  avgStar: z.number().default(0),
 });
 
 const ProductDetailResSchema = ProductModel.pick({
@@ -79,7 +95,7 @@ const ProductDetailResSchema = ProductModel.pick({
   description: true,
 }).extend({
   basePrice: DecimalToNumberSchema,
-  salePrice: DecimalToNumberSchema,
+  salePrice: DecimalToNumberOptionalSchema,
   views: z.number(),
   category: CategoryModel.pick({
     id: true,
@@ -101,10 +117,16 @@ const ProductDetailResSchema = ProductModel.pick({
       }),
     )
     .optional(),
+  liked: z.boolean().default(false),
 });
 
 type ProductDetailResType = z.infer<typeof ProductDetailResSchema>;
 type ProductResType = z.infer<typeof ProductResSchema>;
 
+type ProductSitemapType = {
+  id: number;
+  createdAt: Date;
+}[];
+
 export { ProductDetailResSchema, ProductResSchema, SearchProductReqSchema };
-export type { ProductDetailResType, ProductResType };
+export type { ProductDetailResType, ProductResType, ProductSitemapType };

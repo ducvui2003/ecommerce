@@ -3,7 +3,7 @@ import PaginationProduct from '@/app/product/pagination';
 import ListView from '@/components/ListView';
 import ProductCard from '@/components/ProductCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import productService from '@/service/product.service';
+import productService from '@/service/product.server.service';
 import { PageReq } from '@/types/api.type';
 import { ProductCardType, SearchParams } from '@/types/product.type';
 
@@ -27,9 +27,9 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
     page: currentPage,
     size: currentSize,
   });
-
   const data: ProductCardType[] = response.items.map((item) => ({
     ...item,
+    star: item.avgStar || 0,
   }));
 
   const { limit, page, totalItems = 0, totalPages } = response.pagination;
@@ -44,19 +44,32 @@ const ProductPage = async ({ searchParams }: ProductPageProps) => {
       </div>
       <div className="flex-1">
         <div className="filter-header my-3 flex items-center justify-between">
-          <span className="text-xl font-bold">
-            Có {totalItems} sản phẩm hợp
-          </span>
+          {totalItems > 0 && (
+            <span className="text-xl font-bold">
+              Có {totalItems} sản phẩm phù hợp
+            </span>
+          )}
         </div>
         <ScrollArea className="h-3/4">
           <ListView<ProductCardType>
             display="grid"
             data={data}
             className="product grid-cols-4 gap-5"
+            emptyComponent={null}
             render={(item, index) => <ProductCard key={index} {...item} />}
           />
+          {data && data.length === 0 && (
+            <div className="text-center text-xl text-gray-500">
+              Không có sản phẩm nào phù hợp với bộ lọc của bạn.
+            </div>
+          )}
         </ScrollArea>
-        <PaginationProduct currentPage={currentPage} totalPages={totalPages} />
+        {data && data.length > 0 && (
+          <PaginationProduct
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+        )}
       </div>
     </div>
   );

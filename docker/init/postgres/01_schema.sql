@@ -1,12 +1,9 @@
 --
 -- PostgreSQL database dump
 --
-
+\connect ecommerce;
 -- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
 -- Dumped by pg_dump version 17.4 (Ubuntu 17.4-1.pgdg24.04+2)
-
-CREATE DATABASE ecommerce;
-\connect ecommerce;
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -806,7 +803,8 @@ CREATE TABLE public.products (
     created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp(3) without time zone,
     deleted_at timestamp(3) without time zone,
-    thumbnail_id integer
+    thumbnail_id integer,
+    views integer DEFAULT 0 NOT NULL
 );
 
 

@@ -44,7 +44,7 @@ export class SerializerInterceptor implements NestInterceptor {
         formatResponse.data =
           dataParser && Object.keys(dataParser)?.length != 0
             ? dataParser
-            : undefined;
+            : null;
 
         return formatResponse;
       }),

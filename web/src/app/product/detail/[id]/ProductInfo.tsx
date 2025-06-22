@@ -7,17 +7,21 @@ type ProductInfoProps = {
     supplierName: string;
     productType: string;
     basePrice: number;
-    salePrice: number;
+    salePrice?: number;
   };
 };
 
 export default function ProductInfo({ product }: ProductInfoProps) {
+  const { name, views, supplierName, productType, basePrice, salePrice } =
+    product;
   return (
     <div className="lg:col-span-2 lg:border-gray-200 lg:pr-8">
       <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-        {product.name}
+        {name}
       </h1>
-      <p>Lượt xem: <span>{product.views}</span></p>
+      <p>
+        Lượt xem: <span>{views}</span>
+      </p>
       <div className="mt-2 text-sm text-gray-600">
         <p>
           Nhà cung cấp:{' '}
@@ -35,38 +39,23 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       <div className="mt-4 lg:row-span-3 lg:mt-0">
         <h2 className="sr-only">Product information</h2>
         <div className="mt-2 flex items-baseline gap-x-3">
-          <span className="text-2xl font-semibold text-red-600">
-            {currency(product.basePrice)}
-          </span>
-          <span className="text-sm text-gray-400 line-through">
-            {currency(product.salePrice)}
-          </span>
-          <span className="ml-2 text-sm font-medium text-green-600">
-            -
-            {Math.round(
-              ((product.basePrice - product.salePrice) / product.basePrice) *
-                100,
-            )}
-            %
-          </span>
-        </div>
-
-        <div className="mt-6">
-          <h3 className="sr-only">Reviews</h3>
-          <div className="flex items-center">
-            <div className="flex items-center">
-              {[...Array(4)].map((_, idx) => (
-                <Star key={idx} filled />
-              ))}
-              <Star filled={false} />
-            </div>
-            <a
-              href="#"
-              className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              117 reviews
-            </a>
-          </div>
+          {salePrice ? (
+            <>
+              <span className="text-2xl font-semibold text-red-600">
+                {currency(salePrice)}
+              </span>
+              <span className="text-sm text-gray-400 line-through">
+                {currency(product.basePrice)}
+              </span>
+              <span className="ml-2 text-sm font-medium text-green-600">
+                -{Math.round(((basePrice - salePrice) / basePrice) * 100)}%
+              </span>
+            </>
+          ) : (
+            <span className="text-2xl font-semibold text-red-600">
+              {currency(basePrice)}
+            </span>
+          )}
         </div>
       </div>
     </div>

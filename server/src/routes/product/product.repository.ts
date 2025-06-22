@@ -6,6 +6,7 @@ import {
   UpdateProductBodyType,
 } from '@route/product/product-manager.schema';
 import { SearchProductDto } from '@route/product/product.dto';
+import { ProductSitemapType } from '@route/product/product.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductType } from '@shared/models/product.model';
 import { PrismaService } from '@shared/services/prisma.service';
@@ -25,7 +26,7 @@ export class ProductRepositoryImpl implements ProductRepository {
     });
   }
 
-  async getProductById(id: number): Promise<ProductType> {
+  async getProductById(id: number, isDeleted: boolean): Promise<ProductType> {
     const product = await this.prisma.product.findFirstOrThrow({
       include: {
         supplier: true,
@@ -40,7 +41,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       },
       where: {
         id: id,
-        deletedAt: null,
+        isDeleted: isDeleted,
       },
     });
 
@@ -58,6 +59,7 @@ export class ProductRepositoryImpl implements ProductRepository {
       minPrice,
       maxPrice,
       sort,
+      isDeleted,
     } = dto;
 
     const whereClause: Prisma.ProductWhereInput = {
@@ -70,7 +72,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         supplierId && supplierId.length > 0
           ? { in: supplierId.map(Number) }
           : undefined,
-      deletedAt: null,
+      isDeleted: isDeleted ?? undefined,
       basePrice: {
         gte: minPrice,
         lte: maxPrice,
@@ -139,6 +141,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
           thumbnailId: dto.thumbnailId,
+          isDeleted: dto.isDeleted,
           option: {
             create: dto.options?.map((item) => ({
               name: item.name,
@@ -192,6 +195,7 @@ export class ProductRepositoryImpl implements ProductRepository {
           categoryId: dto.categoryId,
           supplierId: dto.supplierId,
           thumbnailId: dto.thumbnailId,
+          isDeleted: dto.isDeleted,
         },
         where: {
           id: id,
@@ -319,7 +323,7 @@ export class ProductRepositoryImpl implements ProductRepository {
   async getNewProducts(): Promise<ProductType[]> {
     const products = await this.prisma.product.findMany({
       where: {
-        deletedAt: null,
+        isDeleted: false,
       },
       orderBy: {
         createdAt: 'desc',
@@ -344,7 +348,7 @@ export class ProductRepositoryImpl implements ProductRepository {
   async getMostViewProducts(): Promise<ProductType[]> {
     const products = await this.prisma.product.findMany({
       where: {
-        deletedAt: null,
+        isDeleted: false,
       },
       orderBy: {
         views: 'desc',
@@ -364,5 +368,58 @@ export class ProductRepositoryImpl implements ProductRepository {
     });
 
     return products;
+  }
+
+  getAllId(): Promise<ProductSitemapType> {
+    return this.prisma.product
+      .findMany({
+        where: {
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+        },
+      })
+      .then((products) => {
+        return products.map((product) => {
+          return {
+            id: product.id,
+            createdAt: product.createdAt,
+          };
+        });
+      });
+  }
+
+  countAvgStar(
+    productIds: number[],
+  ): Promise<{ productId: number; avgStar: number }[]> {
+    return this.prisma.review
+      .groupBy({
+        by: ['productId'],
+        where: {
+          productId: { in: productIds },
+        },
+        _avg: {
+          rating: true,
+        },
+      })
+      .then((results) => {
+        return results.map((item) => ({
+          productId: item.productId,
+          avgStar: parseFloat((item._avg.rating ?? 0).toFixed(1)),
+        }));
+      });
+  }
+
+  countNumSell(
+    productIds: number[],
+  ): Promise<{ productId: number; numSell: number }[]> {
+    return this.prisma.$queryRaw<{ productId: number; numSell: number }[]>(
+      Prisma.sql`   SELECT (oi.product ->> 'id')::INT AS "productId", COUNT(*)::INT AS "numSell"
+                    FROM order_items oi 
+                    WHERE (oi.product ->> 'id')::INT IN (${Prisma.join(productIds)})
+                    GROUP BY oi.product ->> 'id'`,
+    );
   }
 }

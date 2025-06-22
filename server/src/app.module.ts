@@ -27,7 +27,9 @@ import { OrderModule } from '@route/order/order.module';
 import { ContactModule } from '@route/contact/contact.module';
 import { CommentModule } from '@route/comment/comment.module';
 import { WebsocketModule } from 'src/websockets/websocket.module';
+import { ReviewModule } from '@route/review/review.module';
 import { DashboardModule } from './routes/dashboard/dashboard.module';
+import { WishlistModule } from './routes/wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -48,7 +50,9 @@ import { DashboardModule } from './routes/dashboard/dashboard.module';
     ContactModule,
     CommentModule,
     WebsocketModule,
+    ReviewModule,
     DashboardModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [

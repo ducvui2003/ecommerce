@@ -25,13 +25,14 @@ const UpdateProductForm = ({ id }: UpdateProductFormProps) => {
   const handleSubmit = (values: BaseProductFormType) => {
     const req: UpdateProductBodyType = {
       ...values,
-      thumbnail: values.thumbnail?.id,
+      thumbnailId: values.thumbnail?.id,
       resourceIds: values.resources?.map((item) => item.id),
       options: values.options?.map((item) => ({
         ...item,
         resourceId: item.resource?.id,
       })),
     };
+    console.log('Update product request:', req);
     update({
       id: id,
       payload: req,

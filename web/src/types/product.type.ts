@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 import { CategoryType } from './category.type';
 import { SupplierType } from '@/types/supplier.type';
 
@@ -11,6 +11,7 @@ type ProductSearchParams = {
   categoryId?: number[] | number;
   supplierId?: number[] | number;
   name?: string;
+  isDeleted?: boolean;
 };
 
 type ProductCardType = {
@@ -19,7 +20,7 @@ type ProductCardType = {
   name: string;
   basePrice: number;
   salePrice?: number;
-  star: number;
+  avgStar: number;
   numSell: number;
 };
 
@@ -30,7 +31,7 @@ type ProductResType = {
   thumbnail?: string;
   basePrice: number;
   salePrice?: number;
-  star: number;
+  avgStar: number;
   numSell: number;
 };
 
@@ -39,7 +40,7 @@ type ProductDetailRespType = {
   name: string;
   description: string;
   basePrice: number;
-  salePrice: number;
+  salePrice?: number;
   views: number;
   category: {
     id: number;
@@ -56,6 +57,7 @@ type ProductDetailRespType = {
     price: number;
     resource: string;
   }[];
+  liked: boolean;
 };
 
 type ProductType = {
@@ -86,51 +88,64 @@ const BaseResourceForm = z.object({
 });
 
 const BaseOptionForm = z.object({
-  id: z.number().nullable().default(null),
+  id: z.number().nullable(),
   name: string,
   price: z.coerce.number().min(1, 'Price must be >= 0'),
   resource: BaseResourceForm.optional(),
   stock: z.coerce.number(),
 });
 
-const BaseProductFormSchema = z.object({
-  name: string,
-  description: z.string(),
-  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
-  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
-  thumbnail: BaseResourceForm.optional(),
-  resources: z.array(BaseResourceForm).optional(),
-  isDeleted: z.boolean().optional().default(false),
-  options: z.array(BaseOptionForm).optional(),
-});
+const BaseProductFormSchema = z
+  .object({
+    name: string,
+    description: z.string(),
+    categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
+    supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
+    basePrice: z.coerce.number().min(1000, 'Price must be >= 1000'),
+    salePrice: z.coerce.number().min(0, 'Price must be >= 0').optional(),
+    thumbnail: BaseResourceForm.optional(),
+    resources: z.array(BaseResourceForm).optional(),
+    isDeleted: z.boolean(),
+    options: z.array(BaseOptionForm).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.salePrice != null && data.salePrice > data.basePrice) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Giá giảm cần phải nhỏ hơn giá cơ bản',
+      path: ['salePrice'],
+    },
+  );
 
 type BaseProductFormType = z.infer<typeof BaseProductFormSchema>;
 
 const CreateProductBodySchema = z.object({
-  name: string,
+  name: z.string(),
   description: z.string(),
-  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
-  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
+  categoryId: z.number(),
+  supplierId: z.number(),
+  basePrice: z.number(),
+  salePrice: z.number(),
   thumbnailId: z.number().optional(),
   resourceIds: z.array(z.number()).optional(),
-  isDeleted: z.boolean().optional().default(false),
+  isDeleted: z.boolean(),
   options: z.array(CreateOptionBodySchema).optional(),
 });
 
 const UpdateProductBodySchema = z.object({
   name: string,
   description: z.string(),
-  categoryId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  supplierId: z.coerce.number().min(1, 'Vui lòng chọn'),
-  basePrice: z.coerce.number().min(1, 'Price must be >= 0'),
-  salePrice: z.coerce.number().min(0, 'Price must be >= 0'),
-  thumbnail: z.number().optional(),
+  categoryId: z.number(),
+  supplierId: z.number(),
+  basePrice: z.number(),
+  salePrice: z.number().optional(),
+  thumbnailId: z.number().optional(),
   resourceIds: z.array(z.number()).optional(),
-  isDeleted: z.boolean().optional().default(false),
+  isDeleted: z.boolean(),
   options: z.array(BaseOptionForm).optional(),
 });
 
@@ -146,6 +161,7 @@ type ProductManagerResType = {
   category: number;
   supplier: number;
   thumbnail?: string;
+  isDeleted: boolean;
 };
 
 type ResourceResSchema = {
@@ -176,6 +192,7 @@ type ProductDetailManagerResType = {
 
   createdAt: Date;
   updatedAt: Date;
+  isDeleted: boolean;
 };
 
 type CreateProductResType = {
@@ -188,8 +205,8 @@ type CreateProductResType = {
 };
 
 type SearchProductResType = {
-  items: Pick<ProductResType, 'id' | 'name'>[]
-}
+  items: Pick<ProductResType, 'id' | 'name'>[];
+};
 
 export type {
   ProductCardType,

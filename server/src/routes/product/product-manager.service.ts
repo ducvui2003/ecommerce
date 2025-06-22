@@ -16,6 +16,7 @@ import { SearchProductDto } from '@route/product/product.dto';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { ProductNotFoundException } from '@shared/exceptions/product.exception';
 import {
+  isNotFoundError,
   isUniqueConstraintError,
   transformItemsPaging,
 } from '@shared/helper.shared';
@@ -70,12 +71,14 @@ export class ProductManagerService {
           publicId: product.thumbnail.publicId,
           url: this.fileService.getUrl(product.thumbnail.publicId),
         },
-        resources: product.productResource.map(({ resource }) => {
-          return {
-            id: resource.id,
-            publicId: resource.publicId,
-            url: this.fileService.getUrl(resource.publicId),
-          };
+        resources: product.productResource.map((item) => {
+          if (item?.resource)
+            return {
+              id: item.resource.id,
+              publicId: item.resource.publicId,
+              url: this.fileService.getUrl(item.resource.publicId),
+            };
+          return null;
         }),
         options: product.option?.map((option, index) => {
           return {
@@ -91,7 +94,7 @@ export class ProductManagerService {
         }),
       });
     } catch (error) {
-      if (isUniqueConstraintError(error)) {
+      if (isNotFoundError(error)) {
         throw new ProductNotFoundException();
       }
       throw error;

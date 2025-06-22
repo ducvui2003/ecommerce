@@ -2,8 +2,8 @@
 
 import notFound from '@/app/not-found';
 import ProductDescription from '@/app/product/detail/[id]/ProductDescription';
-import RatingSummary from '@/app/product/detail/[id]/RatingSummary';
-import WishlistButton from '@/components/button/WishlistButton';
+import ProductReview from '@/app/product/detail/[id]/ProductReview';
+import WishlistButton from '@/components/WishlistButton';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -21,7 +21,7 @@ import { ProductDetailRespType } from '@/types/product.type';
 import { AddCartItemSchema } from '@/types/schema/cart.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ControllerRenderProps,
   FieldErrors,
@@ -31,6 +31,10 @@ import {
 import { toast } from 'sonner';
 import ProductImages from './ProductImages';
 import ProductInfo from './ProductInfo';
+import useSession from '@/components/auth/useSession';
+import Link from '@/components/Link';
+import { useGetReviewsOfProductQuery } from '@/features/product/product.api';
+import { RatingSortKeysType } from '@/types/review.type';
 
 type ProductDetailProps = {
   product: ProductDetailRespType;
@@ -39,6 +43,28 @@ type ProductDetailProps = {
 export default function ProductDetail({ product }: ProductDetailProps) {
   if (!product) return notFound();
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
+  const { status } = useSession();
+  const [page, setPage] = useState(1);
+  const [ratings, setRatings] = useState<number[]>([]);
+  const [sort, setSort] = useState<RatingSortKeysType[number] | undefined>(
+    undefined,
+  );
+  const [onlyHasResponse, setOnlyHasResponse] = useState<boolean>(false);
+  const [onlyHasBuyAgain, setOnlyHasBuyAgain] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>('');
+
+  const { data: reviews } = useGetReviewsOfProductQuery({
+    productId: product.id,
+    query: {
+      size: 5,
+      page,
+      ratings,
+      ...(sort && { sort }),
+      ...(search && { search }),
+      ...(onlyHasResponse && { onlyHasResponse }),
+      ...(onlyHasBuyAgain && { onlyHasBuyAgain }),
+    },
+  });
 
   const productInfoData = {
     name: product.name,
@@ -55,7 +81,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     defaultValues: {
       productId: product.id,
       quantity: 1,
-      hasOption: product.option.length > 0
+      hasOption: product.option.length > 0,
     },
   });
 
@@ -83,10 +109,20 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const onSummitAddCartItemForm = async (body: AddCartItemReqType) => {
-    const {hasOption, ...data} = body
+    if (status !== 'authenticated') {
+      toast.warning('Vui lòng đăng nhập để sử dụng tính năng này', {
+        description: (
+          <Button>
+            <Link href="/login">Đăng nhập</Link>
+          </Button>
+        ),
+      });
+      return;
+    }
+    const { hasOption, ...data } = body;
     try {
       const result = await addCartItem(data);
-      if (result.hasOwnProperty('data')){
+      if (result.hasOwnProperty('data')) {
         toast.success('Thêm sản phẩm vào giỏ hàng thành công');
       }
     } catch (error) {
@@ -126,14 +162,15 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             )}
           >
             <ProductInfo product={productInfoData} />
-            {
-              product.option.length > 0 &&
+            {product.option.length > 0 && (
               <FormField
                 control={addCartItemForm.control}
                 name="optionId"
                 render={({ field }: { field: FieldValues }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Dung tích</FormLabel>
+                    <FormLabel className="text-muted-foreground">
+                      Dung tích
+                    </FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={(value) => field.onChange(Number(value))}
@@ -141,7 +178,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       >
                         <FormItem className="mt-2 flex items-center space-y-0 space-x-3">
                           {product.option.map((option) => {
-                            const isSelected = String(option.id) === String(field.value);
+                            const isSelected =
+                              String(option.id) === String(field.value);
                             return (
                               <FormItem
                                 key={option.id}
@@ -168,7 +206,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   </FormItem>
                 )}
               />
-            }
+            )}
             <FormField
               control={addCartItemForm.control}
               name="quantity"
@@ -207,7 +245,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               )}
             />
             <div className="flex items-center gap-2">
-              <Button type="submit" className="gap-2 px-4 py-2 text-white disabled:opacity-50">
+              <Button
+                type="submit"
+                className="gap-2 px-4 py-2 text-white disabled:opacity-50"
+              >
                 <ShoppingCart />
                 <span>Thêm vào giỏ hàng</span>
               </Button>
@@ -217,9 +258,22 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </Form>
       </div>
       <div className="mt-5 lg:mt-10">
-        <ProductDescription description={product.description} productId={product.id}/>
+        <ProductDescription
+          description={product.description}
+          productId={product.id}
+        />
       </div>
-      <RatingSummary />
+      {reviews && (
+        <ProductReview
+          reviews={reviews}
+          setPage={setPage}
+          setRatings={setRatings}
+          setSort={setSort}
+          setOnlyHasResponse={setOnlyHasResponse}
+          setOnlyHasBuyAgain={setOnlyHasBuyAgain}
+          setSearch={setSearch}
+        />
+      )}
     </div>
   );
 }

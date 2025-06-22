@@ -42,10 +42,10 @@ const LoginForm = () => {
 
   // 2. Define a submit handler.
   function onSubmit(values: LoginFormType) {
-    if (!turnstileToken) {
-      toast.warning('Vui lòng xác thực Turnstile trước khi đăng nhập');
-      return;
-    }
+    // if (!turnstileToken) {
+    //   toast.warning('Vui lòng xác thực Turnstile trước khi đăng nhập');
+    //   return;
+    // }
     return signIn({
       email: values.email,
       password: values.password,
@@ -137,14 +137,14 @@ const LoginForm = () => {
           )}
         />
 
-        <TurnstileWidget
-          onSuccess={(token) => setTurnstileToken(token)}
-          onFail={() => {
-            toast.error(
-              'Xác thực Turnstile không thành công, vui lòng thử lại',
-            );
-          }}
-        />
+        {/*<TurnstileWidget*/}
+        {/*  onSuccess={(token) => setTurnstileToken(token)}*/}
+        {/*  onFail={() => {*/}
+        {/*    toast.error(*/}
+        {/*      'Xác thực Turnstile không thành công, vui lòng thử lại',*/}
+        {/*    );*/}
+        {/*  }}*/}
+        {/*/>*/}
         <Button
           className="w-full"
           type="submit"

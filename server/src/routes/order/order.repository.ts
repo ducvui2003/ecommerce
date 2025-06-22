@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { OrderStatus, Prisma } from '@prisma/client';
-import { OrderResType, SearchOrderType } from '@route/order/order.schema';
+import {
+  CartItemType,
+  OrderResType,
+  SearchOrderType,
+} from '@route/order/order.schema';
 import { Paging } from '@shared/common/interfaces/paging.interface';
 import { OrderItemType } from '@shared/models/order-item.model';
 import { OrderType } from '@shared/models/order.model';
@@ -20,6 +24,13 @@ export interface OrderRepository {
   );
   getDetail(userId: number, orderId: number): Promise<OrderType>;
   search(userId: number, dto: SearchOrderType): Promise<Paging<OrderResType>>;
+  findById(id: number): Promise<OrderType | null>;
+  updateOrderStatus(id: number): Promise<void>;
+  findCartItemByIdIn: (ids: string[]) => Promise<CartItemType[]>;
+  deleteCartItemByIdIn: (
+    ids: string[],
+    tx: Prisma.TransactionClient,
+  ) => Promise<void>;
 }
 @Injectable()
 export class OrderPrismaRepository implements OrderRepository {
@@ -110,7 +121,7 @@ export class OrderPrismaRepository implements OrderRepository {
     );
 
     const resultCount = await this.prismaService.$queryRaw<{ count: number }>(
-      Prisma.sql`SELECT COUNT(o.id)::INT as count
+      Prisma.sql`SELECT COUNT(DISTINCT o.id)::INT as count
                   FROM orders o JOIN order_items oi ON o.id = oi.order_id 
                   JOIN LATERAL (
                     SELECT oi2.product
@@ -123,7 +134,6 @@ export class OrderPrismaRepository implements OrderRepository {
     );
 
     const totalItems: number = resultCount?.[0]?.count ?? 0;
-
     return {
       items,
       pagination: {
@@ -143,6 +153,57 @@ export class OrderPrismaRepository implements OrderRepository {
       where: {
         userId: userId,
         id: orderId,
+      },
+    });
+  }
+
+  async findById(id: number): Promise<OrderType | null> {
+    return this.prismaService.order.findUnique({
+      where: { id: id },
+    });
+  }
+  async updateOrderStatus(id: number): Promise<void> {
+    await this.prismaService.order.update({
+      where: { id: id },
+      data: { status: OrderStatus.CANCELED },
+    });
+  }
+
+  async findCartItemByIdIn(ids: string[]): Promise<CartItemType[]> {
+    const data = await this.prismaService.cartItem.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      select: {
+        quantity: true,
+        optionId: true,
+        productId: true,
+        cartId: true,
+        product: true,
+        option: true,
+        id: true,
+      },
+    });
+
+    return data.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+      },
+    }));
+  }
+
+  async deleteCartItemByIdIn(
+    ids: string[],
+    tx: Prisma.TransactionClient,
+  ): Promise<void> {
+    await tx.cartItem.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
       },
     });
   }

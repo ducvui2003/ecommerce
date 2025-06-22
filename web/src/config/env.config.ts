@@ -11,6 +11,7 @@ const configSchema = z.object({
   NEXT_PUBLIC_LOG_CLIENT: z.string().transform((value) => new Boolean(value)),
   NEXT_PUBLIC_CLOUDFLARE_SITE_KEY: z.string().optional().default(''),
   NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY: z.string().optional().default(''),
+  NEXT_PUBLIC_BASE_URL: z.string().optional().default('http://localhost:3000'),
 });
 
 const configProject = configSchema.safeParse({
@@ -27,6 +28,7 @@ const configProject = configSchema.safeParse({
   NEXT_PUBLIC_CLOUDFLARE_SITE_KEY: process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY,
   NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY:
     process.env.NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY,
+  NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || '',
 });
 
 if (!configProject.success) {

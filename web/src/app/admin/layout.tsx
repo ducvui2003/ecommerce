@@ -56,7 +56,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
             </li>
           </ul>
         </aside>
-        <section className="col-span-10 mt-2 mr-2">
+        <section className="col-span-10 my-2 mr-2">
           <ScrollArea className="relative h-[calc(100vh-100px)] overflow-hidden">
             {children}
           </ScrollArea>

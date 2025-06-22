@@ -24,34 +24,32 @@ import {
   OrderResType,
 } from '@route/order/order-manager.schema';
 import { OrderStatusType } from '@shared/constants/order.constant';
+import { RolesGuard } from '@shared/guards/role.guard';
+import { Roles } from '@shared/decorators/roles.decorator';
 @Controller('/api/v1/manager/orders')
+@UseGuards(AuthenticationGuard, RolesGuard)
+@Auth([AuthType.Bearer])
+@Roles('ADMIN')
 export class OrderManagerController {
   constructor(@Inject() private readonly orderService: OrderManagerService) {}
 
   @Get('search')
-  @UseGuards(AuthenticationGuard)
   @MessageHttp('Paging order for admin')
-  @Auth([AuthType.Bearer])
   search(
     @Query() search: SearchOrderManagerDto,
   ): Promise<Paging<OrderResType>> {
-    console.log(search);
     return this.orderService.search(search);
   }
 
   @Get('/:id')
-  @UseGuards(AuthenticationGuard)
   @MessageHttp('Get order detail for customer')
-  @Auth([AuthType.Bearer])
   getDetail(
     @Param('id', ParseIntPipe) orderId: number,
   ): Promise<OrderDetailResType> {
     return this.orderService.getDetail(orderId);
   }
   @Get('/status/:id')
-  @UseGuards(AuthenticationGuard)
-  @MessageHttp('Get order detail for customer')
-  @Auth([AuthType.Bearer])
+  @MessageHttp('Get order status can change for manager')
   getStatus(
     @Param('id', ParseIntPipe) orderId: number,
   ): Promise<OrderStatusType[]> {
@@ -59,9 +57,7 @@ export class OrderManagerController {
   }
 
   @Put('/status/:id')
-  @UseGuards(AuthenticationGuard)
-  @MessageHttp('Get order detail for customer')
-  @Auth([AuthType.Bearer])
+  @MessageHttp('Update order status for manager')
   changeStatus(
     @Param('id', ParseIntPipe) orderId: number,
     @Body() body: ChangeOrderManagerDto,
