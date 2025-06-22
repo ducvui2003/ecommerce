@@ -35,27 +35,27 @@ const UserDropdown = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
           <GuestOnlyClient>
-            <DropdownMenuItem className="p-0 hover:!text-white">
+            <DropdownMenuItem className="hover:!bg-primary p-0 hover:!text-white">
               <Link href={'/login'} className="flex-1 p-2">
                 Đăng nhập
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="p-0 hover:!text-white">
+            <DropdownMenuItem className="hover:!bg-primary p-0 hover:!text-white">
               <Link href={'/register'} className="flex-1 p-2">
                 Đăng ký
               </Link>
             </DropdownMenuItem>
           </GuestOnlyClient>
           <RequiredAuthClient mode="hide" role={['ADMIN']}>
-            <DropdownMenuItem className="p-0 hover:!text-white">
+            <DropdownMenuItem className="hover:!bg-primary p-0 hover:!text-white">
               <Link href={'/admin/product'} className="flex-1 p-2">
                 Quản lý
               </Link>
             </DropdownMenuItem>
           </RequiredAuthClient>
           <RequiredAuthClient mode="hide">
-            <DropdownMenuItem className="p-0 hover:!text-white">
+            <DropdownMenuItem className="hover:!bg-primary p-0 hover:!text-white">
               <Link href={'/user/info'} className="flex-1 p-2" legacyBehavior>
                 Thông tin cá nhân
               </Link>

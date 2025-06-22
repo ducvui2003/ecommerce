@@ -23,18 +23,18 @@ const ManagerDropdown = () => {
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" sideOffset={12}>
-          <DropdownMenuItem>
-            <Link href={'/'} className="flex-1" legacyBehavior>
+          <DropdownMenuItem className="hover:!bg-primary p-0 hover:!text-white">
+            <Link href={'/'} className="flex-1 p-2" legacyBehavior>
               Cửa hàng
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href={'/user/info'} className="flex-1" legacyBehavior>
+          <DropdownMenuItem className="hover:!bg-primary p-0 hover:!text-white">
+            <Link href={'/user/info'} className="flex-1 p-2" legacyBehavior>
               Thông tin cá nhân
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="flex-1 bg-red-500 text-white hover:cursor-pointer hover:bg-red-700"
+            className="bg-destructive flex-1 p-2 text-white hover:cursor-pointer hover:!bg-red-700 hover:!text-white"
             onClick={() => setOpen(true)}
           >
             Đăng xuất
