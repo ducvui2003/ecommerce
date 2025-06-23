@@ -21,7 +21,12 @@ import { SharedOrderRepository } from '@shared/repositories/shared-order.reposit
 import { WebsocketService } from '@shared/services/websocket.service';
 import { Server } from 'socket.io';
 @Injectable()
-@WebSocketGateway({ namespace: 'payment' })
+@WebSocketGateway({
+  namespace: 'payment',
+  cors: {
+    origin: '*', // adjust as needed
+  },
+})
 export class PaymentService {
   @WebSocketServer()
   server: Server;

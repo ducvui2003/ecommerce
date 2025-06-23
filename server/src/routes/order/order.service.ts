@@ -81,9 +81,9 @@ export class OrderService {
       }
       if (item.optionId) {
         const optionPrice = item.option?.price?.toNumber() ?? 0;
-        price = (basePrice + optionPrice) * item.quantity;
+        price = (productPrice + optionPrice) * item.quantity;
       } else {
-        price = basePrice * item.quantity;
+        price = productPrice * item.quantity;
       }
       recordPriceOrderItem[item.id] = price;
       totalAmount += price;

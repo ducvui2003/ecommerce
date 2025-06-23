@@ -3,7 +3,10 @@ import { ProductResType, SearchProductResType } from '@/types/product.type';
 import { toQueryString } from '@/lib/utils';
 import { PageReq, ResponseApi, ResponseApiPaging } from '@/types/api.type';
 import httpClient from '@/lib/http.client';
-import { GetReviewsOfProductResType, FilterReviewQueryType } from '@/types/review.type';
+import {
+  GetReviewsOfProductResType,
+  FilterReviewQueryType,
+} from '@/types/review.type';
 import productService from '@/service/product.service';
 
 export const productApi = createApi({
