@@ -14,11 +14,6 @@ const PaymentPage = async () => {
         <div className="mt-10 text-3xl font-bold">Thanh toán thành công</div>
         <p className="pt-4 text-xl">Đơn hàng đã được thanh toán thành công</p>
         <div className="flex flex-col items-center gap-4">
-          <ClientIcon
-            icon={'clarity:success-standard-solid'}
-            className="animate-shake text-green-500"
-            size={100}
-          />
           <Button>
             <Link href={'/user/order'}>Kiểm tra đơn hàng</Link>
           </Button>
