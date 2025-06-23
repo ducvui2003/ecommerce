@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UserStatus } from '@prisma/client';
 import { RegisterBodyType } from '@route/auth/auth.schema';
 import { TypeOfVerificationType } from '@shared/constants/auth.constant';
 import { RoleType } from '@shared/models/role.model';
@@ -14,6 +15,8 @@ export interface AuthRepository {
   existEmail(email: string): Promise<boolean>;
 
   updatePassword(email: string, password: string);
+
+  updateStatus(email: string, status: UserStatus): Promise<UserType>;
 }
 
 @Injectable()
@@ -52,6 +55,16 @@ export class PrismaAuthRepository implements AuthRepository {
       },
       data: {
         password: password,
+      },
+    });
+  }
+  updateStatus(email: string, status: UserStatus): Promise<UserType> {
+    return this.prismaService.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        status: status,
       },
     });
   }
