@@ -231,6 +231,7 @@ export class AuthService {
     if (code !== req.code) {
       throw OTPInvalidException;
     }
+    await this.authRepository.updateStatus(req.email, 'ACTIVE');
   }
 
   async forgotPassword(req: ForgetPasswordBodyDTO): Promise<void> {

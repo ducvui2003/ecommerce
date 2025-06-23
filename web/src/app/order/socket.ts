@@ -11,7 +11,8 @@ export function useSocket(): Socket | null {
 
   useEffect(() => {
     if (accessToken && !socket) {
-      const newSocket = io(`${envConfig.NEXT_PUBLIC_SERVER_EXTERNAL}/payment`, {
+      const newSocket = io(`${envConfig.NEXT_PUBLIC_SERVER_EXTERNAL}`, {
+        path: 'payment',
         transports: ['websocket'],
         query: {
           token: `Bearer ${accessToken}`,
