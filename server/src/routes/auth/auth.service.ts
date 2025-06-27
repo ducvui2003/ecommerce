@@ -21,6 +21,7 @@ import {
 } from '@route/auth/auth.error';
 import { AuthRepository } from '@route/auth/auth.repository';
 import { RefreshResType } from '@route/auth/auth.schema';
+import { UserStatus } from '@shared/constants/auth.constant';
 import { SHARED_USER_REPOSITORY } from '@shared/constants/dependency.constant';
 import { UserNotFoundException } from '@shared/exceptions/user.exception';
 import { generateOTP, isNotFoundError } from '@shared/helper.shared';
@@ -231,7 +232,7 @@ export class AuthService {
     if (code !== req.code) {
       throw OTPInvalidException;
     }
-    await this.authRepository.updateStatus(req.email, 'ACTIVE');
+    await this.authRepository.updateStatus(req.email, UserStatus.ACTIVE);
   }
 
   async forgotPassword(req: ForgetPasswordBodyDTO): Promise<void> {
