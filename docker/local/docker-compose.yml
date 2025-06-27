@@ -1,0 +1,104 @@
+services:
+  nginx:
+    container_name: ecommerce-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - ecommerce-fe
+      - ecommerce-be
+
+  ecommerce-fe:
+    container_name: ecommerce-fe
+    image: ducvui2003/nextjs-ecommerce:latest
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - NEXT_PUBLIC_SERVER_EXTERNAL
+      - NEXT_PUBLIC_SERVER_CONTAINER
+      - NEXT_PUBLIC_AUTH_SECRET
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID
+      - NEXT_PUBLIC_GOOGLE_CLIENT_SECRET
+      - NEXT_PUBLIC_FACEBOOK_CLIENT_ID
+      - NEXT_PUBLIC_FACEBOOK_CLIENT_SECRET
+      - NEXT_PUBLIC_DEVELOPMENT
+      - NEXT_PUBLIC_LOG_CLIENT
+      - NEXT_PUBLIC_CLOUDFLARE_SITE_KEY
+      - NEXT_PUBLIC_CLOUDFLARE_SECRET_KEY
+      - NEXT_PUBLIC_BASE_URL
+    ports:
+      - ${CLIENT_PORT}:3000
+
+  ecommerce-be:
+    container_name: ecommerce-be
+    image: ducvui2003/nestjs-ecommerce:latest
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - NODE_ENV
+      - PORT
+      - ORIGIN_ALLOWE
+      - EMAIL_URL
+      - ACCESS_TOKEN_SECRET
+      - ACCESS_TOKEN_EXPIRY
+      - REFRESH_TOKEN_SECRET
+      - REFRESH_TOKEN_EXPIRY
+      - SECRET_KEY
+      - OTP_EXPIRY
+      - ADDRESS_ACCESS_TOKEN
+      - ADDRESS_APP_ID
+      - ADDRESS_BUSINESS_ID
+      - CLOUDINARY_API_KEY
+      - CLOUDINARY_API_SECRET
+      - CLOUDINARY_CLOUD_NAME
+      - PAYMENT_API_KEY
+      - VNPAY_PAY_URL
+      - VNPAY_PAY_RETURN_URL
+      - VNPAY_TNN_CODE
+      - VNPAY_HASH_SECRET
+      - VNPAY_API_URL=https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+      - SEPAY_BANK
+      - SEPAY_ACCOUNT_NUMBER
+      - DATABASE_URL
+      - REDIS_URL
+    ports:
+      - ${SERVER_PORT}:8000
+    command:
+      [
+        "./wait-for-it.sh",
+        "postgres:5432",
+        "--timeout=30",
+        "--strict",
+        "--",
+        "node",
+        "dist/src/main",
+      ]
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    container_name: ecommerce-redis
+    image: redis:7.4.2-alpine
+    ports:
+      - "${REDIS_PORT}:6379"
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+
+  postgres:
+    container_name: ecommerce-postgres
+    image: postgres:latest
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      - REDIS_PASSWORD
+      - REDIS_PORT
+    volumes:
+      - ./init/postgres:/docker-entrypoint-initdb.d
+      - ecommerce_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  ecommerce_postgres_data:
